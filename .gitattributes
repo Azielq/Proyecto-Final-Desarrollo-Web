@@ -1,26 +1,24 @@
 ###############################################################################
-# Set default behavior to automatically normalize line endings.
+# Normalización de finales de línea:
+# Asegura que los archivos de texto usen el final de línea correcto en cada OS.
 ###############################################################################
 * text=auto
 
 ###############################################################################
-# Set default behavior for command prompt diff.
+# Configuración de diff para archivos C#
 #
-# This is need for earlier builds of msysgit that does not have it on by
-# default for csharp files.
-# Note: This is only used by command line
+# Esta opción asigna un controlador de diff específico para archivos .cs, lo que
+# mejora la visualización de cambios en la línea de comandos.
+# Descomenta la siguiente línea si deseas activarlo:
 ###############################################################################
-#*.cs     diff=csharp
+#*.cs diff=csharp
 
 ###############################################################################
-# Set the merge driver for project and solution files
+# Configuración de merge para archivos de proyecto y solución.
 #
-# Merging from the command prompt will add diff markers to the files if there
-# are conflicts (Merging from VS is not affected by the settings below, in VS
-# the diff markers are never inserted). Diff markers may cause the following 
-# file extensions to fail to load in VS. An alternative would be to treat
-# these files as binary and thus will always conflict and require user
-# intervention with every merge. To do so, just uncomment the entries below
+# Al fusionar desde la línea de comandos, estos archivos pueden recibir marcadores
+# de conflicto. Si prefieres tratarlos como binarios para forzar la intervención
+# manual en cada conflicto, descomenta las siguientes líneas:
 ###############################################################################
 #*.sln       merge=binary
 #*.csproj    merge=binary
@@ -36,28 +34,42 @@
 #*.wwaproj   merge=binary
 
 ###############################################################################
-# behavior for image files
+# Configuración de diff para archivos web (HTML, CSS, JavaScript)
 #
-# image files are treated as binary by default.
+# Estos archivos, siendo de texto, se benefician de un diff normal.
+###############################################################################
+*.html diff
+*.css  diff
+*.js   diff
+
+###############################################################################
+# Archivos ASP.NET y Entity Framework:
+#
+# Se marcan como archivos de texto para asegurar la correcta normalización
+# y evitar conflictos en archivos generados automáticamente, como los de EF.
+###############################################################################
+*.edmx         text
+*.edmx.diagram text
+web.config     text
+app.config     text
+
+###############################################################################
+# Archivos de imagen:
+#
+# Por defecto, Git trata los archivos de imagen como binarios, evitando diffs línea a línea.
+# Descomenta las siguientes líneas si necesitas reglas específicas:
 ###############################################################################
 #*.jpg   binary
+#*.jpeg  binary
 #*.png   binary
 #*.gif   binary
 
 ###############################################################################
-# diff behavior for common document formats
-# 
-# Convert binary document formats to text before diffing them. This feature
-# is only available from the command line. Turn it on by uncommenting the 
-# entries below.
+# Configuración para documentos y PDF (opcional):
+#
+# Permite convertir archivos binarios a texto para facilitar la comparación desde
+# la línea de comandos. Descomenta si lo requieres.
 ###############################################################################
 #*.doc   diff=astextplain
-#*.DOC   diff=astextplain
 #*.docx  diff=astextplain
-#*.DOCX  diff=astextplain
-#*.dot   diff=astextplain
-#*.DOT   diff=astextplain
 #*.pdf   diff=astextplain
-#*.PDF   diff=astextplain
-#*.rtf   diff=astextplain
-#*.RTF   diff=astextplain
