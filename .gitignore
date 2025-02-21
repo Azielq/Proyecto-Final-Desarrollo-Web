@@ -1,0 +1,85 @@
+# .gitignore para proyecto web con HTML, CSS, C#, .NET, ASP.NET, React, Bootstrap y Entity Framework
+# IDEs: Visual Studio, VS Code y Sublime Text
+# Base de datos: SQL Server en Azure (archivos locales ignorados)
+
+#######################################
+## Visual Studio y entorno .NET
+#######################################
+# Configuración y archivos específicos del usuario
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Directorios y archivos generados en compilación
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+*.cache
+*.dbmdl
+*.bak
+*.log
+
+# Dependencias NuGet y paquetes
+packages/
+*.nupkg
+
+#######################################
+## Archivos temporales y resultados de tests
+#######################################
+*.tmp
+*.temp
+TestResults/
+
+#######################################
+## Configuración de entornos de desarrollo (IDEs)
+#######################################
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+#######################################
+## Dependencias y artefactos de Node.js (React, Bootstrap)
+#######################################
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.yarn-integrity
+
+#######################################
+## Publicación / Deploy (Azure, etc.)
+#######################################
+publish/
+*.publish.xml
+
+#######################################
+## Archivos locales de base de datos (SQL Server)
+#######################################
+*.mdf
+*.ldf
+
+#######################################
+## ASP.NET y Entity Framework
+#######################################
+# Archivos y carpetas generados por ASP.NET
+App_Data/
+Logs/
+
+# Archivos generados por el diseñador de Entity Framework
+*.edmx.diagram
+
+#######################################
+## Otros archivos del sistema y configuraciones sensibles
+#######################################
+.DS_Store
+Thumbs.db
+.env
