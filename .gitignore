@@ -15,6 +15,8 @@
 # Directorios y archivos generados en compilación
 bin/
 obj/
+[Bb]in/
+[Oo]bj/
 [Dd]ebug/
 [Rr]elease/
 x64/
@@ -23,17 +25,26 @@ x86/
 *.dbmdl
 *.bak
 *.log
-
-# Dependencias NuGet y paquetes
-packages/
-*.nupkg
+[Ll]og/
 
 #######################################
-## Archivos temporales y resultados de tests
+## Paquetes y dependencias NuGet
+#######################################
+packages/
+*.nupkg
+*.snupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+#######################################
+## Archivos temporales y de test
 #######################################
 *.tmp
 *.temp
 TestResults/
+*.trx
+*.coverage
 
 #######################################
 ## Configuración de entornos de desarrollo (IDEs)
@@ -60,6 +71,9 @@ yarn-error.log*
 #######################################
 publish/
 *.publish.xml
+*.publishsettings
+logs/
+*.log
 
 #######################################
 ## Archivos locales de base de datos (SQL Server)
@@ -76,6 +90,7 @@ Logs/
 
 # Archivos generados por el diseñador de Entity Framework
 *.edmx.diagram
+appsettings.*.json
 
 #######################################
 ## Otros archivos del sistema y configuraciones sensibles
@@ -83,3 +98,13 @@ Logs/
 .DS_Store
 Thumbs.db
 .env
+
+#######################################
+## Archivos de compilación adicionales
+#######################################
+*.dll
+*.exe
+*.pdb
+*.mdb
+*.ilk
+*.meta
