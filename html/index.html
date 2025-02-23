@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmaU - Tu farmacia de confianza</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Estilos generales */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        a {
+            text-decoration: none;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            background-color: #388E3C;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Header */
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            color: #4CAF50;
+            margin-left: 10px;
+        }
+        
+        .logo span {
+            color: #2196F3;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 30px;
+        }
+        
+        nav ul li a {
+            color: #555;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        nav ul li a:hover {
+            color: #4CAF50;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding-top: 120px;
+            padding-bottom: 80px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #e3f2fd 100%);
+        }
+        
+        .hero-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .hero-text {
+            flex: 1;
+            padding-right: 40px;
+        }
+        
+        .hero-text h2 {
+            font-size: 42px;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: #2E7D32;
+        }
+        
+        .hero-text p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .hero-image {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .hero-image img {
+            max-width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Categorías */
+        .categories {
+            padding: 80px 0;
+            background-color: white;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-size: 32px;
+            color: #2E7D32;
+            margin-bottom: 15px;
+        }
+        
+        .section-title p {
+            color: #666;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+        
+        .category-card {
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .category-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .category-image {
+            height: 200px;
+            overflow: hidden;
+        }
+        
+        .category-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .category-card:hover .category-image img {
+            transform: scale(1.05);
+        }
+        
+        .category-content {
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .category-content h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #2E7D32;
+        }
+        
+        .category-content p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        /* Servicios */
+        .services {
+            padding: 80px 0;
+            background-color: #f5f7fa;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .service-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .service-icon {
+            width: 70px;
+            height: 70px;
+            background-color: #e8f5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .service-icon img {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .service-card h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #2E7D32;
+        }
+        
+        .service-card p {
+            color: #666;
+        }
+        
+        /* Testimonios */
+        .testimonials {
+            padding: 80px 0;
+            background-color: white;
+        }
+        
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        
+        .testimonial-card {
+            background-color: #f5f7fa;
+            border-radius: 10px;
+            padding: 30px;
+            position: relative;
+        }
+        
+        
+        .testimonial-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: #555;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+        
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 15px;
+        }
+        
+        .author-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .author-info h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: #2E7D32;
+        }
+        
+        .author-info p {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* Descarga App */
+        .app-download {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #4CAF50 0%, #2196F3 100%);
+            color: white;
+            text-align: center;
+        }
+        
+        .app-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .app-content h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        
+        .app-content p {
+            font-size: 18px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+        }
+        
+        .app-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .app-btn {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            color: #333;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .app-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .app-btn img {
+            width: 25px;
+            margin-right: 10px;
+        }
+        
+        /* Footer */
+        footer {
+            background-color: #263238;
+            color: white;
+            padding: 60px 0 20px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-column h3 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-column h3:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: #4CAF50;
+        }
+        
+        .footer-column ul {
+            list-style: none;
+        }
+        
+        .footer-column ul li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-column ul li a {
+            color: #B0BEC5;
+            transition: color 0.3s ease;
+        }
+        
+        .footer-column ul li a:hover {
+            color: #4CAF50;
+        }
+        
+        .footer-column p {
+            color: #B0BEC5;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background-color: #4CAF50;
+            transform: translateY(-3px);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: #B0BEC5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-content {
+                flex-direction: column;
+            }
+            
+            .hero-text {
+                padding-right: 0;
+                margin-bottom: 40px;
+                text-align: center;
+            }
+            
+            nav {
+                display: none;
+            }
+            
+            .app-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="/api/placeholder/40/40" alt="FarmaU Logo">
+                    <h1>Farma<span>U</span></h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#categorias">Categorías</a></li>
+                        <li><a href="#servicios">Servicios</a></li>
+                        <li><a href="#testimonios">Testimonios</a></li>
+                        <li><a href="#app">App</a></li>
+                        <li><a href="#contacto">Contacto</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="inicio">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h2>Tu farmacia de confianza, ahora digital</h2>
+                    <p>Medicamentos, productos de cuidado personal y asesoría profesional. Todo en un solo lugar, con entrega a domicilio en menos de 30 minutos.</p>
+                    <a href="#" class="btn">Comprar ahora</a>
+                </div>
+                <div class="hero-image">
+                    <img src="/api/placeholder/500/350" alt="Farmacia Digital">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categorías -->
+    <section class="categories" id="categorias">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nuestras Categorías</h2>
+                <p>Descubre nuestra amplia selección de productos clasificados para facilitar tu búsqueda.</p>
+            </div>
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="/api/placeholder/300/300" alt="Medicamentos">
+                    </div>
+                    <div class="category-content">
+                        <h3>Medicamentos</h3>
+                        <p>Con y sin receta médica, para todas tus necesidades de salud.</p>
+                        <a href="#" class="btn">Ver productos</a>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="/api/placeholder/300/300" alt="Cuidado Personal">
+                    </div>
+                    <div class="category-content">
+                        <h3>Cuidado Personal</h3>
+                        <p>Productos de higiene y belleza para tu bienestar diario.</p>
+                        <a href="#" class="btn">Ver productos</a>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="/api/placeholder/300/300" alt="Vitaminas y Suplementos">
+                    </div>
+                    <div class="category-content">
+                        <h3>Vitaminas y Suplementos</h3>
+                        <p>Complementa tu alimentación con lo mejor para tu salud.</p>
+                        <a href="#" class="btn">Ver productos</a>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="/api/placeholder/300/300" alt="Bebés y Maternidad">
+                    </div>
+                    <div class="category-content">
+                        <h3>Bebés y Maternidad</h3>
+                        <p>Todo lo que mamá y bebé necesitan para su cuidado.</p>
+                        <a href="#" class="btn">Ver productos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Servicios -->
+    <section class="services" id="servicios">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nuestros Servicios</h2>
+                <p>En FarmaU nos preocupamos por ofrecerte la mejor experiencia y cuidado integral.</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="/api/placeholder/40/40" alt="Entrega Rápida">
+                    </div>
+                    <h3>Entrega Express</h3>
+                    <p>Recibe tus medicamentos en menos de 30 minutos directamente en la puerta de tu casa.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="/api/placeholder/40/40" alt="Asesoría Farmacéutica">
+                    </div>
+                    <h3>Asesoría Farmacéutica</h3>
+                    <p>Consulta con nuestros farmacéuticos profesionales a través del chat o videollamada.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="/api/placeholder/40/40" alt="Programa de Lealtad">
+                    </div>
+                    <h3>Programa de Lealtad</h3>
+                    <p>Gana puntos en cada compra y canjéalos por descuentos especiales.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="/api/placeholder/40/40" alt="Recordatorios">
+                    </div>
+                    <h3>Recordatorios de Medicación</h3>
+                    <p>Configura alertas para no olvidar tomar tus medicamentos a tiempo.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="/api/placeholder/40/40" alt="Recetas Digitales">
+                    </div>
+                    <h3>Recetas Digitales</h3>
+                    <p>Sube tus recetas médicas directamente desde la app y recibe tus medicamentos.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="/api/placeholder/40/40" alt="Suscripción">
+                    </div>
+                    <h3>Suscripción de Medicamentos</h3>
+                    <p>Recibe automáticamente tus medicamentos recurrentes sin preocupaciones.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section class="testimonials" id="testimonios">
+        <div class="container">
+            <div class="section-title">
+                <h2>Lo que dicen nuestros clientes</h2>
+                <p>La satisfacción de nuestros usuarios es nuestra mayor recompensa.</p>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">FarmaU ha revolucionado la forma en que compro mis medicamentos. La app es super intuitiva y la entrega es realmente rápida. ¡En menos de 20 minutos tenía mi pedido en casa!</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="/api/placeholder/50/50" alt="Cliente">
+                            </div>
+                            <div class="author-info">
+                                <h4>María González</h4>
+                                <p>Cliente desde 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">Lo que más valoro es la asesoría farmacéutica. Tenía dudas sobre la interacción de mis medicamentos y pude consultar con un profesional por videollamada. Servicio excepcional.</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="/api/placeholder/50/50" alt="Cliente">
+                            </div>
+                            <div class="author-info">
+                                <h4>José Martínez</h4>
+                                <p>Cliente desde 2022</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">El sistema de recordatorios me ha ayudado muchísimo con mi tratamiento. Ya no olvido tomar mis medicamentos a tiempo y mi salud ha mejorado notablemente. ¡Gracias FarmaU!</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="/api/placeholder/50/50" alt="Cliente">
+                            </div>
+                            <div class="author-info">
+                                <h4>Ana López</h4>
+                                <p>Cliente desde 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Descarga App -->
+    <section class="app-download" id="app">
+        <div class="container">
+            <div class="app-content">
+                <h2>Descarga nuestra app</h2>
+                <p>Accede a todos nuestros servicios desde tu dispositivo móvil. Rápido, fácil y seguro.</p>
+                <div class="app-buttons">
+                    <a href="#" class="app-btn">
+                        <img src="/api/placeholder/25/25" alt="Google Play">
+                        <span>Google Play</span>
+                    </a>
+                    <a href="#" class="app-btn">
+                        <img src="/api/placeholder/25/25" alt="App Store">
+                        <span>App Store</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contacto">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>FarmaU</h3>
+                    <p>Tu farmacia digital de confianza, disponible las 24 horas del día, los 7 días de la semana.</p>
+                    <div class="social-links">
+                        <a href="#"><img src="/api/placeholder/16/16" alt="Facebook"></a>
+                        <a href="#"><img src="/api/placeholder/16/16" alt="Instagram"></a>
+                        <a href="#"><img src="/api/placeholder/16/16" alt="Twitter"></a>
+                        <a href="#"><img src="/api/placeholder/16/16" alt="LinkedIn"></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Navegación</h3>
+                    <ul>
+                        <li><a href="#inicio">Inicio</a></li>
+                        <li><a href="#categorias">Categorías</a></li>
+                        <li><a href="#servicios">Servicios</a></li>
+                        <li><a href="#testimonios">Testimonios</a></li>
+                        <li><a href="#app">App</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Categorías</h3>
+                    <ul>
+                        <li><a href="#">Medicamentos</a></li>
+                        <li><a href="#">Cuidado Personal</a></li>
+                        <li><a href="#">Vitaminas y Suplementos</a></li>
+                        <li><a href="#">Bebés y Maternidad</a></li>
+                        <li><a href="#">Equipo Médico</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Contacto</h3>
+                    <p>Email: info@farmau.com</p>
+                    <p>Teléfono: (800) 123-4567</p>
+                    <p>Dirección: Av. Principal #123, Ciudad</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 FarmaU. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
