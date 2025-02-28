@@ -19,12 +19,20 @@ namespace Proyecto_Final_Desarrollo_Web
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
-            bundles.Add(new Bundle("~/bundles/bootstrap").Include(
-                      "~/Scripts/bootstrap.js"));
+            bundles.Add(new Bundle("~/bundles/libs").Include(
+                      "~/Scripts/bootstrap.js",
+                      "~/Scripts/react-bootstrap.js",
+                      "~/Scripts/react-bootstrap-table.js",
+                      "~/Scripts/bootstrap.bundle.min.js",
+                      "~/Scripts/sweetalert2.all.min.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/styles.css"
-                      ));
+                      "~/Content/bootstrap.css",
+                      "~/Content/react-bootstrap-table.min.css",
+                       "~/Content/bootstrap-icons/bootstrap-icons.css",
+                        "~/Content/bootstrap-icons/bootstrap-icons.min.css",
+                      "~/Content/site.css",
+                      "~/Content/styles.css"));
         }
     }
 }
