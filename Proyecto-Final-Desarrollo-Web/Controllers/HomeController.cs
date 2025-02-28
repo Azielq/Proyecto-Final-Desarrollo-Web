@@ -23,7 +23,6 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
-
             return View();
         }
     }
