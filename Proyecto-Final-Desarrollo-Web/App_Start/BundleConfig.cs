@@ -23,8 +23,8 @@ namespace Proyecto_Final_Desarrollo_Web
                       "~/Scripts/bootstrap.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
-                      "~/Content/site.css"));
+                      "~/Content/styles.css"
+                      ));
         }
     }
 }
