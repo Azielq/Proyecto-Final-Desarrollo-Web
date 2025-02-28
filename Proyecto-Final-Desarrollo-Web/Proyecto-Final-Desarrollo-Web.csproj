@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.TypeScript.MSBuild.5.7.3\build\Microsoft.TypeScript.MSBuild.props" Condition="Exists('..\packages\Microsoft.TypeScript.MSBuild.5.7.3\build\Microsoft.TypeScript.MSBuild.props')" />
   <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.props" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -329,6 +330,10 @@
     <Content Include="Content\bootstrap-grid.min.css" />
     <Content Include="Content\bootstrap-grid.rtl.css" />
     <Content Include="Content\bootstrap-grid.rtl.min.css" />
+    <Content Include="Content\bootstrap-icons\bootstrap-icons.css" />
+    <Content Include="Content\bootstrap-icons\bootstrap-icons.min.css" />
+    <Content Include="Content\bootstrap-icons\font\bootstrap-icons.css" />
+    <Content Include="Content\bootstrap-icons\font\bootstrap-icons.min.css" />
     <Content Include="Content\bootstrap-reboot.css" />
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap-reboot.rtl.css" />
@@ -341,6 +346,22 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\react-bootstrap-table-all.min.css" />
+    <Content Include="Content\react-bootstrap-table.min.css" />
+    <Content Include="Scripts\react-bootstrap-table.js" />
+    <Content Include="Scripts\react-bootstrap-table.min.js" />
+    <Content Include="Scripts\react-bootstrap.js" />
+    <Content Include="Scripts\react-bootstrap.min.js" />
+    <Content Include="Scripts\sweetalert2.all.js" />
+    <Content Include="Scripts\sweetalert2.all.min.js" />
+    <Content Include="Content\sweetalert2.css" />
+    <Content Include="Scripts\sweetalert2.esm.all.js" />
+    <Content Include="Scripts\sweetalert2.esm.all.min.js" />
+    <Content Include="Scripts\sweetalert2.esm.js" />
+    <Content Include="Scripts\sweetalert2.esm.min.js" />
+    <Content Include="Scripts\sweetalert2.js" />
+    <Content Include="Content\sweetalert2.min.css" />
+    <Content Include="Scripts\sweetalert2.min.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -368,6 +389,13 @@
     <Content Include="Models\FarmaU.edmx.diagram">
       <DependentUpon>FarmaU.edmx</DependentUpon>
     </Content>
+    <Content Include="libman.json" />
+    <Content Include="Content\bootstrap-icons\bootstrap-icons.json" />
+    <Content Include="Content\bootstrap-icons\fonts\bootstrap-icons.woff" />
+    <Content Include="Content\bootstrap-icons\fonts\bootstrap-icons.woff2" />
+    <Content Include="Content\bootstrap-icons\font\bootstrap-icons.json" />
+    <Content Include="Content\bootstrap-icons\font\fonts\bootstrap-icons.woff" />
+    <Content Include="Content\bootstrap-icons\font\fonts\bootstrap-icons.woff2" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
@@ -393,9 +421,11 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Scripts\react-bootstrap-table.js.map" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\Img\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -425,6 +455,7 @@
     <Content Include="Scripts\jquery-3.7.1.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <PropertyGroup>
@@ -464,9 +495,12 @@
     <Error Condition="!Exists('..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets'))" />
     <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.props'))" />
     <Error Condition="!Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EntityFramework.6.5.1\build\EntityFramework.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.TypeScript.MSBuild.5.7.3\build\Microsoft.TypeScript.MSBuild.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.TypeScript.MSBuild.5.7.3\build\Microsoft.TypeScript.MSBuild.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.TypeScript.MSBuild.5.7.3\build\Microsoft.TypeScript.MSBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.TypeScript.MSBuild.5.7.3\build\Microsoft.TypeScript.MSBuild.targets'))" />
   </Target>
   <Import Project="..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets')" />
   <Import Project="..\packages\EntityFramework.6.5.1\build\EntityFramework.targets" Condition="Exists('..\packages\EntityFramework.6.5.1\build\EntityFramework.targets')" />
+  <Import Project="..\packages\Microsoft.TypeScript.MSBuild.5.7.3\build\Microsoft.TypeScript.MSBuild.targets" Condition="Exists('..\packages\Microsoft.TypeScript.MSBuild.5.7.3\build\Microsoft.TypeScript.MSBuild.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
