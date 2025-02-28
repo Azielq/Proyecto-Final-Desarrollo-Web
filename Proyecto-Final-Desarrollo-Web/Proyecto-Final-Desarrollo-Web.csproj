@@ -362,6 +362,7 @@
     <Content Include="Scripts\sweetalert2.js" />
     <Content Include="Content\sweetalert2.min.css" />
     <Content Include="Scripts\sweetalert2.min.js" />
+    <Content Include="Content\styles.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />

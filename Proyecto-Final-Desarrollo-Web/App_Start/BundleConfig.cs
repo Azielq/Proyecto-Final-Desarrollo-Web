@@ -31,7 +31,8 @@ namespace Proyecto_Final_Desarrollo_Web
                       "~/Content/react-bootstrap-table.min.css",
                        "~/Content/bootstrap-icons/bootstrap-icons.css",
                         "~/Content/bootstrap-icons/bootstrap-icons.min.css",
-                      "~/Content/site.css"));
+                      "~/Content/site.css",
+                      "~/Content/styles.css"));
         }
     }
 }
