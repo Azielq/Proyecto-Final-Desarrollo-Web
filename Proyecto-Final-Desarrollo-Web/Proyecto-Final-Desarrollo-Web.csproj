@@ -346,6 +346,24 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\img\appstore.jpg" />
+    <Content Include="Content\img\asesoria.jpg" />
+    <Content Include="Content\img\cuidado.jpg" />
+    <Content Include="Content\img\entrega.jpg" />
+    <Content Include="Content\img\facebook.jpg" />
+    <Content Include="Content\img\FarmaU.png" />
+    <Content Include="Content\img\googleplay.jpg" />
+    <Content Include="Content\img\instagram.jpg" />
+    <Content Include="Content\img\lealtad.jpg" />
+    <Content Include="Content\img\linkedin.jpg" />
+    <Content Include="Content\img\maternidad.jpg" />
+    <Content Include="Content\img\medicamentos.jpg" />
+    <Content Include="Content\img\recetas.jpg" />
+    <Content Include="Content\img\recordatorio.jpg" />
+    <Content Include="Content\img\subscripcion.jpg" />
+    <Content Include="Content\img\usuario.jpg" />
+    <Content Include="Content\img\vitaminas.jpg" />
+    <Content Include="Content\img\X.jpg" />
     <Content Include="Content\react-bootstrap-table-all.min.css" />
     <Content Include="Content\react-bootstrap-table.min.css" />
     <Content Include="Scripts\react-bootstrap-table.js" />
@@ -426,7 +444,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Content\Img\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
