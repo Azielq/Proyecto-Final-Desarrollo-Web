@@ -29,8 +29,8 @@ namespace Proyecto_Final_Desarrollo_Web
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/react-bootstrap-table.min.css",
-                       "~/Content/bootstrap-icons/bootstrap-icons.css",
-                        "~/Content/bootstrap-icons/bootstrap-icons.min.css",
+                      "~/Content/bootstrap-icons/bootstrap-icons.css",
+                      "~/Content/bootstrap-icons/bootstrap-icons.min.css",
                       "~/Content/site.css"));
         }
     }
