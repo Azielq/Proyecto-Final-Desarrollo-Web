@@ -23,7 +23,17 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         public ActionResult Contact()
         {
             ViewBag.Message = "Your contact page.";
+            return View();
+        }
+        // Acción para mostrar la vista de inicio de sesión
+        public ActionResult Login()
+        {
+            return View();
+        }
 
+        // Acción para mostrar la vista de registro
+        public ActionResult Register()
+        {
             return View();
         }
     }
