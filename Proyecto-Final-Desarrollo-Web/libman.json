@@ -24,6 +24,10 @@
     {
       "library": "react-bootstrap-table@4.3.1",
       "destination": "Scripts/react-bootstrap-table/"
+    },
+    {
+      "library": "notyf@3.10.0",
+      "destination": "Content/notyf/"
     }
   ]
 }

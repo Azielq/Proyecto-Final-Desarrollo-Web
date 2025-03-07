@@ -21,6 +21,23 @@
                     <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                 </ul>
+
+                <!-- Barra de búsqueda -->
+                <form class="d-flex me-2" action="/Search" method="get">
+                    <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search" name="query">
+                    <button class="btn btn-outline-light" type="submit">Buscar</button>
+                </form>
+
+                <!-- Botón desplegable de usuario -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Cuenta
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                        <li>@Html.ActionLink("Iniciar sesión", "Login", "Home", new { area = "" }, new { @class = "dropdown-item" })</li>
+                        <li>@Html.ActionLink("Registrarse", "Register", "Home", new { area = "" }, new { @class = "dropdown-item" })</li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
@@ -33,7 +50,9 @@
     </div>
 
     @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/libs")
     @RenderSection("scripts", required: false)
 </body>
 </html>
+
+
