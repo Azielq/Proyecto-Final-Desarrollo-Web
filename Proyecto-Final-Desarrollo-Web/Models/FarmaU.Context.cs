@@ -9,17 +9,19 @@
 
 namespace Proyecto_Final_Desarrollo_Web.Models
 {
+    using Azure.Identity;
     using System;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
-    
+    using System.Data.SqlClient;
+
     public partial class FarmaUEntities : DbContext
     {
         public FarmaUEntities()
             : base("name=FarmaUEntities")
         {
         }
-    
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             throw new UnintentionalCodeFirstException();

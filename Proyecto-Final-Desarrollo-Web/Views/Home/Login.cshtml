@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.LoginViewModel
+
+@{
     ViewBag.Title = "Login - FarmaU";
 }
 
@@ -8,8 +10,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title</title>
-
-
 </head>
 <body>
 
@@ -19,32 +19,40 @@
                 <div class="login-container">
                     <h2 class="text-center">Iniciar sesión</h2>
 
-                    @if (ViewBag.ErrorMessage != null)
+                    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
                     {
-                        <div class="error-message">
-                            @ViewBag.ErrorMessage
-                        </div>
+                    <div class="alert alert-danger text-center">
+                        @ViewBag.ErrorMessage
+                    </div>
                     }
 
-                    <form action="/Home/Login" method="post">
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Usuario</label>
-                            <input type="text" class="form-control" id="username" name="username" required placeholder="Ingrese su usuario" />
-                        </div>
+                    @using (Html.BeginForm("Login", "Login", FormMethod.Post))
+                    {
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Usuario, new { @class = "form-label" })
+                        @Html.TextBoxFor(m => m.Usuario, new { @class = "form-control", placeholder = "Ingrese su usuario" })
+                        @Html.ValidationMessageFor(m => m.Usuario, "", new { @class = "text-danger" })
+                    </div>
 
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="password" name="password" required placeholder="Ingrese su contraseña" />
-                        </div>
+                    <div class="mb-3">
+                        @Html.LabelFor(m => m.Password, new { @class = "form-label" })
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Ingrese su contraseña" })
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
 
-                        <div class="mb-3 text-center">
-                            <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-                        </div>
+                    <div class="mb-3 form-check">
+                        @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                        @Html.LabelFor(m => m.RememberMe, new { @class = "form-check-label" })
+                    </div>
 
-                        <div class="text-center">
-                            <p>¿No tienes una cuenta? <a href="/Home/Register">Regístrate</a></p>
-                        </div>
-                    </form>
+                    <div class="mb-3 text-center">
+                        <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+                    </div>
+
+                    <div class="text-center">
+                        <p>¿No tienes una cuenta? <a href="@Url.Action(" Register", "Home" )">Regístrate</a></p>
+                    </div>
+                    }
                 </div>
             </div>
         </div>

@@ -263,6 +263,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\PasswordHasher.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -300,6 +301,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>FarmaU.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Models\Identity\ApplicationUser.cs" />
     <Compile Include="Models\Inventario.cs">
       <DependentUpon>FarmaU.tt</DependentUpon>
     </Compile>
@@ -473,6 +475,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Login\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
