@@ -443,6 +443,8 @@
     <Content Include="Scripts\react-bootstrap-table.js.map" />
     <Content Include="Views\Home\Login.cshtml" />
     <Content Include="Views\Home\Register.cshtml" />
+    <Content Include="Views\Home\Inventario.cshtml" />
+    <Content Include="Views\Home\AñadirInventario.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

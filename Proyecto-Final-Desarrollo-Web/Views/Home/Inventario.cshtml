@@ -1,0 +1,448 @@
+﻿
+@{
+    ViewBag.Title = "Inventario";
+}
+
+
+<div class="container-fluid my-4">
+    <div class="row">
+        <!-- Sidebar de navegación -->
+        <div class="col-md-3 col-lg-2">
+            <div class="sidebar">
+                <div class="logo-container mb-4">
+                    <img src="~/imagenes/FarmaU.png" alt="FarmaU Logo" class="logo-img">
+                    <h4 class="logo-text">Farma<span class="text-primary">U</span></h4>
+                </div>
+                <div class="menu">
+                    <div class="menu-header">MENÚ PRINCIPAL</div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-shopping-cart"></i> Ventas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-truck"></i> Pedidos
+                            </a>
+                        </li>
+                        <li class="nav-item active">
+                            <a href="#" class="nav-link active">
+                                <i class="fas fa-boxes"></i> Inventario
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-users"></i> Clientes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-building"></i> Proveedores
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="menu-header mt-4">CONFIGURACIÓN</div>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-user-cog"></i> Usuarios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="fas fa-cog"></i> Configuración
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contenido principal -->
+        <div class="col-md-9 col-lg-10">
+            <div class="content-header d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3">Gestión de Inventario</h1>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#">Inicio</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Inventario</li>
+                        </ol>
+                    </nav>
+                </div>
+                <div class="d-flex">
+                    <div class="dropdown me-2">
+                        <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-download me-1"></i> Exportar
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="exportDropdown">
+                            <li><a class="dropdown-item" href="#"><i class="far fa-file-excel me-1"></i> Excel</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="far fa-file-pdf me-1"></i> PDF</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="far fa-file-csv me-1"></i> CSV</a></li>
+                        </ul>
+                    </div>
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Nuevo Producto
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="get" action="#" id="filterForm">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label for="categoria" class="form-label">Categoría</label>
+                                <select class="form-select" id="categoria" name="categoria">
+                                    <option value="">Todas las categorías</option>
+                                    <option value="1">Medicamentos</option>
+                                    <option value="2">Cuidado Personal</option>
+                                    <option value="3">Suplementos</option>
+                                    <option value="4">Bebés y Maternidad</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="proveedor" class="form-label">Proveedor</label>
+                                <select class="form-select" id="proveedor" name="proveedor">
+                                    <option value="">Todos los proveedores</option>
+                                    <option value="1">Farmacéutica Nacional</option>
+                                    <option value="2">Distribuidora Médica</option>
+                                    <option value="3">Insumos de Salud</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="estado" class="form-label">Estado</label>
+                                <select class="form-select" id="estado" name="estado">
+                                    <option value="">Todos los estados</option>
+                                    <option value="EnStock">En Stock</option>
+                                    <option value="BajoStock">Stock Bajo</option>
+                                    <option value="SinStock">Sin Stock</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label for="busqueda" class="form-label">Buscar</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="busqueda" name="busqueda" placeholder="Código, nombre o descripción">
+                                    <button class="btn btn-outline-secondary" type="submit">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Resumen de inventario -->
+            <div class="row mb-4">
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-primary h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                        Total Productos
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">125</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-box fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-success h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                        Valor Total
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">$25,680.50</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                        Stock Bajo
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">15</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-danger h-100 py-2">
+                        <div class="card-body">
+                            <div class="row no-gutters align-items-center">
+                                <div class="col mr-2">
+                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                        Sin Stock
+                                    </div>
+                                    <div class="h5 mb-0 font-weight-bold text-gray-800">8</div>
+                                </div>
+                                <div class="col-auto">
+                                    <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de productos -->
+            <div class="card mb-4">
+                <div class="card-header bg-white py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Listado de Productos</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="tablaInventario">
+                            <thead>
+                                <tr>
+                                    <th>Código</th>
+                                    <th>Imagen</th>
+                                    <th>Producto</th>
+                                    <th>Categoría</th>
+                                    <th>Stock</th>
+                                    <th>Precio</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Datos de ejemplo -->
+                                <tr>
+                                    <td>MED-001</td>
+                                    <td>
+                                        <img src="~/imagenes/producto-placeholder.jpg" alt="Paracetamol" class="product-thumbnail">
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">Paracetamol 500mg</div>
+                                        <small class="text-muted">Analgésico para aliviar el dolor y reducir la fiebre.</small>
+                                    </td>
+                                    <td>Medicamentos</td>
+                                    <td>
+                                        <span class="badge bg-success">120</span>
+                                    </td>
+                                    <td>$5.99</td>
+                                    <td>
+                                        <span class="badge bg-success">En Stock</span>
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Acciones
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-1"></i> Editar</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-info-circle me-1"></i> Detalles</a></li>
+                                                <li><a class="dropdown-item text-success" href="#"><i class="fas fa-plus-circle me-1"></i> Ajustar Stock</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash-alt me-1"></i> Eliminar</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>CP-023</td>
+                                    <td>
+                                        <img src="~/imagenes/producto-placeholder.jpg" alt="Jabón Antibacterial" class="product-thumbnail">
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">Jabón Antibacterial</div>
+                                        <small class="text-muted">Protección diaria contra bacterias y gérmenes.</small>
+                                    </td>
+                                    <td>Cuidado Personal</td>
+                                    <td>
+                                        <span class="badge bg-warning">12</span>
+                                    </td>
+                                    <td>$3.50</td>
+                                    <td>
+                                        <span class="badge bg-warning">Stock Bajo</span>
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Acciones
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-1"></i> Editar</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-info-circle me-1"></i> Detalles</a></li>
+                                                <li><a class="dropdown-item text-success" href="#"><i class="fas fa-plus-circle me-1"></i> Ajustar Stock</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash-alt me-1"></i> Eliminar</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>SUP-105</td>
+                                    <td>
+                                        <img src="~/imagenes/producto-placeholder.jpg" alt="Vitamina C" class="product-thumbnail">
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold">Vitamina C 1000mg</div>
+                                        <small class="text-muted">Fortalece el sistema inmunológico. 60 tabletas.</small>
+                                    </td>
+                                    <td>Suplementos</td>
+                                    <td>
+                                        <span class="badge bg-danger">0</span>
+                                    </td>
+                                    <td>$12.99</td>
+                                    <td>
+                                        <span class="badge bg-danger">Sin Stock</span>
+                                    </td>
+                                    <td>
+                                        <div class="dropdown">
+                                            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                Acciones
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-1"></i> Editar</a></li>
+                                                <li><a class="dropdown-item" href="#"><i class="fas fa-info-circle me-1"></i> Detalles</a></li>
+                                                <li><a class="dropdown-item text-success" href="#"><i class="fas fa-plus-circle me-1"></i> Ajustar Stock</a></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash-alt me-1"></i> Eliminar</a></li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            Mostrando <span class="fw-bold">3</span> de <span class="fw-bold">125</span> productos
+                        </div>
+                        <nav aria-label="Navegación de páginas">
+                            <ul class="pagination mb-0">
+                                <li class="page-item disabled">
+                                    <a class="page-link" href="#">Anterior</a>
+                                </li>
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item">
+                                    <a class="page-link" href="#">Siguiente</a>
+                                </li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ajustar stock -->
+<div class="modal fade" id="ajustarStockModal" tabindex="-1" aria-labelledby="ajustarStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ajustarStockModalLabel">Ajustar Stock</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formAjustarStock">
+                    <input type="hidden" id="productoId" name="productoId">
+                    <div class="mb-3">
+                        <label for="productoNombre" class="form-label">Producto</label>
+                        <input type="text" class="form-control" id="productoNombre" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tipoAjuste" class="form-label">Tipo de Ajuste</label>
+                        <select class="form-select" id="tipoAjuste" name="tipoAjuste">
+                            <option value="Entrada">Entrada de Stock</option>
+                            <option value="Salida">Salida de Stock</option>
+                            <option value="Ajuste">Ajuste Manual</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cantidad" class="form-label">Cantidad</label>
+                        <input type="number" class="form-control" id="cantidad" name="cantidad" min="1" value="1">
+                    </div>
+                    <div class="mb-3">
+                        <label for="motivo" class="form-label">Motivo</label>
+                        <select class="form-select" id="motivo" name="motivo">
+                            <option value="Compra">Compra</option>
+                            <option value="Devolucion">Devolución</option>
+                            <option value="Ajuste">Ajuste de inventario</option>
+                            <option value="Venta">Venta</option>
+                            <option value="Perdida">Pérdida o daño</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="observaciones" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="observaciones" name="observaciones" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnGuardarAjuste">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Inicializar DataTable (si tienes jQuery DataTables)
+            if ($.fn.DataTable) {
+                $('#tablaInventario').DataTable({
+                    "paging": false,
+                    "ordering": true,
+                    "info": false,
+                    "searching": false
+                });
+            }
+
+            // Modal para ajustar stock
+            $('.dropdown-item.text-success').click(function (e) {
+                e.preventDefault();
+                var nombre = $(this).closest('tr').find('.fw-bold').text();
+                var id = 1; // En un caso real, se obtiene el ID desde el elemento
+                $('#productoId').val(id);
+                $('#productoNombre').val(nombre);
+                $('#ajustarStockModal').modal('show');
+            });
+
+            // Botón de guardar ajuste
+            $('#btnGuardarAjuste').click(function () {
+                alert('Funcionalidad de ajuste de stock en desarrollo');
+                $('#ajustarStockModal').modal('hide');
+            });
+        });
+    </script>
+}

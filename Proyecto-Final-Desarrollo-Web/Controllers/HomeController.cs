@@ -36,5 +36,15 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         {
             return View();
         }
+
+        public ActionResult Inventario()
+        {
+            return View();
+        }
+
+        public ActionResult AñadirInventario()
+        {
+            return View();
+        }
     }
 }
