@@ -888,7 +888,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="FarmaUEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="FarmaUEntities1" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Categorias" EntityType="Self.Categorias" />
           <EntitySet Name="Clientes" EntityType="Self.Clientes" />
           <EntitySet Name="Compras_Farmacia" EntityType="Self.Compras_Farmacia" />
@@ -983,7 +983,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="FarmaUModelStoreContainer" CdmEntityContainer="FarmaUEntities">
+        <EntityContainerMapping StorageEntityContainer="FarmaUModelStoreContainer" CdmEntityContainer="FarmaUEntities1">
           <EntitySetMapping Name="Categorias">
             <EntityTypeMapping TypeName="FarmaUModel.Categorias">
               <MappingFragment StoreEntitySet="Categorias">
@@ -1181,43 +1181,6 @@
       </DesignerInfoPropertySet>
     </Options>
     <!-- Diagram content (shape and connector positions) -->
-    <Diagrams>
-      <Diagram DiagramId="dbe3ae26f18a4b85badba7158a1b501d" Name="Diagram1">
-        <EntityTypeShape EntityType="FarmaUModel.Categorias" Width="1.5" PointX="0.75" PointY="11.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Clientes" Width="1.5" PointX="3.75" PointY="4.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Compras_Farmacia" Width="1.5" PointX="3" PointY="15" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Detalles_Compras_Farmacia" Width="1.5" PointX="5.25" PointY="11.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Detalles_Factura" Width="1.5" PointX="8.25" PointY="11.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Facturas" Width="1.5" PointX="6" PointY="4" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Inventario" Width="1.5" PointX="7.5" PointY="17.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Laboratorios" Width="1.5" PointX="0.75" PointY="8.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Lotes" Width="1.5" PointX="5.25" PointY="17.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Medicamentos" Width="1.5" PointX="3" PointY="10.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Medicos" Width="1.5" PointX="3.75" PointY="20.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Movimientos_Inventario" Width="1.5" PointX="10.5" PointY="13.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Personas" Width="1.5" PointX="1.5" PointY="3.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Proveedores" Width="1.5" PointX="0.75" PointY="15.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Roles" Width="1.5" PointX="1.5" PointY="19" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Usuarios" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
-        <AssociationConnector Association="FarmaUModel.FK_Medicamentos_Categoría" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Clientes_Persona" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Facturas_Cliente" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Compras_Proveedor" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_DetallesCompras_Compra" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Movimientos_Compra" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_DetallesCompras_Medicamento" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_DetallesFactura_Factura" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_DetallesFactura_Medicamento" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Movimientos_Factura" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Inventario_Lote" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Medicamentos_Laboratorio" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Lotes_Medicamento" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Movimientos_Lote" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Movimientos_Medicamento" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Medicos_Persona" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Usuarios_Persona" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Usuarios_Rol" ManuallyRouted="false" />
-      </Diagram>
-    </Diagrams>
+    <Diagrams></Diagrams>
   </Designer>
 </edmx:Edmx>

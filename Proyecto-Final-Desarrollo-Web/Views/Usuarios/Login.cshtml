@@ -1,0 +1,60 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.LoginViewModel
+
+@{
+    ViewBag.Title = "Iniciar Sesión";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 login-container">
+        <div class="login-logo">
+            <h1 class="text-center">Farma<span style="color:#2196F3">U</span></h1>
+            <h3 class="text-center text-muted">Sistema de Gestión de Farmacia</h3>
+        </div>
+
+        @using (Html.BeginForm("Login", "Usuarios", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger error-message" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(model => model.Usuario, new { @class = "form-label" })
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-person"></i></span>
+                    @Html.TextBoxFor(model => model.Usuario, new { @class = "form-control", placeholder = "Ingrese su nombre de usuario" })
+                </div>
+                @Html.ValidationMessageFor(model => model.Usuario, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3">
+                @Html.LabelFor(model => model.Password, new { @class = "form-label" })
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                    @Html.PasswordFor(model => model.Password, new { @class = "form-control", placeholder = "Ingrese su contraseña" })
+                </div>
+                @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="mb-3 form-check">
+                @Html.CheckBoxFor(model => model.RememberMe, new { @class = "form-check-input" })
+                @Html.LabelFor(model => model.RememberMe, new { @class = "form-check-label" })
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                </button>
+            </div>
+        }
+
+        <div class="mt-4 text-center">
+            <p class="mb-0">¿Olvidaste tu contraseña? Contacta al administrador.</p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

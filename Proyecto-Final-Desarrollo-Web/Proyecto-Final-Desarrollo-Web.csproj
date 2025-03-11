@@ -263,8 +263,9 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\LoginController.cs" />
-    <Compile Include="Controllers\PasswordHasher.cs" />
+    <Compile Include="Controllers\MedicamentosController.cs" />
+    <Compile Include="Controllers\RolesController.cs" />
+    <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -301,7 +302,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>FarmaU.edmx</DependentUpon>
     </Compile>
-    <Compile Include="Models\Identity\ApplicationUser.cs" />
     <Compile Include="Models\Inventario.cs">
       <DependentUpon>FarmaU.tt</DependentUpon>
     </Compile>
@@ -395,6 +395,16 @@
     <Content Include="Content\img\X.jpg" />
     <Content Include="Content\react-bootstrap-table-all.min.css" />
     <Content Include="Content\react-bootstrap-table.min.css" />
+    <Content Include="Models\FarmaU.Context.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>FarmaU.edmx</DependentUpon>
+      <LastGenOutput>FarmaU.Context.cs</LastGenOutput>
+    </Content>
+    <Content Include="Models\FarmaU.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <DependentUpon>FarmaU.edmx</DependentUpon>
+      <LastGenOutput>FarmaU.cs</LastGenOutput>
+    </Content>
     <Content Include="Scripts\react-bootstrap-table.js" />
     <Content Include="Scripts\react-bootstrap-table.min.js" />
     <Content Include="Scripts\react-bootstrap.js" />
@@ -414,29 +424,12 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <Content Include="ILLink\ILLink.Descriptors.LibraryBuild.xml" />
-    <Content Include="Models\FarmaU.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>FarmaU.edmx</DependentUpon>
-      <LastGenOutput>FarmaU.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="Models\FarmaU.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>FarmaU.edmx</DependentUpon>
-      <LastGenOutput>FarmaU.cs</LastGenOutput>
-    </Content>
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
     <Content Include="Scripts\bootstrap.esm.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <EntityDeploy Include="Models\FarmaU.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>FarmaU.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <Content Include="Models\FarmaU.edmx.diagram">
-      <DependentUpon>FarmaU.edmx</DependentUpon>
-    </Content>
     <Content Include="libman.json" />
     <Content Include="Content\bootstrap-icons\bootstrap-icons.json" />
     <Content Include="Content\bootstrap-icons\fonts\bootstrap-icons.woff" />
@@ -444,6 +437,13 @@
     <Content Include="Content\bootstrap-icons\font\bootstrap-icons.json" />
     <Content Include="Content\bootstrap-icons\font\fonts\bootstrap-icons.woff" />
     <Content Include="Content\bootstrap-icons\font\fonts\bootstrap-icons.woff2" />
+    <EntityDeploy Include="Models\FarmaU.edmx">
+      <Generator>EntityModelCodeGenerator</Generator>
+      <LastGenOutput>FarmaU.Designer.cs</LastGenOutput>
+    </EntityDeploy>
+    <Content Include="Models\FarmaU.edmx.diagram">
+      <DependentUpon>FarmaU.edmx</DependentUpon>
+    </Content>
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
@@ -470,12 +470,11 @@
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\react-bootstrap-table.js.map" />
-    <Content Include="Views\Home\Login.cshtml" />
     <Content Include="Views\Home\Register.cshtml" />
+    <Content Include="Views\Usuarios\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Views\Login\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
