@@ -16,7 +16,7 @@ namespace Proyecto_Final_Desarrollo_Web.Models
     public partial class FarmaUEntities : DbContext
     {
         public FarmaUEntities()
-            : base("name=FarmaUEntities1")
+            : base("name=FarmaUEntities")
         {
         }
     

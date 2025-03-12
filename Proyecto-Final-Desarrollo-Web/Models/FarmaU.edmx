@@ -888,7 +888,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="FarmaUEntities1" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="FarmaUEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Categorias" EntityType="Self.Categorias" />
           <EntitySet Name="Clientes" EntityType="Self.Clientes" />
           <EntitySet Name="Compras_Farmacia" EntityType="Self.Compras_Farmacia" />
@@ -983,7 +983,7 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="FarmaUModelStoreContainer" CdmEntityContainer="FarmaUEntities1">
+        <EntityContainerMapping StorageEntityContainer="FarmaUModelStoreContainer" CdmEntityContainer="FarmaUEntities">
           <EntitySetMapping Name="Categorias">
             <EntityTypeMapping TypeName="FarmaUModel.Categorias">
               <MappingFragment StoreEntitySet="Categorias">
