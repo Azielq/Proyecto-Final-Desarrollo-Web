@@ -264,6 +264,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MedicamentosController.cs" />
+    <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Global.asax.cs">
@@ -472,6 +473,10 @@
     <Content Include="Scripts\react-bootstrap-table.js.map" />
     <Content Include="Views\Home\Register.cshtml" />
     <Content Include="Views\Usuarios\Login.cshtml" />
+    <Content Include="Views\Productos\Medicamentos.cshtml" />
+    <Content Include="Views\Productos\Vitaminas.cshtml" />
+    <Content Include="Views\Productos\Bebes.cshtml" />
+    <Content Include="Views\Productos\CuidadoPersonal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

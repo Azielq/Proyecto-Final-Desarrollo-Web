@@ -25,6 +25,17 @@
                         <li>@Html.ActionLink("Home", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("About", "About", "Home", new { area = "" }, new { @class = "nav-link" })</li>
                         <li>@Html.ActionLink("Contact", "Contact", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Categorías
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                                <li>@Html.ActionLink("Medicamentos", "Medicamentos", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink("Cuidado Personal", "CuidadoPersonal", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink("Vitaminas y Suplementos", "Vitaminas", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink("Bebés y Maternidad", "Bebes", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
+                            </ul>
+                        </li>
                     </ul>
 
                     <!-- Barra de búsqueda -->
