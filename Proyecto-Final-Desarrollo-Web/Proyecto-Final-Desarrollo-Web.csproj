@@ -262,6 +262,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MedicamentosController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
@@ -477,6 +478,8 @@
     <Content Include="Views\Productos\Vitaminas.cshtml" />
     <Content Include="Views\Productos\Bebes.cshtml" />
     <Content Include="Views\Productos\CuidadoPersonal.cshtml" />
+    <Content Include="Views\Cliente\Clientes.cshtml" />
+    <Content Include="Views\Cliente\Detalles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
