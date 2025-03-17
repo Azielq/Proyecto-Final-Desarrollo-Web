@@ -266,6 +266,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MedicamentosController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
+    <Compile Include="Controllers\ProveedoresController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
     <Compile Include="Controllers\UsuariosController.cs" />
     <Compile Include="Global.asax.cs">
@@ -480,6 +481,8 @@
     <Content Include="Views\Productos\CuidadoPersonal.cshtml" />
     <Content Include="Views\Cliente\Clientes.cshtml" />
     <Content Include="Views\Cliente\Detalles.cshtml" />
+    <Content Include="Views\Proveedor\Proveedores.cshtml" />
+    <Content Include="Views\Proveedor\Detalles.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -1,0 +1,22 @@
+@model Proyecto_Final_Desarrollo_Web.TableViewModels.ProveedorTableViewModel
+
+@{
+    ViewBag.Title = "Detalles del Proveedor";
+}
+
+<h2>Detalles del Proveedor</h2>
+
+<div class="card">
+    <div class="card-body">
+        <h4 class="card-title">@Model.Nombre</h4>
+        <p><strong>Correo:</strong> @Model.Correo</p>
+        <p><strong>Teléfono:</strong> @Model.Telefono</p>
+        <p><strong>Dirección:</strong> @Model.direccion</p>
+        <p><strong>Estado:</strong> <span class="@Model.EstadoClass">@Model.EstadoTexto</span></p>
+        <p><strong>Total Compras:</strong> @Model.TotalCompras.ToString("C2")</p>
+        <p><strong>Última Compra:</strong> @(Model.UltimaCompra.HasValue ? Model.UltimaCompra.Value.ToString("dd/MM/yyyy") : "No registrada")</p>
+        <p><strong>Compras Realizadas:</strong> @Model.NumeroCompras</p>
+
+        <a href="@Url.Action("Proveedores", "Proveedores")" class="btn btn-primary">Volver</a>
+    </div>
+</div>

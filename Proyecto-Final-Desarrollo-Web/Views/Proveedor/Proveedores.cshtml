@@ -1,0 +1,34 @@
+@{
+    ViewBag.Title = "Lista de Proveedores";
+}
+
+<h2>Proveedores</h2>
+
+<button class="btn btn-success mb-3">Agregar Proveedor</button>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var proveedor in Model)
+        {
+            <tr>
+                <td>@proveedor.Nombre</td>
+                <td>@proveedor.Correo</td>
+                <td>@proveedor.Telefono</td>
+                <td><span class="@proveedor.EstadoClass">@proveedor.EstadoTexto</span></td>
+                <td>
+                    <a href="@Url.Action("Detalles", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-info">Ver Detalles</a>
+                    <button class="btn btn-danger">Eliminar</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
