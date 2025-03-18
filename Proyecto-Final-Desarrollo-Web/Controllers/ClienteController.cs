@@ -4,8 +4,8 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Proyecto_Final_Desarrollo_Web.Models;
-using Proyecto_Final_Desarrollo_Web.Models.TableViewModels;
-using Proyecto_Final_Desarrollo_Web.Models.ViewModels;
+using Proyecto_Final_Desarrollo_Web.TableViewModels;
+using Proyecto_Final_Desarrollo_Web.ViewModels;
 using System.Data.Entity;
 
 namespace Proyecto_Final_Desarrollo_Web.Controllers
@@ -16,23 +16,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
         public ActionResult Index()
         {
-            List<ClienteTableViewModel> listaClientes;
-            using (var db = new FarmaUEntities())
-            {
-                listaClientes = db.Clientes
-                    .Select(a => new ClienteTableViewModel
-                    {
-                        ID_Cliente = a.ID_Cliente,
-                        Nombre = a.Nombre,
-                        Apellido = a.Apellido,
-                        Direccion = a.Direccion,
-                        Telefono = a.Telefono,
-                        Correo = a.Correo,
-                        estado = a.estado
-                    })
-                    .ToList();
-            }
-            return View(listaClientes);
+            return View();
         }
 
         public ActionResult Create()
@@ -45,12 +29,10 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                using (var db = new FarmaUEntities())
-                {
-                    var cliente = model.ToEntity();
-                    db.Clientes.Add(cliente);
-                    db.SaveChanges();
-                }
+                var entities = model.ToEntities();
+                db.Personas.Add(entities.Item1);
+                db.Clientes.Add(entities.Item2);
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -58,16 +40,12 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
         public ActionResult Edit(int id)
         {
-            ClienteViewModel model;
-            using (var db = new FarmaUEntities())
+            var cliente = db.Clientes.Find(id);
+            if (cliente == null)
             {
-                var cliente = db.Clientes.Find(id);
-                if (cliente == null)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                model = new ClienteViewModel(cliente);
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
+            var model = ClienteViewModel.FromEntity(cliente);
             return View(model);
         }
 
@@ -76,12 +54,10 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                using (var db = new FarmaUEntities())
-                {
-                    var cliente = model.ToEntity();
-                    db.Entry(cliente).State = EntityState.Modified;
-                    db.SaveChanges();
-                }
+                var entities = model.ToEntities();
+                db.Entry(entities.Item1).State = EntityState.Modified;
+                db.Entry(entities.Item2).State = EntityState.Modified;
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(model);
@@ -113,3 +89,4 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             return RedirectToAction("Index");
         }
     }
+}

@@ -50,7 +50,6 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 .Take(request.Length)
                 .ToList();
 
-            // Convertir a ViewModel
             var proveedoresViewModel = proveedores.Select(p => new ProveedorTableViewModel
             {
                 Pk_Proveedor = p.Pk_Proveedor,
@@ -59,8 +58,8 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 Telefono = p.Telefono,
                 direccion = p.direccion,
                 activo = p.activo,
-                TotalCompras = p.Compras_Farmacia.Sum(c => c.MontoTotal), 
-                UltimaCompra = p.Compras_Farmacia.OrderByDescending(c => c.FechaCompra).FirstOrDefault()?.FechaCompra,
+                TotalCompras = p.Compras_Farmacia.Sum(c => c.total), // Usamos la propiedad total de Compras_Farmacia
+                UltimaCompra = p.Compras_Farmacia.OrderByDescending(c => c.fecha).FirstOrDefault()?.fecha, // Usamos la propiedad fecha de Compras_Farmacia
                 NumeroCompras = p.Compras_Farmacia.Count
             }).ToList();
 
@@ -91,8 +90,8 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 Telefono = proveedor.Telefono,
                 direccion = proveedor.direccion,
                 activo = proveedor.activo,
-                TotalCompras = proveedor.Compras_Farmacia.Sum(c => c.MontoTotal),
-                UltimaCompra = proveedor.Compras_Farmacia.OrderByDescending(c => c.FechaCompra).FirstOrDefault()?.FechaCompra,
+                TotalCompras = proveedor.Compras_Farmacia.Sum(c => c.total), // Usamos la propiedad total de Compras_Farmacia
+                UltimaCompra = proveedor.Compras_Farmacia.OrderByDescending(c => c.fecha).FirstOrDefault()?.fecha, // Usamos la propiedad fecha de Compras_Farmacia
                 NumeroCompras = proveedor.Compras_Farmacia.Count
             };
 
@@ -157,3 +156,4 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         }
     }
 }
+

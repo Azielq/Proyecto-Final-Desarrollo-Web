@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Proyecto_Final_Desarrollo_Web.Models;
-using Proyecto_Final_Desarrollo_Web.Models.ViewModels;
 using Proyecto_Final_Desarrollo_Web.TableViewModels;
 
 namespace Proyecto_Final_Desarrollo_Web.Controllers
@@ -22,10 +21,10 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             var query = db.Categorias
                 .Select(c => new CategoriaTableViewModel
                 {
-                    ID_Categoría = c.ID_Categoria,
+                    ID_Categoría = c.ID_Categoría,
                     Nombre = c.Nombre,
                     Descripcion = c.Descripcion,
-                    TotalMedicamentos = c.Medicamentos.Count() 
+                    TotalMedicamentos = c.Medicamentos.Count()
                 });
 
             if (!string.IsNullOrEmpty(request.SearchValue))
@@ -67,16 +66,11 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(CategoriaViewModel model)
+        public ActionResult Create(Categorias model)
         {
             if (ModelState.IsValid)
             {
-                var categoria = new Categoria
-                {
-                    Nombre = model.Nombre,
-                    Descripcion = model.Descripcion
-                };
-                db.Categorias.Add(categoria);
+                db.Categorias.Add(model);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -90,21 +84,15 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             {
                 return HttpNotFound();
             }
-            var model = new CategoriaViewModel
-            {
-                ID_Categoria = categoria.ID_Categoria,
-                Nombre = categoria.Nombre,
-                Descripcion = categoria.Descripcion
-            };
-            return View(model);
+            return View(categoria);
         }
 
         [HttpPost]
-        public ActionResult Edit(CategoriaViewModel model)
+        public ActionResult Edit(Categorias model)
         {
             if (ModelState.IsValid)
             {
-                var categoria = db.Categorias.Find(model.ID_Categoria);
+                var categoria = db.Categorias.Find(model.ID_Categoría);
                 if (categoria != null)
                 {
                     categoria.Nombre = model.Nombre;

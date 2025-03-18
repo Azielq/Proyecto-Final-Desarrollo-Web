@@ -4,15 +4,15 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using Proyecto_Final_Desarrollo_Web.Models;
-using Proyecto_Final_Desarrollo_Web.Models.TableViewModels;
-using Proyecto_Final_Desarrollo_Web.Models.ViewModels;
+using Proyecto_Final_Desarrollo_Web.TableViewModels;
+using Proyecto_Final_Desarrollo_Web.ViewModels;
 using System.Data.Entity;
 
 namespace Proyecto_Final_Desarrollo_Web.Controllers
 {
 	public class MedicamentoController : Controller
 	{
-		private readonly FarmaUEntities db = new FarmaUEntities();
+		private FarmaUEntities db = new FarmaUEntities();
 
 		public ActionResult Index()
 		{
@@ -58,7 +58,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 				return RedirectToAction("Index");
 			}
 
-			ViewBag.Categorias = new SelectList(db.Categorias, "ID_Categoria", "Nombre", model.ID_Categoria);
+			ViewBag.Categorias = new SelectList(db.Categorias, "ID_Categoria", "Nombre", model.ID_Categoría);
 			ViewBag.Laboratorios = new SelectList(db.Laboratorios, "ID_Laboratorio", "Nombre", model.ID_Laboratorio);
 			return View(model);
 		}
@@ -68,7 +68,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 			if (id == null)
 				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-			Medicamento medicamento;
+			Medicamentos medicamento;
 			using (var db = new FarmaUEntities())
 			{
 				medicamento = db.Medicamentos.Find(id);
@@ -79,7 +79,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
 			var model = MedicamentoViewModel.FromEntity(medicamento);
 
-			ViewBag.Categorias = new SelectList(db.Categorias, "ID_Categoria", "Nombre", model.ID_Categoria);
+			ViewBag.Categorias = new SelectList(db.Categorias, "ID_Categoria", "Nombre", model.ID_Categoría);
 			ViewBag.Laboratorios = new SelectList(db.Laboratorios, "ID_Laboratorio", "Nombre", model.ID_Laboratorio);
 
 			return View(model);
@@ -99,7 +99,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 				return RedirectToAction("Index");
 			}
 
-			ViewBag.Categorias = new SelectList(db.Categorias, "ID_Categoria", "Nombre", model.ID_Categoria);
+			ViewBag.Categorias = new SelectList(db.Categorias, "ID_Categoria", "Nombre", model.ID_Categoría);
 			ViewBag.Laboratorios = new SelectList(db.Laboratorios, "ID_Laboratorio", "Nombre", model.ID_Laboratorio);
 
 			return View(model);
@@ -110,7 +110,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 			if (id == null)
 				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-			Medicamento medicamento;
+			Medicamentos medicamento;
 			using (var db = new FarmaUEntities())
 			{
 				medicamento = db.Medicamentos.Find(id);

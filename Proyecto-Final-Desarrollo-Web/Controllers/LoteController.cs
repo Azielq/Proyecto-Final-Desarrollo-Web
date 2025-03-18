@@ -6,12 +6,14 @@ using System.Web.Mvc;
 using Proyecto_Final_Desarrollo_Web.Models;
 using Proyecto_Final_Desarrollo_Web.ViewModels;
 using Proyecto_Final_Desarrollo_Web.TableViewModels;
+using System.Data.Entity;
+
 
 namespace Proyecto_Final_Desarrollo_Web.Controllers
 {
     public class LoteController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private FarmaUEntities db = new FarmaUEntities();
 
         public ActionResult Index()
         {
@@ -47,14 +49,6 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
             if (request.SoloConStock == true)
                 query = query.Where(l => l.cantidad > 0);
-
-            // Ordenamiento
-            if (!string.IsNullOrEmpty(request.SortColumn))
-            {
-                query = request.SortDirection == "desc"
-                    ? query.OrderByDescending(l => EF.Property<object>(l, request.SortColumn))
-                    : query.OrderBy(l => EF.Property<object>(l, request.SortColumn));
-            }
 
             int totalRecords = query.Count();
             var data = query.Skip(request.Start).Take(request.Length).ToList();
