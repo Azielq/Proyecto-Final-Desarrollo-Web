@@ -20,20 +20,21 @@ namespace Proyecto_Final_Desarrollo_Web
                         "~/Scripts/modernizr-*"));
 
             bundles.Add(new Bundle("~/bundles/libs").Include(
-                      "~/Scripts/bootstrap.js",
-                      "~/Scripts/react-bootstrap.js",
-                      "~/Scripts/react-bootstrap-table.js",
-                      "~/Scripts/bootstrap.bundle.min.js",
-                      "~/Scripts/sweetalert2.all.min.js",
-                      "~/Scripts/notyf.js"
-                      ));
+                    "~/Scripts/bootstrap.js",
+                    "~/Scripts/bootstrap.bundle.min.js",
+                    "~/Scripts/sweetalert2.all.min.js", 
+                    "~/Scripts/notyf.js",
+                    "~/Scripts/site.js", 
+                    "~/Scripts/react-bootstrap.js",
+                    "~/Scripts/react-bootstrap-table.js"
+                    ));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/react-bootstrap-table.min.css",
-                       "~/Content/bootstrap-icons/bootstrap-icons.css",
-                        "~/Content/bootstrap-icons/bootstrap-icons.min.css",
-                        "~/Content/notyf.min.css",
+                      "~/Content/bootstrap-icons/bootstrap-icons.css",
+                      "~/Content/bootstrap-icons/bootstrap-icons.min.css",
+                      "~/Content/notyf.min.css",
                       "~/Content/site.css"));
         }
     }

@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using Proyecto_Final_Desarrollo_Web.Models;
 using Proyecto_Final_Desarrollo_Web.ViewModels;
 using Proyecto_Final_Desarrollo_Web.TableViewModels;
+using Proyecto_Final_Desarrollo_Web.Helpers;
 
 namespace Proyecto_Final_Desarrollo_Web.Controllers
 {
@@ -17,146 +18,77 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         private FarmaUEntities db = new FarmaUEntities();
 
         // GET: Medicamentos
-        public ActionResult Index()
+        public ActionResult Index(int page = 1, int pageSize = 10, string searchTerm = "", int? categoriaId = null, int? laboratorioId = null, string estado = "Activo")
         {
-            return View();
-        }
-
-        [HttpPost]
-        public ActionResult GetMedicamentos(MedicamentoTableRequest request)
-        {
-            var response = new MedicamentoTableResponse
+            try
             {
-                draw = request.Start
-            };
+                // Carga listas para filtros
+                ViewBag.Categorias = new SelectList(db.Categorias.OrderBy(c => c.Nombre), "ID_Categoría", "Nombre");
+                ViewBag.Laboratorios = new SelectList(db.Laboratorios.OrderBy(l => l.Nombre), "ID_Laboratorio", "Nombre");
 
-            // Consulta base
-            var query = db.Medicamentos
-                .Include(m => m.Categorias)
-                .Include(m => m.Laboratorios)
-                .AsQueryable();
+                // Consulta base
+                var query = db.Medicamentos
+                    .Include(m => m.Categorias)
+                    .Include(m => m.Laboratorios)
+                    .Include(m => m.Lotes)
+                    .AsQueryable();
 
-            // Esto filtra activos o por estado específico
-            if (!string.IsNullOrEmpty(request.Estado))
-            {
-                query = query.Where(m => m.estado == request.Estado);
-            }
-            else
-            {
-                query = query.Where(m => m.estado == "Activo");
-            }
-
-            // Esto filtra adicionales
-            if (request.CategoriaId.HasValue)
-            {
-                query = query.Where(m => m.ID_Categoría == request.CategoriaId.Value);
-            }
-
-            if (request.LaboratorioId.HasValue)
-            {
-                query = query.Where(m => m.ID_Laboratorio == request.LaboratorioId.Value);
-            }
-
-            // Esto busca por término
-            if (!string.IsNullOrWhiteSpace(request.SearchValue))
-            {
-                var searchValue = request.SearchValue.ToLower();
-                query = query.Where(m => m.Nombre.ToLower().Contains(searchValue) ||
-                                         m.principio_activo.ToLower().Contains(searchValue) ||
-                                         m.Categorias.Nombre.ToLower().Contains(searchValue) ||
-                                         m.Laboratorios.Nombre.ToLower().Contains(searchValue));
-            }
-
-            // Total sin filtrar
-            response.recordsTotal = query.Count();
-
-            // Total después de filtrar
-            response.recordsFiltered = query.Count();
-
-            // Ordena
-            if (!string.IsNullOrEmpty(request.SortColumn))
-            {
-                if (request.SortDirection.ToLower() == "asc")
+                // Aplica filtros
+                if (!string.IsNullOrEmpty(estado))
                 {
-                    switch (request.SortColumn)
-                    {
-                        case "Nombre":
-                            query = query.OrderBy(m => m.Nombre);
-                            break;
-                        case "principio_activo":
-                            query = query.OrderBy(m => m.principio_activo);
-                            break;
-                        case "NombreCategoria":
-                            query = query.OrderBy(m => m.Categorias.Nombre);
-                            break;
-                        case "NombreLaboratorio":
-                            query = query.OrderBy(m => m.Laboratorios.Nombre);
-                            break;
-                        case "precio_compra":
-                            query = query.OrderBy(m => m.precio_compra);
-                            break;
-                        case "precio_venta":
-                            query = query.OrderBy(m => m.precio_venta);
-                            break;
-                        default:
-                            query = query.OrderBy(m => m.Nombre);
-                            break;
-                    }
+                    query = query.Where(m => m.estado == estado);
                 }
-                else
+
+                if (categoriaId.HasValue)
                 {
-                    switch (request.SortColumn)
-                    {
-                        case "Nombre":
-                            query = query.OrderByDescending(m => m.Nombre);
-                            break;
-                        case "principio_activo":
-                            query = query.OrderByDescending(m => m.principio_activo);
-                            break;
-                        case "NombreCategoria":
-                            query = query.OrderByDescending(m => m.Categorias.Nombre);
-                            break;
-                        case "NombreLaboratorio":
-                            query = query.OrderByDescending(m => m.Laboratorios.Nombre);
-                            break;
-                        case "precio_compra":
-                            query = query.OrderByDescending(m => m.precio_compra);
-                            break;
-                        case "precio_venta":
-                            query = query.OrderByDescending(m => m.precio_venta);
-                            break;
-                        default:
-                            query = query.OrderByDescending(m => m.Nombre);
-                            break;
-                    }
+                    query = query.Where(m => m.ID_Categoría == categoriaId.Value);
                 }
+
+                if (laboratorioId.HasValue)
+                {
+                    query = query.Where(m => m.ID_Laboratorio == laboratorioId.Value);
+                }
+
+                // Busca por término
+                if (!string.IsNullOrWhiteSpace(searchTerm))
+                {
+                    var searchValue = searchTerm.ToLower();
+                    query = query.Where(m => m.Nombre.ToLower().Contains(searchValue) ||
+                                             m.principio_activo.ToLower().Contains(searchValue) ||
+                                             m.Categorias.Nombre.ToLower().Contains(searchValue) ||
+                                             m.Laboratorios.Nombre.ToLower().Contains(searchValue));
+                }
+
+                // Total de registros para paginación
+                var totalRecords = query.Count();
+
+                // Aplica ordenamiento y paginación
+                var medicamentos = query
+                    .OrderBy(m => m.Nombre)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
+                // Configuración de paginación
+                PaginationHelper.ConfigurePagination(ViewData, totalRecords, page, pageSize);
+
+                // Guarda los parámetros de búsqueda
+                ViewBag.SearchTerm = searchTerm;
+                ViewBag.CategoriaId = categoriaId;
+                ViewBag.LaboratorioId = laboratorioId;
+                ViewBag.Estado = estado;
+
+                // Transforma a ViewModel
+                var medicamentosViewModel = medicamentos.Select(m => MedicamentoViewModel.FromEntity(m)).ToList();
+
+                return View(medicamentosViewModel);
             }
-            else
+            catch (Exception ex)
             {
-                query = query.OrderBy(m => m.Nombre);
+                System.Diagnostics.Debug.WriteLine($"Error al cargar medicamentos: {ex.Message}");
+                ViewBag.ErrorMessage = "Error al cargar los medicamentos: " + ex.Message;
+                return View(new List<MedicamentoViewModel>());
             }
-
-            // Paginación
-            query = query.Skip(request.Start).Take(request.Length);
-
-            // Convierte y asigna a la respuesta
-            response.data = query.ToList().Select(m => new MedicamentoTableViewModel
-            {
-                ID_Medicamento = m.ID_Medicamento,
-                Nombre = m.Nombre,
-                principio_activo = m.principio_activo,
-                NombreCategoria = m.Categorias.Nombre,
-                NombreLaboratorio = m.Laboratorios.Nombre,
-                precio_compra = m.precio_compra,
-                precio_venta = m.precio_venta,
-                estado = m.estado,
-                StockTotal = m.Lotes.Sum(l => l.cantidad),
-                TieneLotesProximosAVencer = m.Lotes.Any(l => l.fecha_vencimiento > DateTime.Now &&
-                                                         l.fecha_vencimiento <= DateTime.Now.AddDays(30) &&
-                                                         l.cantidad > 0)
-            }).ToList();
-
-            return Json(response, JsonRequestBehavior.AllowGet);
         }
 
         // GET: Medicamentos/Details
@@ -279,8 +211,18 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return HttpNotFound();
             }
 
-            var viewModel = MedicamentoViewModel.FromEntity(medicamento);
+            // Verifica si tiene lotes asociados
+            if (medicamento.Lotes.Any())
+            {
+                ViewBag.TieneLotes = true;
+                ViewBag.TotalLotes = medicamento.Lotes.Count;
+            }
+            else
+            {
+                ViewBag.TieneLotes = false;
+            }
 
+            var viewModel = MedicamentoViewModel.FromEntity(medicamento);
             return View(viewModel);
         }
 
@@ -289,9 +231,11 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Medicamentos medicamento = db.Medicamentos.Find(id);
+            Medicamentos medicamento = db.Medicamentos
+                .Include(m => m.Lotes)
+                .FirstOrDefault(m => m.ID_Medicamento == id);
 
-            // En lugar de eliminar, cambia el estado
+            // En lugar de eliminar físicamente, cambia el estado
             medicamento.estado = "Inactivo";
             db.Entry(medicamento).State = EntityState.Modified;
             db.SaveChanges();

@@ -1,0 +1,175 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.UsuarioViewModel
+@{
+    ViewBag.Title = "Mi Perfil - FarmaU";
+}
+
+<div class="container mt-auto pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Mi Perfil</li>
+                </ol>
+            </nav>
+
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="bi bi-person-circle me-2"></i>Mi Perfil</h4>
+                        <div>
+                            @if (Convert.ToInt32(Session["UserID"]) == Model.ID_Usuario)
+                            {
+                                <a href="@Url.Action("Edit", "Usuarios", new { id = Model.ID_Usuario })" class="btn btn-light btn-sm me-2">
+                                    <i class="bi bi-pencil-square me-1"></i>Editar
+                                </a>
+                                <a href="@Url.Action("CambiarPassword", "Usuarios", new { id = Model.ID_Usuario })" class="btn btn-light btn-sm">
+                                    <i class="bi bi-shield-lock me-1"></i>Cambiar Contraseña
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                            <div class="p-3">
+                                <div class="profile-icon mb-3">
+                                    <i class="bi bi-person-circle" style="font-size: 8rem; color: #2196F3;"></i>
+                                </div>
+                                <h3 class="mb-1">@Model.usuario</h3>
+                                <span class="badge bg-primary mb-2">@Model.NombreRol</span>
+                                <p class="text-muted">
+                                    <small>
+                                        <i class="bi bi-calendar-event me-1"></i>Miembro desde @(Model.fecha_creacion != null ? Model.fecha_creacion.Value.ToString("MMM yyyy") : "")
+                                    </small>
+                                </p>
+                                @if (Model.ultimo_login.HasValue)
+                                {
+                                    <p class="text-muted">
+                                        <small>
+                                            <i class="bi bi-clock-history me-1"></i>Último acceso: @(Model.ultimo_login != null ? Model.ultimo_login.Value.ToString("dd/MM/yyyy HH:mm") : "")
+                                        </small>
+                                    </p>
+                                }
+                                <div class="mt-3">
+                                    @{
+                                        string estadoClass = "bg-secondary";
+                                        string estadoText = "Desconocido";
+
+                                        switch (Model.estado)
+                                        {
+                                            case 1:
+                                                estadoClass = "bg-success";
+                                                estadoText = "Activo";
+                                                break;
+                                            case 0:
+                                                estadoClass = "bg-danger";
+                                                estadoText = "Inactivo";
+                                                break;
+                                            case 2:
+                                                estadoClass = "bg-warning";
+                                                estadoText = "Bloqueado";
+                                                break;
+                                        }
+                                    }
+                                    <span class="badge @estadoClass">@estadoText</span>
+                                </div>
+
+                                <!-- INICIO: Enlaces de administración solo visibles para admin -->
+                                @if (Session["UserRoleID"] != null && Convert.ToInt32(Session["UserRoleID"]) == 1) // El 1 es el ID del rol Admin
+                                {
+                                    <div class="mt-4">
+                                        <h5 class="mb-3"><i class="bi bi-gear me-2"></i>Administración</h5>
+                                        <div class="d-grid gap-2">
+                                            <a href="@Url.Action("Index", "Usuarios")" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-people me-2"></i>Gestión de Usuarios
+                                            </a>
+                                            <a href="@Url.Action("Index", "Roles")" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-person-badge me-2"></i>Gestión de Roles
+                                            </a>
+                                        </div>
+                                    </div>
+                                }
+                                <!-- FIN: Enlaces de administración -->
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <h4 class="border-bottom pb-2 mb-3">
+                                <i class="bi bi-info-circle me-2"></i>Información Personal
+                            </h4>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-group">
+                                        <label class="text-muted small">
+                                            <i class="bi bi-person me-1"></i>Nombre Completo
+                                        </label>
+                                        <p class="form-control-static">
+                                            @Model.Nombre @Model.Apellido_1 @Model.Apellido_2
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-group">
+                                        <label class="text-muted small">
+                                            <i class="bi bi-card-text me-1"></i>@Html.DisplayNameFor(model => model.tipo_documento)
+                                        </label>
+                                        <p class="form-control-static">
+                                            @Model.tipo_documento: @Model.numero_documento
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-group">
+                                        <label class="text-muted small">
+                                            <i class="bi bi-envelope me-1"></i>@Html.DisplayNameFor(model => model.Correo)
+                                        </label>
+                                        <p class="form-control-static">
+                                            @Model.Correo
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-group">
+                                        <label class="text-muted small">
+                                            <i class="bi bi-telephone me-1"></i>@Html.DisplayNameFor(model => model.Teléfono)
+                                        </label>
+                                        <p class="form-control-static">
+                                            @Model.Teléfono
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label class="text-muted small">
+                                            <i class="bi bi-geo-alt me-1"></i>@Html.DisplayNameFor(model => model.dirección)
+                                        </label>
+                                        <p class="form-control-static">
+                                            @Model.dirección
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
