@@ -269,6 +269,7 @@
     <Compile Include="Controllers\LaboratoriosController.cs" />
     <Compile Include="Controllers\LotesController.cs" />
     <Compile Include="Controllers\MedicamentosController.cs" />
+    <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\ProveedoresController.cs" />
     <Compile Include="Controllers\ReportesController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
@@ -484,6 +485,10 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Scripts\react-bootstrap-table.js.map" />
     <Content Include="Views\Usuarios\Login.cshtml" />
+    <Content Include="Views\Productos\Medicamentos.cshtml" />
+    <Content Include="Views\Productos\Vitaminas.cshtml" />
+    <Content Include="Views\Productos\Bebes.cshtml" />
+    <Content Include="Views\Productos\CuidadoPersonal.cshtml" />
     <Content Include="Views\Usuarios\Register.cshtml" />
     <Content Include="Views\Usuarios\Details.cshtml" />
     <Content Include="Views\Usuarios\Edit.cshtml" />

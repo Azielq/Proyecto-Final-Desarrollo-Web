@@ -30,7 +30,33 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         {
             return View();
         }
+        public ActionResult Categorias()
+        {
+            ViewBag.Message = "Your contact page.";
+            return View();
+        }
+        public ActionResult Medicamentos()
+        {
+            ViewBag.Message = "Your contact page.";
+            return View();
+        }
+        public ActionResult CuidadoPersonal()
+        {
+            ViewBag.Message = "Your contact page.";
+            return View();
+        }
 
-        
+        public ActionResult Vitaminas()
+        {
+            ViewBag.Message = "Your contact page.";
+            return View();
+        }
+
+        public ActionResult Bebes()
+        {
+            ViewBag.Message = "Your contact page.";
+            return View();
+        }
+
     }
 }
