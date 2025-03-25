@@ -491,8 +491,8 @@
     <Content Include="Views\Productos\Vitaminas.cshtml" />
     <Content Include="Views\Productos\Bebes.cshtml" />
     <Content Include="Views\Productos\CuidadoPersonal.cshtml" />
-    <Content Include="Views\Proveedor\Proveedores.cshtml" />
-    <Content Include="Views\Proveedor\Detalles.cshtml" />
+    <Content Include="Views\Proveedores\Index.cshtml" />
+    <Content Include="Views\Proveedores\Details.cshtml" />
     <Content Include="Views\Usuarios\Register.cshtml" />
     <Content Include="Views\Usuarios\Details.cshtml" />
     <Content Include="Views\Usuarios\Edit.cshtml" />

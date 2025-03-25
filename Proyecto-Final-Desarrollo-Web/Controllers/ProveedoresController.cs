@@ -101,7 +101,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return HttpNotFound();
             }
 
-            // Esto obtiene las compras del proveedor ordenadas por fecha descendente
+            // Obtiene las compras del proveedor ordenadas por fecha descendente
             var compras = db.Compras_Farmacia
                 .Include(c => c.Detalles_Compras_Farmacia)
                 .Where(c => c.ID_proveedor == id)
@@ -112,13 +112,30 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             ViewBag.Compras = compras;
 
             // Estadísticas de compras
-            ViewBag.TotalCompras = proveedor.Compras_Farmacia.Sum(c => c.total);
-            ViewBag.NumeroCompras = proveedor.Compras_Farmacia.Count;
-            ViewBag.PromedioCompra = ViewBag.NumeroCompras > 0 ? ViewBag.TotalCompras / ViewBag.NumeroCompras : 0;
-            ViewBag.UltimaCompra = proveedor.Compras_Farmacia.OrderByDescending(c => c.fecha).Select(c => c.fecha).FirstOrDefault();
+            decimal totalCompras = proveedor.Compras_Farmacia.Sum(c => c.total);
+            int numeroCompras = proveedor.Compras_Farmacia.Count;
+            DateTime? ultimaCompra = proveedor.Compras_Farmacia
+                .OrderByDescending(c => c.fecha)
+                .Select(c => c.fecha)
+                .FirstOrDefault();
 
-            return View(proveedor);
+            // Mapea la entidad a ProveedorTableViewModel
+            var viewModel = new Proyecto_Final_Desarrollo_Web.TableViewModels.ProveedorTableViewModel
+            {
+                Pk_Proveedor = proveedor.Pk_Proveedor,
+                Nombre = proveedor.Nombre,
+                Correo = proveedor.Correo,
+                Telefono = proveedor.Telefono,
+                direccion = proveedor.direccion,
+                activo = proveedor.activo,
+                TotalCompras = totalCompras,
+                NumeroCompras = numeroCompras,
+                UltimaCompra = ultimaCompra
+            };
+
+            return View(viewModel);
         }
+
 
         // GET: Proveedores/Create
         public ActionResult Create()
