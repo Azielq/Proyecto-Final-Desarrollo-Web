@@ -4,56 +4,57 @@
 }
 
 
-    <!-- Hero Section -->
-    <section class="hero" id="proveedores-header">
-        <div class="container pt-4">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h2>Proveedores</h2>
-                    <p>Administra y consulta la lista de proveedores de FarmaU.</p>
-                </div>
-                <div class="hero-image">
-                    <img src="@Url.Content("~/Content/img/proveedor.png")" alt="Proveedores" class="img-fluid" style="max-width: 300px; height: auto;">
-                </div>
-            </div>
-        </div>
-    </section>
 
-    <!-- Sección de Lista de Proveedores -->
-    <section class="providers-list" id="lista-proveedores">
-        <div class="container pt-4">
-            <div class="actions">
-                <a href="@Url.Action("Create", "Proveedores")" class="btn btn-success">Agregar Proveedor</a>
+<!-- Hero Section -->
+<section class="hero" id="proveedores-header">
+    <div class="container pt-4">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h2>Proveedores</h2>
+                <p>Administra y consulta la lista de proveedores de FarmaU.</p>
             </div>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Correo</th>
-                        <th>Teléfono</th>
-                        <th>Estado</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var proveedor in Model)
-                    {
-                        <tr>
-                            <td>@proveedor.Nombre</td>
-                            <td>@proveedor.Correo</td>
-                            <td>@proveedor.Telefono</td>
-                            <td>
-                                <span class="@proveedor.EstadoClass">
-                                    @proveedor.EstadoTexto
-                                </span>
-                            </td>
-                            <td>
-                                <a href="@Url.Action("Details", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-info">Ver Detalles</a>
-                                <button class="btn btn-danger">Eliminar</button>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <div class="hero-image">
+                <img src="@Url.Content("~/Content/img/proveedor.png")" alt="Proveedores" class="img-fluid" style="max-width: 300px; height: auto;">
+            </div>
         </div>
-    </section>
+    </div>
+</section>
+
+<!-- Sección de Lista de Proveedores -->
+<section class="providers-list" id="lista-proveedores">
+    <div class="container pt-4">
+        <div class="actions">
+            <a href="@Url.Action("Create", "Proveedores")" class="btn btn-success">Agregar Proveedor</a>
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Correo</th>
+                    <th>Teléfono</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var proveedor in Model)
+                {
+                    <tr>
+                        <td>@proveedor.Nombre</td>
+                        <td>@proveedor.Correo</td>
+                        <td>@proveedor.Telefono</td>
+                        <td>
+                            <span class="@proveedor.EstadoClass">
+                                @proveedor.EstadoTexto
+                            </span>
+                        </td>
+                        <td>
+                            <a href="@Url.Action("Details", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-info">Ver Detalles</a>
+                            <button class="btn btn-danger">Eliminar</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
