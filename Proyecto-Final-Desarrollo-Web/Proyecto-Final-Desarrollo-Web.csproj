@@ -387,6 +387,7 @@
     <Content Include="Content\img\appstore.jpg" />
     <Content Include="Content\img\asesoria.jpg" />
     <Content Include="Content\img\cuidado.jpg" />
+    <Content Include="Content\img\proveedor.png" />
     <Content Include="Content\img\entrega.jpg" />
     <Content Include="Content\img\facebook.jpg" />
     <Content Include="Content\img\FarmaU.png" />
@@ -458,6 +459,7 @@
     <Content Include="Models\FarmaU.edmx.diagram">
       <DependentUpon>FarmaU.edmx</DependentUpon>
     </Content>
+    <Content Include="Content\img\proveedores.webp" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
@@ -489,6 +491,8 @@
     <Content Include="Views\Productos\Vitaminas.cshtml" />
     <Content Include="Views\Productos\Bebes.cshtml" />
     <Content Include="Views\Productos\CuidadoPersonal.cshtml" />
+    <Content Include="Views\Proveedor\Proveedores.cshtml" />
+    <Content Include="Views\Proveedor\Detalles.cshtml" />
     <Content Include="Views\Usuarios\Register.cshtml" />
     <Content Include="Views\Usuarios\Details.cshtml" />
     <Content Include="Views\Usuarios\Edit.cshtml" />

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -24,17 +24,22 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
                             <a class="nav-link" href="@Url.Action("Index", "Home")">
-                                <i class="bi bi-house-door nav-icon"></i>Home
+                                <i class="bi bi-house-door nav-icon"></i> Home
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="@Url.Action("About", "Home")">
-                                <i class="bi bi-info-circle nav-icon"></i>About
+                                <i class="bi bi-info-circle nav-icon"></i> About
                             </a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="@Url.Action("Contact", "Home")">
-                                <i class="bi bi-envelope nav-icon"></i>Contact
+                                <i class="bi bi-envelope nav-icon"></i> Contact
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Proveedores", "Proveedores")">
+                                <i class="bi bi-building nav-icon"></i> Proveedores
                             </a>
                         </li>
                         <li class="nav-item dropdown">
@@ -49,6 +54,7 @@
                             </ul>
                         </li>
                     </ul>
+
 
                     <!-- Barra de búsqueda -->
                     <form class="d-flex me-2" action="/Search" method="get">
