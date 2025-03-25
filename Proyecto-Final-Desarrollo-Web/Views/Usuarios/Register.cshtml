@@ -1,0 +1,50 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.UsuarioViewModel
+@{
+    ViewBag.Title = "Registro - FarmaU";
+    ViewBag.CardHeaderClass = "primary";
+    ViewBag.IsAdmin = false;
+    ViewBag.MostrarRol = false;
+    ViewBag.IsEdit = false;
+}
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="register-container">
+                <h1 class="text-center">Farma<span style="color:#2196F3">U</span></h1>
+                <h2 class="text-center mb-4"><i class="bi bi-person-plus me-2"></i>Crear cuenta</h2>
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <strong>Error:</strong>
+                        @Html.ValidationSummary(false, "", new { @class = "mb-0 list-unstyled" })
+                    </div>
+                }
+                @using (Html.BeginForm("Register", "Usuarios", FormMethod.Post, new
+                {
+                    @class = "needs-validation",
+                    data_confirm_submit = "true",
+                    data_confirm_title = "Confirmar registro",
+                    data_confirm_text = "¿Estás seguro de que deseas registrarte con la información proporcionada?",
+                    data_confirm_button_text = "Sí, registrarme"
+                }))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Partial("_UsuarioFormPartial", Model)
+                    <div class="mb-3 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-person-plus me-2"></i>Registrarme
+                        </button>
+                    </div>
+                    <div class="text-center">
+                        <p><i class="bi bi-question-circle me-1"></i>¿Ya tienes una cuenta? <a href="@Url.Action("Login", "Usuarios")"><i class="bi bi-box-arrow-in-right me-1"></i>Iniciar sesión</a></p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
