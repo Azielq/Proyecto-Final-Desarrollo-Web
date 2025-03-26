@@ -269,6 +269,7 @@
     <Compile Include="Controllers\LaboratoriosController.cs" />
     <Compile Include="Controllers\LotesController.cs" />
     <Compile Include="Controllers\MedicamentosController.cs" />
+    <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\ProveedoresController.cs" />
     <Compile Include="Controllers\ReportesController.cs" />
     <Compile Include="Controllers\RolesController.cs" />
@@ -493,6 +494,12 @@
     <Content Include="Views\Usuarios\CambiarPassword.cshtml" />
     <Content Include="Views\Roles\Index.cshtml" />
     <Content Include="Views\Shared\AccesoDenegado.cshtml" />
+    <Content Include="Views\Productos\Bebes.cshtml" />
+    <Content Include="Views\Productos\CuidadoPersonal.cshtml" />
+    <Content Include="Views\Productos\Medicamentos.cshtml" />
+    <Content Include="Views\Productos\Vitaminas.cshtml" />
+    <Content Include="Views\Proveedores\Index.cshtml" />
+    <Content Include="Views\Proveedores\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
