@@ -120,7 +120,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 .FirstOrDefault();
 
             // Mapea la entidad a ProveedorTableViewModel
-            var viewModel = new Proyecto_Final_Desarrollo_Web.TableViewModels.ProveedorTableViewModel
+            var viewModel = new ProveedorTableViewModel
             {
                 Pk_Proveedor = proveedor.Pk_Proveedor,
                 Nombre = proveedor.Nombre,
