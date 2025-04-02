@@ -10,6 +10,8 @@ body {
     background-color: #f5f7fa;
     color: #333;
     line-height: 1.6;
+    padding-top: 20px; /* Altura aproximada de el navbar */
+    transition: padding-top 0.3s ease;
 }
 
 a {
@@ -754,6 +756,10 @@ footer {
     }
 }
 
+.navbar {
+    height: 100%;
+}
+
 /* Para botones en la navbar */
 .navbar .btn {
     padding: 6px 15px;
@@ -763,8 +769,9 @@ footer {
 /* Para las migas de pan */
 .breadcrumb {
     background-color: transparent;
-    padding: 0.75rem 0;
-    margin-bottom: 1.5rem;
+    padding: 0.75rem 1rem;
+    margin-bottom: 1rem;
+    margin-top: 30px; /* Espacio adicional */
 }
 
 .breadcrumb-item + .breadcrumb-item::before {
@@ -850,3 +857,44 @@ footer {
         border-color: #4CAF50;
         box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
     }
+
+/* Estilos para la línea de tiempo */
+.timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+    padding-left: 50px;
+}
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 20px;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: #198754;
+    }
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: -50px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.timeline-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}

@@ -1,11 +1,224 @@
 ﻿@{
-    ViewBag.Title = "About";
+    ViewBag.Title = "Sobre Nosotros - FarmaU";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container mt-auto pt-5">
-    <main aria-labelledby="title">
-        <h2 id="title">@ViewBag.Title.</h2>
-        <h3>@ViewBag.Message</h3>
 
-        <p>Use this area to provide additional information.</p>
-    </main>
+<div class="container py-4">
+    <!-- Migas de pan -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Nosotros</li>
+        </ol>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="row align-items-center mb-5">
+        <div class="col-md-6">
+            <h1 class="display-5 fw-bold text-success mb-3">
+                <i class="bi bi-heart-pulse me-2"></i>Tu salud es nuestra prioridad
+            </h1>
+            <p class="lead">Más de 15 años acompañando a los costarricenses con medicamentos de calidad y servicio personalizado.</p>
+            <div class="d-flex gap-2 mt-4">
+                <a href="@Url.Action("Contact", "Home")" class="btn btn-success px-4">
+                    <i class="bi bi-chat-left-text me-2"></i>Contáctanos
+                </a>
+                <a href="#nuestro-equipo" class="btn btn-outline-success px-4">
+                    <i class="bi bi-people me-2"></i>Conoce al equipo
+                </a>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <img src="~/Content/img/FarmaU-ETeam1.png" alt="Equipo de FarmaU atendiendo en farmacia" class="img-fluid rounded shadow" loading="lazy">
+        </div>
+    </div>
+
+    <!-- Misión, Visión, Valores -->
+    <div class="row g-4 mb-5">
+        <div class="col-md-4">
+            <div class="card h-100 border-success">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-bullseye fs-1 text-success mb-3"></i>
+                    <h3 class="h4">Misión</h3>
+                    <p>Proveer medicamentos y productos de salud con estándares de calidad, acompañados de asesoría profesional para mejorar la calidad de vida de nuestros clientes.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-success">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-eye fs-1 text-success mb-3"></i>
+                    <h3 class="h4">Visión</h3>
+                    <p>Ser la farmacia líder en Costa Rica reconocida por nuestra innovación en servicios farmacéuticos y compromiso con el bienestar integral.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-success">
+                <div class="card-body text-center p-4">
+                    <i class="bi bi-stars fs-1 text-success mb-3"></i>
+                    <h3 class="h4">Valores</h3>
+                    <ul class="list-unstyled text-start">
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Integridad</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Excelencia profesional</li>
+                        <li class="mb-2"><i class="bi bi-check-circle-fill text-success me-2"></i>Empatía</li>
+                        <li><i class="bi bi-check-circle-fill text-success me-2"></i>Innovación</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historia -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="card bg-light border-0">
+                <div class="card-body p-4 p-md-5">
+                    <h2 class="text-center mb-4"><i class="bi bi-book me-2"></i>Nuestra Historia</h2>
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-success text-white">
+                                <i class="bi bi-building"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h5>2008</h5>
+                                <p>Fundación de la primera sede en San José centro con un equipo de 3 farmacéuticos y 2 asistentes.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-success text-white">
+                                <i class="bi bi-award"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h5>2012</h5>
+                                <p>Premio a la Excelencia Farmacéutica otorgado por el Colegio de Farmacéuticos de Costa Rica.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-success text-white">
+                                <i class="bi bi-phone"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h5>2018</h5>
+                                <p>Lanzamiento de nuestra plataforma digital con servicio de pedidos en línea y seguimiento de tratamientos.</p>
+                            </div>
+                        </div>
+                        <div class="timeline-item">
+                            <div class="timeline-icon bg-success text-white">
+                                <i class="bi bi-heart"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h5>2023</h5>
+                                <p>Expansión a 5 sucursales en el GAM y más de 10,000 clientes satisfechos mensualmente.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Equipo -->
+    <div id="nuestro-equipo" class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center mb-5"><i class="bi bi-people-fill me-2"></i>Nuestro Equipo</h2>
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="card h-100 border-success">
+                        <img src="~/Content/img/farmaceutica-hispana.png" class="card-img-top" alt="Dra. María Rodríguez - Farmacéutica" loading="lazy">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Dra. María Rodríguez</h5>
+                            <p class="text-muted">Farmacéutica General</p>
+                            <p class="card-text">Especialista en farmacoterapia con 12 años de experiencia en atención personalizada.</p>
+                            <div class="social-links">
+                                <a href="#" class="text-success me-2" aria-label="LinkedIn Dra. María"><i class="bi bi-linkedin"></i></a>
+                                <a href="#" class="text-success" aria-label="Email Dra. María"><i class="bi bi-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-success">
+                        <img src="~/Content/img/farmaceutico-C.png" class="card-img-top" alt="Dr. Carlos Méndez - Farmacólogo" loading="lazy">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Dr. Carlos Méndez</h5>
+                            <p class="text-muted">Farmacólogo Clínico</p>
+                            <p class="card-text">Experto en interacciones medicamentosas y seguimiento de tratamientos crónicos.</p>
+                            <div class="social-links">
+                                <a href="#" class="text-success me-2" aria-label="LinkedIn Dr. Carlos"><i class="bi bi-linkedin"></i></a>
+                                <a href="#" class="text-success" aria-label="Email Dr. Carlos"><i class="bi bi-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 border-success">
+                        <img src="~/Content/img/farmaceutica-L.jpg" class="card-img-top" alt="Lic. Ana Castro - Atención al Cliente" loading="lazy">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Lic. Ana Castro</h5>
+                            <p class="text-muted">Coordinadora de Servicios</p>
+                            <p class="card-text">Encargada del programa de fidelización y seguimiento post-venta.</p>
+                            <div class="social-links">
+                                <a href="#" class="text-success me-2" aria-label="LinkedIn Lic. Ana"><i class="bi bi-linkedin"></i></a>
+                                <a href="#" class="text-success" aria-label="Email Lic. Ana"><i class="bi bi-envelope"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Logros -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="bg-success text-white p-4 rounded-3">
+                <h2 class="text-center mb-4"><i class="bi bi-trophy me-2"></i>Logros y Certificaciones</h2>
+                <div class="row text-center">
+                    <div class="col-md-3 mb-3">
+                        <div class="display-4 fw-bold">15+</div>
+                        <p>Años de experiencia</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="display-4 fw-bold">5</div>
+                        <p>Sucursales</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="display-4 fw-bold">98%</div>
+                        <p>Satisfacción clientes</p>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="display-4 fw-bold">24/7</div>
+                        <p>Servicio de emergencias</p>
+                    </div>
+                </div>
+                <div class="text-center mt-3">
+                    <img src="~/Content/img/marcas-de-calidad-costa-rica.jpg" alt="Certificaciones de calidad" class="img-fluid" style="max-height: 80px;" loading="lazy">
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>// Efecto de aparición suave al hacer scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            const timelineItems = document.querySelectorAll('.timeline-item');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            timelineItems.forEach((item, index) => {
+                item.style.opacity = 0;
+                item.style.transform = 'translateY(20px)';
+                item.style.transition = `all 0.5s ease ${index * 0.2}s`;
+                observer.observe(item);
+            });
+        });</script>
+}

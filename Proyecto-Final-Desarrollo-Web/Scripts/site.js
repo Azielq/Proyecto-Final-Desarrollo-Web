@@ -352,3 +352,159 @@ function cambiarEstadoUsuario(id, nombre, estadoActual) {
         }
     });
 }
+
+// Esto es para solucionar el problema de los dropdowns de Bootstrap, para que cuando se haga clic sobre ellos se puedan cerrar
+document.addEventListener('DOMContentLoaded', function () {
+    // Solución para cerrar los dropdowns al hacer clic en el mismo botón que los abre
+    const dropdownToggleElements = document.querySelectorAll('.dropdown-toggle');
+
+    dropdownToggleElements.forEach(function (dropdownToggle) {
+        // Variable para rastrear si el menú está abierto
+        let isOpen = false;
+
+        dropdownToggle.addEventListener('click', function (e) {
+            // Obtiene el menú desplegable asociado a este botón
+            const dropdownMenu = this.nextElementSibling;
+
+            // Si el menú está abierto y el usuario hace clic en el mismo botón
+            if (isOpen) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                // Fuerza el cierre del menú usando la API de Bootstrap
+                const dropdown = bootstrap.Dropdown.getInstance(this);
+                if (dropdown) {
+                    dropdown.hide();
+                }
+
+                // Alternativamente, si la API de Bootstrap no funciona:
+                dropdownMenu.classList.remove('show');
+                this.setAttribute('aria-expanded', 'false');
+
+                isOpen = false;
+            } else {
+                // Si el menú no está abierto, permite el comportamiento predeterminado
+                // y marcar como abierto para el próximo clic
+                setTimeout(() => {
+                    if (this.getAttribute('aria-expanded') === 'true') {
+                        isOpen = true;
+                    }
+                }, 10);
+            }
+        });
+
+        // Restablece el estado cuando el menú se cierra por cualquier motivo
+        // (clic fuera, tecla Escape, etc.)
+        document.addEventListener('click', function (e) {
+            if (!dropdownToggle.contains(e.target) && !dropdownToggle.nextElementSibling?.contains(e.target)) {
+                isOpen = false;
+            }
+        });
+
+        // También restablece el estado cuando se presiona la tecla Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                isOpen = false;
+            }
+        });
+    });
+
+    // Método alternativo: utiliza el evento 'hide.bs.dropdown' de Bootstrap
+    // Este método es más limpio pero depende de los eventos del dropdown de Bootstrap
+    document.querySelectorAll('.dropdown').forEach(function (dropdown) {
+        dropdown.addEventListener('hide.bs.dropdown', function () {
+            // Restablece cualquier estado cuando se cierra el dropdown
+            const dropdownToggle = this.querySelector('.dropdown-toggle');
+            if (dropdownToggle) {
+                dropdownToggle.blur(); // Quita el foco del botón
+            }
+        });
+    });
+});
+
+
+// Solución específica para el toggle, esto funciona junto con los estilos para pantallas pequeñas
+$(document).ready(function () {
+    // Elementos clave
+    var navbarToggler = $('.navbar-toggler');
+    var navbarCollapse = $('.navbar-collapse');
+
+    // Variable para mantener el estado
+    var menuIsOpen = false;
+
+    // Función para abrir el menú
+    function openMenu() {
+        navbarCollapse.addClass('show');
+        menuIsOpen = true;
+        $('body').addClass('menu-open');
+    }
+
+    // Función para cerrar el menú
+    function closeMenu() {
+        navbarCollapse.removeClass('show');
+        menuIsOpen = false;
+        $('body').removeClass('menu-open');
+        navbarToggler.attr('aria-expanded', 'false');
+        navbarToggler.addClass('collapsed');
+    }
+
+    // Sobrescribe el comportamiento del toggler
+    navbarToggler.on('click', function (e) {
+        // Previene comportamiento por defecto
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Verificar estado actual
+        if (menuIsOpen) {
+            // Si está abierto, cerrarlo
+            closeMenu();
+        } else {
+            // Si está cerrado, abrirlo
+            openMenu();
+        }
+    });
+
+    // Cierra al hacer clic en elementos del menú desplegable
+    $('.dropdown-item').on('click', function () {
+        if (menuIsOpen) {
+            closeMenu();
+        }
+    });
+
+    // Cierra al hacer clic fuera del menú
+    $(document).on('click', function (e) {
+        if (menuIsOpen &&
+            !$(e.target).closest('.navbar-collapse').length &&
+            !$(e.target).closest('.navbar-toggler').length) {
+            closeMenu();
+        }
+    });
+
+    // Previene cierre al hacer clic dentro del menú
+    navbarCollapse.on('click', function (e) {
+        e.stopPropagation();
+    });
+
+    // Detecta cambios en la clase para mantener sincronizado el estado
+    var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            if (mutation.attributeName === 'class') {
+                var hasShowClass = navbarCollapse.hasClass('show');
+                menuIsOpen = hasShowClass;
+
+                if (hasShowClass) {
+                    $('body').addClass('menu-open');
+                    navbarToggler.attr('aria-expanded', 'true');
+                    navbarToggler.removeClass('collapsed');
+                } else {
+                    $('body').removeClass('menu-open');
+                    navbarToggler.attr('aria-expanded', 'false');
+                    navbarToggler.addClass('collapsed');
+                }
+            }
+        });
+    });
+
+    // Inicia observación de cambios en el menú
+    observer.observe(navbarCollapse[0], { attributes: true });
+});
