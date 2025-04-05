@@ -15,7 +15,7 @@ namespace Proyecto_Final_Desarrollo_Web.Models
     public partial class Movimientos_Inventario
     {
         public int ID_movimiento { get; set; }
-        public int id_medicamento { get; set; }
+        public int id_Producto { get; set; }
         public int id_Lote { get; set; }
         public string tipo { get; set; }
         public int cantidad { get; set; }
@@ -26,6 +26,6 @@ namespace Proyecto_Final_Desarrollo_Web.Models
         public virtual Compras_Farmacia Compras_Farmacia { get; set; }
         public virtual Facturas Facturas { get; set; }
         public virtual Lotes Lotes { get; set; }
-        public virtual Medicamentos Medicamentos { get; set; }
+        public virtual Productos Productos { get; set; }
     }
 }

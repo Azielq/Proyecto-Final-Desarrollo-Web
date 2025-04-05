@@ -17,7 +17,7 @@ namespace Proyecto_Final_Desarrollo_Web.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Categorias()
         {
-            this.Medicamentos = new HashSet<Medicamentos>();
+            this.Productos = new HashSet<Productos>();
         }
     
         public int ID_Categoría { get; set; }
@@ -25,6 +25,6 @@ namespace Proyecto_Final_Desarrollo_Web.Models
         public string Descripcion { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Medicamentos> Medicamentos { get; set; }
+        public virtual ICollection<Productos> Productos { get; set; }
     }
 }

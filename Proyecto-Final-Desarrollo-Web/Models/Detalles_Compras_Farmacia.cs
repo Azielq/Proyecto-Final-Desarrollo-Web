@@ -16,11 +16,11 @@ namespace Proyecto_Final_Desarrollo_Web.Models
     {
         public int id_detalle_compra { get; set; }
         public int ID_Compra { get; set; }
-        public int ID_Medicamento { get; set; }
+        public int ID_Producto { get; set; }
         public int Cantidad { get; set; }
         public decimal Subtotal { get; set; }
     
         public virtual Compras_Farmacia Compras_Farmacia { get; set; }
-        public virtual Medicamentos Medicamentos { get; set; }
+        public virtual Productos Productos { get; set; }
     }
 }

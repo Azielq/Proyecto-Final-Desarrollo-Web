@@ -14,6 +14,12 @@ namespace Proyecto_Final_Desarrollo_Web.Models
     
     public partial class Usuarios
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Usuarios()
+        {
+            this.Carrito = new HashSet<Carrito>();
+        }
+    
         public int ID_Usuario { get; set; }
         public int ID_Persona { get; set; }
         public int ID_Rol { get; set; }
@@ -23,6 +29,8 @@ namespace Proyecto_Final_Desarrollo_Web.Models
         public Nullable<System.DateTime> fecha_creacion { get; set; }
         public string usuario { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Carrito> Carrito { get; set; }
         public virtual Personas Personas { get; set; }
         public virtual Roles Roles { get; set; }
     }

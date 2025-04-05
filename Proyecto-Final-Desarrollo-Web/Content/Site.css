@@ -1,6 +1,4 @@
-﻿
-
-/* Estilos generales */
+﻿/* Estilos generales */
 * {
     margin: 0;
     padding: 0;
@@ -19,8 +17,8 @@ a {
 }
 
 .container {
-    width: 90%;
-    max-width: 1200px;
+    width: 100%;
+    max-width: 100%;
     margin: 0 auto;
 }
 
@@ -90,6 +88,116 @@ nav ul {
             nav ul li a:hover {
                 color: #4CAF50;
             }
+
+/* Nuevos estilos para íconos y tooltips */
+.nav-icon {
+    font-size: 1.1rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+.icon-only {
+    font-size: 1.3rem;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    color: white;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+    .icon-only:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+.icon-badge {
+    position: relative;
+}
+
+    .icon-badge .badge {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        font-size: 0.65rem;
+        padding: 0.25rem 0.4rem;
+        border-radius: 50%;
+        min-width: 18px;
+        height: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+.navbar-nav .nav-item {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-nav .nav-link {
+    display: flex;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    transition: all 0.3s ease;
+}
+
+    .navbar-nav .nav-link:hover {
+        color: #4CAF50 !important;
+    }
+
+/* Ajuste para los menús desplegables */
+.dropdown-menu {
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border: none;
+    padding: 0.5rem 0;
+}
+
+.dropdown-item {
+    padding: 0.6rem 1.5rem;
+    transition: all 0.2s ease;
+}
+
+    .dropdown-item:hover {
+        background-color: rgba(76, 175, 80, 0.1);
+        color: #4CAF50;
+    }
+
+    .dropdown-item i {
+        margin-right: 0.5rem;
+        color: #555;
+    }
+
+.dropdown-divider {
+    margin: 0.5rem 0;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Personalización de botones en la barra de navegación */
+.btn-outline-light {
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+    .btn-outline-light:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+/* Personalización para alertas */
+.alert {
+    border-radius: 8px;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+    .alert i {
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+    }
 
 /* Hero Section */
 .hero {
@@ -278,7 +386,6 @@ nav ul {
     position: relative;
 }
 
-
 .testimonial-content {
     position: relative;
     z-index: 1;
@@ -390,6 +497,8 @@ footer {
     margin-bottom: 20px;
     position: relative;
     padding-bottom: 10px;
+    display: flex;
+    align-items: center;
 }
 
     .footer-column h3:after {
@@ -400,6 +509,11 @@ footer {
         width: 40px;
         height: 2px;
         background-color: #4CAF50;
+    }
+
+    .footer-column h3 i {
+        margin-right: 8px;
+        color: #4CAF50;
     }
 
 .footer-column ul {
@@ -413,17 +527,32 @@ footer {
         .footer-column ul li a {
             color: #B0BEC5;
             transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
         }
 
             .footer-column ul li a:hover {
                 color: #4CAF50;
             }
 
+            .footer-column ul li a i {
+                margin-right: 8px;
+                font-size: 0.9rem;
+            }
+
 .footer-column p {
     color: #B0BEC5;
     margin-bottom: 15px;
     font-size: 14px;
+    display: flex;
+    align-items: center;
 }
+
+    .footer-column p i {
+        margin-right: 8px;
+        color: #4CAF50;
+        font-size: 1rem;
+    }
 
 .social-links {
     display: flex;
@@ -454,6 +583,130 @@ footer {
     color: #B0BEC5;
 }
 
+    .footer-bottom i {
+        color: #4CAF50;
+        margin-right: 3px;
+    }
+
+/* Estilos para login y registro */
+.login-container, .register-container {
+    margin-top: 80px;
+    margin-bottom: 20px;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+}
+
+.login-logo, .register-logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+    .login-logo img, .register-logo img {
+        width: 150px;
+    }
+
+.form-label {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+}
+
+    .form-label i {
+        margin-right: 5px;
+        color: #4CAF50;
+    }
+
+.btn-primary {
+    background-color: #28a745;
+    border-color: #28a745;
+    border-radius: 30px;
+    padding: 8px 20px;
+    transition: all 0.3s ease;
+}
+
+    .btn-primary:hover {
+        background-color: #218838;
+        border-color: #1e7e34;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+.error-message {
+    color: red;
+    text-align: center;
+    font-weight: bold;
+}
+
+/* Estilos para inputs */
+.form-control, .form-select {
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    border: 1px solid #ddd;
+    transition: all 0.2s ease;
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+    }
+
+.input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-group .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+/* Estilos para tarjetas */
+.card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .card:hover {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: none;
+    padding: 15px 20px;
+}
+
+    .card-header.bg-primary {
+        background-color: #4CAF50 !important;
+    }
+
+.card-body {
+    padding: 20px;
+}
+
+/* Estilos para tablas */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+    .table thead th {
+        background-color: #f8f9fa;
+        border-bottom: none;
+        font-weight: 600;
+        color: #2E7D32;
+    }
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(76, 175, 80, 0.05);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .hero-content {
@@ -474,4 +727,126 @@ footer {
         flex-direction: column;
         align-items: center;
     }
+
+    .icon-only {
+        font-size: 1.2rem;
+        width: 35px;
+        height: 35px;
+    }
+
+    .hidden-mobile {
+        display: none;
+    }
+
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
 }
+
+/* Estilos específicos para pantallas medianas */
+@media (min-width: 769px) and (max-width: 992px) {
+    .container {
+        width: 95%;
+    }
+
+    .nav-icon {
+        margin-right: 0.3rem;
+    }
+}
+
+/* Para botones en la navbar */
+.navbar .btn {
+    padding: 6px 15px;
+    font-size: 0.9rem;
+}
+
+/* Para las migas de pan */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0.75rem 0;
+    margin-bottom: 1.5rem;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: ">";
+    color: #6c757d;
+}
+
+.breadcrumb-item.active {
+    color: #4CAF50;
+    font-weight: 500;
+}
+
+/* Esto es para el card dentro de ver detalles en roles */
+/* Asegura que las etiquetas y valores estén bien alineados */
+#detailsRolModal table th {
+    vertical-align: middle;
+    font-weight: 600;
+}
+
+#detailsRolModal table td {
+    vertical-align: middle;
+}
+
+/* Estilo para el badge */
+#detailsRolModal .badge {
+    display: inline-block;
+    min-width: 30px;
+    font-size: 0.875rem;
+}
+
+/* Contenedor de usuarios con scroll */
+.user-list-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+    /* Asegura que la tabla de usuarios mantenga sus encabezados fijos */
+    .user-list-container table thead th {
+        position: sticky;
+        top: 0;
+        background-color: #f8f9fa;
+        z-index: 1;
+    }
+
+/* Estilos para la paginación */
+.pagination {
+    margin-bottom: 0;
+}
+
+    .pagination .page-item .page-link {
+        color: #4CAF50;
+        border-color: #dee2e6;
+        transition: all 0.2s ease;
+    }
+
+    .pagination .page-item.active .page-link {
+        background-color: #4CAF50;
+        border-color: #4CAF50;
+        color: white;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+        background-color: #fff;
+        border-color: #dee2e6;
+    }
+
+    .pagination .page-link:hover {
+        z-index: 2;
+        color: #388E3C;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+/* Estilo para el selector de tamaño de página */
+#pageSizeSelector {
+    min-width: 120px;
+    transition: all 0.2s ease;
+}
+
+    #pageSizeSelector:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+    }

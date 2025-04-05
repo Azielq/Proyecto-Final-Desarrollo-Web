@@ -25,6 +25,7 @@ namespace Proyecto_Final_Desarrollo_Web.Models
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<Carrito> Carrito { get; set; }
         public virtual DbSet<Categorias> Categorias { get; set; }
         public virtual DbSet<Clientes> Clientes { get; set; }
         public virtual DbSet<Compras_Farmacia> Compras_Farmacia { get; set; }
@@ -32,14 +33,14 @@ namespace Proyecto_Final_Desarrollo_Web.Models
         public virtual DbSet<Detalles_Factura> Detalles_Factura { get; set; }
         public virtual DbSet<Facturas> Facturas { get; set; }
         public virtual DbSet<Inventario> Inventario { get; set; }
-        public virtual DbSet<Laboratorios> Laboratorios { get; set; }
         public virtual DbSet<Lotes> Lotes { get; set; }
-        public virtual DbSet<Medicamentos> Medicamentos { get; set; }
         public virtual DbSet<Medicos> Medicos { get; set; }
         public virtual DbSet<Movimientos_Inventario> Movimientos_Inventario { get; set; }
         public virtual DbSet<Personas> Personas { get; set; }
+        public virtual DbSet<Productos> Productos { get; set; }
         public virtual DbSet<Proveedores> Proveedores { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
+        public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<Usuarios> Usuarios { get; set; }
     }
 }

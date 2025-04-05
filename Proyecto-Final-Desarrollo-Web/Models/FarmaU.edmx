@@ -5,6 +5,16 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
       <Schema Namespace="FarmaUModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Carrito">
+          <Key>
+            <PropertyRef Name="ID_Carrito" />
+          </Key>
+          <Property Name="ID_Carrito" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ID_Usuario" Type="int" Nullable="false" />
+          <Property Name="ID_Producto" Type="int" Nullable="false" />
+          <Property Name="Cantidad" Type="int" Nullable="false" />
+          <Property Name="FechaAgregado" Type="datetime" />
+        </EntityType>
         <EntityType Name="Categorias">
           <Key>
             <PropertyRef Name="ID_Categoría" />
@@ -36,7 +46,7 @@
           </Key>
           <Property Name="id_detalle_compra" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="ID_Compra" Type="int" Nullable="false" />
-          <Property Name="ID_Medicamento" Type="int" Nullable="false" />
+          <Property Name="ID_Producto" Type="int" Nullable="false" />
           <Property Name="Cantidad" Type="int" Nullable="false" />
           <Property Name="Subtotal" Type="decimal" Precision="10" Scale="2" Nullable="false" />
         </EntityType>
@@ -46,7 +56,7 @@
           </Key>
           <Property Name="ID_Detalle_Factura" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="id_Factura" Type="int" Nullable="false" />
-          <Property Name="ID_Medicamento" Type="int" Nullable="false" />
+          <Property Name="ID_Producto" Type="int" Nullable="false" />
           <Property Name="cantidad" Type="int" Nullable="false" />
           <Property Name="subtotal" Type="decimal" Precision="10" Scale="2" Nullable="false" />
         </EntityType>
@@ -68,35 +78,14 @@
           <Property Name="ID_Lote" Type="int" Nullable="false" />
           <Property Name="ubicacion" Type="varchar" MaxLength="255" Nullable="false" />
         </EntityType>
-        <EntityType Name="Laboratorios">
-          <Key>
-            <PropertyRef Name="ID_Laboratorio" />
-          </Key>
-          <Property Name="ID_Laboratorio" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Nombre" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="pais_origen" Type="varchar" MaxLength="50" Nullable="false" />
-        </EntityType>
         <EntityType Name="Lotes">
           <Key>
             <PropertyRef Name="id_Lote" />
           </Key>
           <Property Name="id_Lote" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ID_Medicamento" Type="int" Nullable="false" />
+          <Property Name="ID_Producto" Type="int" Nullable="false" />
           <Property Name="cantidad" Type="int" Nullable="false" />
           <Property Name="fecha_vencimiento" Type="date" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Medicamentos">
-          <Key>
-            <PropertyRef Name="ID_Medicamento" />
-          </Key>
-          <Property Name="ID_Medicamento" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="ID_Categoría" Type="int" Nullable="false" />
-          <Property Name="ID_Laboratorio" Type="int" Nullable="false" />
-          <Property Name="Nombre" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="principio_activo" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="precio_compra" Type="decimal" Precision="10" Scale="2" Nullable="false" />
-          <Property Name="precio_venta" Type="decimal" Precision="10" Scale="2" Nullable="false" />
-          <Property Name="estado" Type="varchar" MaxLength="10" Nullable="false" />
         </EntityType>
         <EntityType Name="Medicos">
           <Key>
@@ -112,7 +101,7 @@
             <PropertyRef Name="ID_movimiento" />
           </Key>
           <Property Name="ID_movimiento" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="id_medicamento" Type="int" Nullable="false" />
+          <Property Name="id_Producto" Type="int" Nullable="false" />
           <Property Name="id_Lote" Type="int" Nullable="false" />
           <Property Name="tipo" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="cantidad" Type="int" Nullable="false" />
@@ -134,6 +123,23 @@
           <Property Name="Teléfono" Type="varchar" MaxLength="20" />
           <Property Name="dirección" Type="varchar(max)" />
         </EntityType>
+        <EntityType Name="Productos">
+          <Key>
+            <PropertyRef Name="ID_Producto" />
+          </Key>
+          <Property Name="ID_Producto" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ID_Categoría" Type="int" Nullable="false" />
+          <Property Name="Nombre" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="precio_compra" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="precio_venta" Type="decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="estado" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Indicaciones" Type="varchar(max)" />
+          <Property Name="Detalles" Type="varchar(max)" />
+          <Property Name="Ingredientes" Type="varchar(max)" />
+          <Property Name="UnidadDeVenta" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ContenidoNeto" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Marca" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
         <EntityType Name="Proveedores">
           <Key>
             <PropertyRef Name="Pk_Proveedor" />
@@ -152,6 +158,16 @@
           <Property Name="ID_Rol" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Nombre" Type="varchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="nvarchar" MaxLength="128" Nullable="false" />
+          <Property Name="principal_id" Type="int" Nullable="false" />
+          <Property Name="diagram_id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="version" Type="int" />
+          <Property Name="definition" Type="varbinary(max)" />
+        </EntityType>
         <EntityType Name="Usuarios">
           <Key>
             <PropertyRef Name="ID_Usuario" />
@@ -165,6 +181,30 @@
           <Property Name="fecha_creacion" Type="datetime" />
           <Property Name="usuario" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <Association Name="FK_Carrito_Producto">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
+          <End Role="Carrito" Type="Self.Carrito" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
+            </Principal>
+            <Dependent Role="Carrito">
+              <PropertyRef Name="ID_Producto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Carrito_Usuario">
+          <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="1" />
+          <End Role="Carrito" Type="Self.Carrito" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuarios">
+              <PropertyRef Name="ID_Usuario" />
+            </Principal>
+            <Dependent Role="Carrito">
+              <PropertyRef Name="ID_Usuario" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Clientes_Persona">
           <End Role="Personas" Type="Self.Personas" Multiplicity="1" />
           <End Role="Clientes" Type="Self.Clientes" Multiplicity="*" />
@@ -201,15 +241,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_DetallesCompras_Medicamento">
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="1" />
+        <Association Name="FK_DetallesCompras_Producto">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
           <End Role="Detalles_Compras_Farmacia" Type="Self.Detalles_Compras_Farmacia" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Medicamentos">
-              <PropertyRef Name="ID_Medicamento" />
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
             </Principal>
             <Dependent Role="Detalles_Compras_Farmacia">
-              <PropertyRef Name="ID_Medicamento" />
+              <PropertyRef Name="ID_Producto" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -225,15 +265,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_DetallesFactura_Medicamento">
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="1" />
+        <Association Name="FK_DetallesFactura_Producto">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
           <End Role="Detalles_Factura" Type="Self.Detalles_Factura" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Medicamentos">
-              <PropertyRef Name="ID_Medicamento" />
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
             </Principal>
             <Dependent Role="Detalles_Factura">
-              <PropertyRef Name="ID_Medicamento" />
+              <PropertyRef Name="ID_Producto" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -261,39 +301,27 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Lotes_Medicamento">
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="1" />
+        <Association Name="FK_Lotes_Producto">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
           <End Role="Lotes" Type="Self.Lotes" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Medicamentos">
-              <PropertyRef Name="ID_Medicamento" />
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
             </Principal>
             <Dependent Role="Lotes">
-              <PropertyRef Name="ID_Medicamento" />
+              <PropertyRef Name="ID_Producto" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Medicamentos_Categoría">
           <End Role="Categorias" Type="Self.Categorias" Multiplicity="1" />
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="*" />
+          <End Role="Productos" Type="Self.Productos" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Categorias">
               <PropertyRef Name="ID_Categoría" />
             </Principal>
-            <Dependent Role="Medicamentos">
+            <Dependent Role="Productos">
               <PropertyRef Name="ID_Categoría" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Medicamentos_Laboratorio">
-          <End Role="Laboratorios" Type="Self.Laboratorios" Multiplicity="1" />
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Laboratorios">
-              <PropertyRef Name="ID_Laboratorio" />
-            </Principal>
-            <Dependent Role="Medicamentos">
-              <PropertyRef Name="ID_Laboratorio" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -345,15 +373,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Movimientos_Medicamento">
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="1" />
+        <Association Name="FK_Movimientos_Producto">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
           <End Role="Movimientos_Inventario" Type="Self.Movimientos_Inventario" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Medicamentos">
-              <PropertyRef Name="ID_Medicamento" />
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
             </Principal>
             <Dependent Role="Movimientos_Inventario">
-              <PropertyRef Name="id_medicamento" />
+              <PropertyRef Name="id_Producto" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -382,6 +410,7 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="FarmaUModelStoreContainer">
+          <EntitySet Name="Carrito" EntityType="Self.Carrito" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Categorias" EntityType="Self.Categorias" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Clientes" EntityType="Self.Clientes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Compras_Farmacia" EntityType="Self.Compras_Farmacia" Schema="dbo" store:Type="Tables" />
@@ -389,15 +418,23 @@
           <EntitySet Name="Detalles_Factura" EntityType="Self.Detalles_Factura" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Facturas" EntityType="Self.Facturas" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Inventario" EntityType="Self.Inventario" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Laboratorios" EntityType="Self.Laboratorios" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Lotes" EntityType="Self.Lotes" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Medicamentos" EntityType="Self.Medicamentos" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Medicos" EntityType="Self.Medicos" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Movimientos_Inventario" EntityType="Self.Movimientos_Inventario" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Personas" EntityType="Self.Personas" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Productos" EntityType="Self.Productos" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Proveedores" EntityType="Self.Proveedores" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Roles" EntityType="Self.Roles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Usuarios" EntityType="Self.Usuarios" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Carrito_Producto" Association="Self.FK_Carrito_Producto">
+            <End Role="Productos" EntitySet="Productos" />
+            <End Role="Carrito" EntitySet="Carrito" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Carrito_Usuario" Association="Self.FK_Carrito_Usuario">
+            <End Role="Usuarios" EntitySet="Usuarios" />
+            <End Role="Carrito" EntitySet="Carrito" />
+          </AssociationSet>
           <AssociationSet Name="FK_Clientes_Persona" Association="Self.FK_Clientes_Persona">
             <End Role="Personas" EntitySet="Personas" />
             <End Role="Clientes" EntitySet="Clientes" />
@@ -410,16 +447,16 @@
             <End Role="Compras_Farmacia" EntitySet="Compras_Farmacia" />
             <End Role="Detalles_Compras_Farmacia" EntitySet="Detalles_Compras_Farmacia" />
           </AssociationSet>
-          <AssociationSet Name="FK_DetallesCompras_Medicamento" Association="Self.FK_DetallesCompras_Medicamento">
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
+          <AssociationSet Name="FK_DetallesCompras_Producto" Association="Self.FK_DetallesCompras_Producto">
+            <End Role="Productos" EntitySet="Productos" />
             <End Role="Detalles_Compras_Farmacia" EntitySet="Detalles_Compras_Farmacia" />
           </AssociationSet>
           <AssociationSet Name="FK_DetallesFactura_Factura" Association="Self.FK_DetallesFactura_Factura">
             <End Role="Facturas" EntitySet="Facturas" />
             <End Role="Detalles_Factura" EntitySet="Detalles_Factura" />
           </AssociationSet>
-          <AssociationSet Name="FK_DetallesFactura_Medicamento" Association="Self.FK_DetallesFactura_Medicamento">
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
+          <AssociationSet Name="FK_DetallesFactura_Producto" Association="Self.FK_DetallesFactura_Producto">
+            <End Role="Productos" EntitySet="Productos" />
             <End Role="Detalles_Factura" EntitySet="Detalles_Factura" />
           </AssociationSet>
           <AssociationSet Name="FK_Facturas_Cliente" Association="Self.FK_Facturas_Cliente">
@@ -430,17 +467,13 @@
             <End Role="Lotes" EntitySet="Lotes" />
             <End Role="Inventario" EntitySet="Inventario" />
           </AssociationSet>
-          <AssociationSet Name="FK_Lotes_Medicamento" Association="Self.FK_Lotes_Medicamento">
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
+          <AssociationSet Name="FK_Lotes_Producto" Association="Self.FK_Lotes_Producto">
+            <End Role="Productos" EntitySet="Productos" />
             <End Role="Lotes" EntitySet="Lotes" />
           </AssociationSet>
           <AssociationSet Name="FK_Medicamentos_Categoría" Association="Self.FK_Medicamentos_Categoría">
             <End Role="Categorias" EntitySet="Categorias" />
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Medicamentos_Laboratorio" Association="Self.FK_Medicamentos_Laboratorio">
-            <End Role="Laboratorios" EntitySet="Laboratorios" />
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
+            <End Role="Productos" EntitySet="Productos" />
           </AssociationSet>
           <AssociationSet Name="FK_Medicos_Persona" Association="Self.FK_Medicos_Persona">
             <End Role="Personas" EntitySet="Personas" />
@@ -458,8 +491,8 @@
             <End Role="Lotes" EntitySet="Lotes" />
             <End Role="Movimientos_Inventario" EntitySet="Movimientos_Inventario" />
           </AssociationSet>
-          <AssociationSet Name="FK_Movimientos_Medicamento" Association="Self.FK_Movimientos_Medicamento">
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
+          <AssociationSet Name="FK_Movimientos_Producto" Association="Self.FK_Movimientos_Producto">
+            <End Role="Productos" EntitySet="Productos" />
             <End Role="Movimientos_Inventario" EntitySet="Movimientos_Inventario" />
           </AssociationSet>
           <AssociationSet Name="FK_Usuarios_Persona" Association="Self.FK_Usuarios_Persona">
@@ -476,6 +509,18 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="FarmaUModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Carrito">
+          <Key>
+            <PropertyRef Name="ID_Carrito" />
+          </Key>
+          <Property Name="ID_Carrito" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ID_Usuario" Type="Int32" Nullable="false" />
+          <Property Name="ID_Producto" Type="Int32" Nullable="false" />
+          <Property Name="Cantidad" Type="Int32" Nullable="false" />
+          <Property Name="FechaAgregado" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Productos" Relationship="Self.FK_Carrito_Producto" FromRole="Carrito" ToRole="Productos" />
+          <NavigationProperty Name="Usuarios" Relationship="Self.FK_Carrito_Usuario" FromRole="Carrito" ToRole="Usuarios" />
+        </EntityType>
         <EntityType Name="Categorias">
           <Key>
             <PropertyRef Name="ID_Categoría" />
@@ -483,7 +528,7 @@
           <Property Name="ID_Categoría" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="Descripcion" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Medicamentos" Relationship="Self.FK_Medicamentos_Categoría" FromRole="Categorias" ToRole="Medicamentos" />
+          <NavigationProperty Name="Productos" Relationship="Self.FK_Medicamentos_Categoría" FromRole="Categorias" ToRole="Productos" />
         </EntityType>
         <EntityType Name="Clientes">
           <Key>
@@ -513,11 +558,11 @@
           </Key>
           <Property Name="id_detalle_compra" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="ID_Compra" Type="Int32" Nullable="false" />
-          <Property Name="ID_Medicamento" Type="Int32" Nullable="false" />
+          <Property Name="ID_Producto" Type="Int32" Nullable="false" />
           <Property Name="Cantidad" Type="Int32" Nullable="false" />
           <Property Name="Subtotal" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
           <NavigationProperty Name="Compras_Farmacia" Relationship="Self.FK_DetallesCompras_Compra" FromRole="Detalles_Compras_Farmacia" ToRole="Compras_Farmacia" />
-          <NavigationProperty Name="Medicamentos" Relationship="Self.FK_DetallesCompras_Medicamento" FromRole="Detalles_Compras_Farmacia" ToRole="Medicamentos" />
+          <NavigationProperty Name="Productos" Relationship="Self.FK_DetallesCompras_Producto" FromRole="Detalles_Compras_Farmacia" ToRole="Productos" />
         </EntityType>
         <EntityType Name="Detalles_Factura">
           <Key>
@@ -525,11 +570,11 @@
           </Key>
           <Property Name="ID_Detalle_Factura" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="id_Factura" Type="Int32" Nullable="false" />
-          <Property Name="ID_Medicamento" Type="Int32" Nullable="false" />
+          <Property Name="ID_Producto" Type="Int32" Nullable="false" />
           <Property Name="cantidad" Type="Int32" Nullable="false" />
           <Property Name="subtotal" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
           <NavigationProperty Name="Facturas" Relationship="Self.FK_DetallesFactura_Factura" FromRole="Detalles_Factura" ToRole="Facturas" />
-          <NavigationProperty Name="Medicamentos" Relationship="Self.FK_DetallesFactura_Medicamento" FromRole="Detalles_Factura" ToRole="Medicamentos" />
+          <NavigationProperty Name="Productos" Relationship="Self.FK_DetallesFactura_Producto" FromRole="Detalles_Factura" ToRole="Productos" />
         </EntityType>
         <EntityType Name="Facturas">
           <Key>
@@ -553,45 +598,17 @@
           <Property Name="ubicacion" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Lotes" Relationship="Self.FK_Inventario_Lote" FromRole="Inventario" ToRole="Lotes" />
         </EntityType>
-        <EntityType Name="Laboratorios">
-          <Key>
-            <PropertyRef Name="ID_Laboratorio" />
-          </Key>
-          <Property Name="ID_Laboratorio" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Nombre" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="pais_origen" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="Medicamentos" Relationship="Self.FK_Medicamentos_Laboratorio" FromRole="Laboratorios" ToRole="Medicamentos" />
-        </EntityType>
         <EntityType Name="Lotes">
           <Key>
             <PropertyRef Name="id_Lote" />
           </Key>
           <Property Name="id_Lote" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ID_Medicamento" Type="Int32" Nullable="false" />
+          <Property Name="ID_Producto" Type="Int32" Nullable="false" />
           <Property Name="cantidad" Type="Int32" Nullable="false" />
           <Property Name="fecha_vencimiento" Type="DateTime" Nullable="false" Precision="0" />
           <NavigationProperty Name="Inventario" Relationship="Self.FK_Inventario_Lote" FromRole="Lotes" ToRole="Inventario" />
-          <NavigationProperty Name="Medicamentos" Relationship="Self.FK_Lotes_Medicamento" FromRole="Lotes" ToRole="Medicamentos" />
+          <NavigationProperty Name="Productos" Relationship="Self.FK_Lotes_Producto" FromRole="Lotes" ToRole="Productos" />
           <NavigationProperty Name="Movimientos_Inventario" Relationship="Self.FK_Movimientos_Lote" FromRole="Lotes" ToRole="Movimientos_Inventario" />
-        </EntityType>
-        <EntityType Name="Medicamentos">
-          <Key>
-            <PropertyRef Name="ID_Medicamento" />
-          </Key>
-          <Property Name="ID_Medicamento" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="ID_Categoría" Type="Int32" Nullable="false" />
-          <Property Name="ID_Laboratorio" Type="Int32" Nullable="false" />
-          <Property Name="Nombre" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="principio_activo" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="precio_compra" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
-          <Property Name="precio_venta" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
-          <Property Name="estado" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
-          <NavigationProperty Name="Categorias" Relationship="Self.FK_Medicamentos_Categoría" FromRole="Medicamentos" ToRole="Categorias" />
-          <NavigationProperty Name="Detalles_Compras_Farmacia" Relationship="Self.FK_DetallesCompras_Medicamento" FromRole="Medicamentos" ToRole="Detalles_Compras_Farmacia" />
-          <NavigationProperty Name="Detalles_Factura" Relationship="Self.FK_DetallesFactura_Medicamento" FromRole="Medicamentos" ToRole="Detalles_Factura" />
-          <NavigationProperty Name="Laboratorios" Relationship="Self.FK_Medicamentos_Laboratorio" FromRole="Medicamentos" ToRole="Laboratorios" />
-          <NavigationProperty Name="Lotes" Relationship="Self.FK_Lotes_Medicamento" FromRole="Medicamentos" ToRole="Lotes" />
-          <NavigationProperty Name="Movimientos_Inventario" Relationship="Self.FK_Movimientos_Medicamento" FromRole="Medicamentos" ToRole="Movimientos_Inventario" />
         </EntityType>
         <EntityType Name="Medicos">
           <Key>
@@ -608,7 +625,7 @@
             <PropertyRef Name="ID_movimiento" />
           </Key>
           <Property Name="ID_movimiento" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="id_medicamento" Type="Int32" Nullable="false" />
+          <Property Name="id_Producto" Type="Int32" Nullable="false" />
           <Property Name="id_Lote" Type="Int32" Nullable="false" />
           <Property Name="tipo" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
           <Property Name="cantidad" Type="Int32" Nullable="false" />
@@ -618,7 +635,7 @@
           <NavigationProperty Name="Compras_Farmacia" Relationship="Self.FK_Movimientos_Compra" FromRole="Movimientos_Inventario" ToRole="Compras_Farmacia" />
           <NavigationProperty Name="Facturas" Relationship="Self.FK_Movimientos_Factura" FromRole="Movimientos_Inventario" ToRole="Facturas" />
           <NavigationProperty Name="Lotes" Relationship="Self.FK_Movimientos_Lote" FromRole="Movimientos_Inventario" ToRole="Lotes" />
-          <NavigationProperty Name="Medicamentos" Relationship="Self.FK_Movimientos_Medicamento" FromRole="Movimientos_Inventario" ToRole="Medicamentos" />
+          <NavigationProperty Name="Productos" Relationship="Self.FK_Movimientos_Producto" FromRole="Movimientos_Inventario" ToRole="Productos" />
         </EntityType>
         <EntityType Name="Personas">
           <Key>
@@ -636,6 +653,29 @@
           <NavigationProperty Name="Clientes" Relationship="Self.FK_Clientes_Persona" FromRole="Personas" ToRole="Clientes" />
           <NavigationProperty Name="Medicos" Relationship="Self.FK_Medicos_Persona" FromRole="Personas" ToRole="Medicos" />
           <NavigationProperty Name="Usuarios" Relationship="Self.FK_Usuarios_Persona" FromRole="Personas" ToRole="Usuarios" />
+        </EntityType>
+        <EntityType Name="Productos">
+          <Key>
+            <PropertyRef Name="ID_Producto" />
+          </Key>
+          <Property Name="ID_Producto" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ID_Categoría" Type="Int32" Nullable="false" />
+          <Property Name="Nombre" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="precio_compra" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="precio_venta" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+          <Property Name="estado" Type="String" MaxLength="10" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Indicaciones" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Detalles" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="Ingredientes" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
+          <Property Name="UnidadDeVenta" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="ContenidoNeto" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Marca" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <NavigationProperty Name="Carrito" Relationship="Self.FK_Carrito_Producto" FromRole="Productos" ToRole="Carrito" />
+          <NavigationProperty Name="Categorias" Relationship="Self.FK_Medicamentos_Categoría" FromRole="Productos" ToRole="Categorias" />
+          <NavigationProperty Name="Detalles_Compras_Farmacia" Relationship="Self.FK_DetallesCompras_Producto" FromRole="Productos" ToRole="Detalles_Compras_Farmacia" />
+          <NavigationProperty Name="Detalles_Factura" Relationship="Self.FK_DetallesFactura_Producto" FromRole="Productos" ToRole="Detalles_Factura" />
+          <NavigationProperty Name="Lotes" Relationship="Self.FK_Lotes_Producto" FromRole="Productos" ToRole="Lotes" />
+          <NavigationProperty Name="Movimientos_Inventario" Relationship="Self.FK_Movimientos_Producto" FromRole="Productos" ToRole="Movimientos_Inventario" />
         </EntityType>
         <EntityType Name="Proveedores">
           <Key>
@@ -657,6 +697,16 @@
           <Property Name="Nombre" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
           <NavigationProperty Name="Usuarios" Relationship="Self.FK_Usuarios_Rol" FromRole="Roles" ToRole="Usuarios" />
         </EntityType>
+        <EntityType Name="sysdiagrams">
+          <Key>
+            <PropertyRef Name="diagram_id" />
+          </Key>
+          <Property Name="name" Type="String" MaxLength="128" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="principal_id" Type="Int32" Nullable="false" />
+          <Property Name="diagram_id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="version" Type="Int32" />
+          <Property Name="definition" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
         <EntityType Name="Usuarios">
           <Key>
             <PropertyRef Name="ID_Usuario" />
@@ -669,17 +719,42 @@
           <Property Name="ultimo_login" Type="DateTime" Precision="3" />
           <Property Name="fecha_creacion" Type="DateTime" Precision="3" />
           <Property Name="usuario" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Carrito" Relationship="Self.FK_Carrito_Usuario" FromRole="Usuarios" ToRole="Carrito" />
           <NavigationProperty Name="Personas" Relationship="Self.FK_Usuarios_Persona" FromRole="Usuarios" ToRole="Personas" />
           <NavigationProperty Name="Roles" Relationship="Self.FK_Usuarios_Rol" FromRole="Usuarios" ToRole="Roles" />
         </EntityType>
+        <Association Name="FK_Carrito_Producto">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
+          <End Role="Carrito" Type="Self.Carrito" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
+            </Principal>
+            <Dependent Role="Carrito">
+              <PropertyRef Name="ID_Producto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Carrito_Usuario">
+          <End Role="Usuarios" Type="Self.Usuarios" Multiplicity="1" />
+          <End Role="Carrito" Type="Self.Carrito" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Usuarios">
+              <PropertyRef Name="ID_Usuario" />
+            </Principal>
+            <Dependent Role="Carrito">
+              <PropertyRef Name="ID_Usuario" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Medicamentos_Categoría">
           <End Role="Categorias" Type="Self.Categorias" Multiplicity="1" />
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="*" />
+          <End Role="Productos" Type="Self.Productos" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Categorias">
               <PropertyRef Name="ID_Categoría" />
             </Principal>
-            <Dependent Role="Medicamentos">
+            <Dependent Role="Productos">
               <PropertyRef Name="ID_Categoría" />
             </Dependent>
           </ReferentialConstraint>
@@ -744,15 +819,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_DetallesCompras_Medicamento">
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="1" />
+        <Association Name="FK_DetallesCompras_Producto">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
           <End Role="Detalles_Compras_Farmacia" Type="Self.Detalles_Compras_Farmacia" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Medicamentos">
-              <PropertyRef Name="ID_Medicamento" />
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
             </Principal>
             <Dependent Role="Detalles_Compras_Farmacia">
-              <PropertyRef Name="ID_Medicamento" />
+              <PropertyRef Name="ID_Producto" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -768,15 +843,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_DetallesFactura_Medicamento">
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="1" />
+        <Association Name="FK_DetallesFactura_Producto">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
           <End Role="Detalles_Factura" Type="Self.Detalles_Factura" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Medicamentos">
-              <PropertyRef Name="ID_Medicamento" />
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
             </Principal>
             <Dependent Role="Detalles_Factura">
-              <PropertyRef Name="ID_Medicamento" />
+              <PropertyRef Name="ID_Producto" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -804,27 +879,15 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Medicamentos_Laboratorio">
-          <End Role="Laboratorios" Type="Self.Laboratorios" Multiplicity="1" />
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Laboratorios">
-              <PropertyRef Name="ID_Laboratorio" />
-            </Principal>
-            <Dependent Role="Medicamentos">
-              <PropertyRef Name="ID_Laboratorio" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Lotes_Medicamento">
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="1" />
+        <Association Name="FK_Lotes_Producto">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
           <End Role="Lotes" Type="Self.Lotes" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Medicamentos">
-              <PropertyRef Name="ID_Medicamento" />
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
             </Principal>
             <Dependent Role="Lotes">
-              <PropertyRef Name="ID_Medicamento" />
+              <PropertyRef Name="ID_Producto" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -840,18 +903,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Movimientos_Medicamento">
-          <End Role="Medicamentos" Type="Self.Medicamentos" Multiplicity="1" />
-          <End Role="Movimientos_Inventario" Type="Self.Movimientos_Inventario" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Medicamentos">
-              <PropertyRef Name="ID_Medicamento" />
-            </Principal>
-            <Dependent Role="Movimientos_Inventario">
-              <PropertyRef Name="id_medicamento" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <Association Name="FK_Medicos_Persona">
           <End Role="Personas" Type="Self.Personas" Multiplicity="1" />
           <End Role="Medicos" Type="Self.Medicos" Multiplicity="*" />
@@ -861,6 +912,18 @@
             </Principal>
             <Dependent Role="Medicos">
               <PropertyRef Name="ID_Persona" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Movimientos_Producto">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
+          <End Role="Movimientos_Inventario" Type="Self.Movimientos_Inventario" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
+            </Principal>
+            <Dependent Role="Movimientos_Inventario">
+              <PropertyRef Name="id_Producto" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -889,6 +952,7 @@
           </ReferentialConstraint>
         </Association>
         <EntityContainer Name="FarmaUEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Carrito" EntityType="Self.Carrito" />
           <EntitySet Name="Categorias" EntityType="Self.Categorias" />
           <EntitySet Name="Clientes" EntityType="Self.Clientes" />
           <EntitySet Name="Compras_Farmacia" EntityType="Self.Compras_Farmacia" />
@@ -896,18 +960,26 @@
           <EntitySet Name="Detalles_Factura" EntityType="Self.Detalles_Factura" />
           <EntitySet Name="Facturas" EntityType="Self.Facturas" />
           <EntitySet Name="Inventario" EntityType="Self.Inventario" />
-          <EntitySet Name="Laboratorios" EntityType="Self.Laboratorios" />
           <EntitySet Name="Lotes" EntityType="Self.Lotes" />
-          <EntitySet Name="Medicamentos" EntityType="Self.Medicamentos" />
           <EntitySet Name="Medicos" EntityType="Self.Medicos" />
           <EntitySet Name="Movimientos_Inventario" EntityType="Self.Movimientos_Inventario" />
           <EntitySet Name="Personas" EntityType="Self.Personas" />
+          <EntitySet Name="Productos" EntityType="Self.Productos" />
           <EntitySet Name="Proveedores" EntityType="Self.Proveedores" />
           <EntitySet Name="Roles" EntityType="Self.Roles" />
+          <EntitySet Name="sysdiagrams" EntityType="Self.sysdiagrams" />
           <EntitySet Name="Usuarios" EntityType="Self.Usuarios" />
+          <AssociationSet Name="FK_Carrito_Producto" Association="Self.FK_Carrito_Producto">
+            <End Role="Productos" EntitySet="Productos" />
+            <End Role="Carrito" EntitySet="Carrito" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Carrito_Usuario" Association="Self.FK_Carrito_Usuario">
+            <End Role="Usuarios" EntitySet="Usuarios" />
+            <End Role="Carrito" EntitySet="Carrito" />
+          </AssociationSet>
           <AssociationSet Name="FK_Medicamentos_Categoría" Association="Self.FK_Medicamentos_Categoría">
             <End Role="Categorias" EntitySet="Categorias" />
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
+            <End Role="Productos" EntitySet="Productos" />
           </AssociationSet>
           <AssociationSet Name="FK_Clientes_Persona" Association="Self.FK_Clientes_Persona">
             <End Role="Personas" EntitySet="Personas" />
@@ -929,16 +1001,16 @@
             <End Role="Compras_Farmacia" EntitySet="Compras_Farmacia" />
             <End Role="Movimientos_Inventario" EntitySet="Movimientos_Inventario" />
           </AssociationSet>
-          <AssociationSet Name="FK_DetallesCompras_Medicamento" Association="Self.FK_DetallesCompras_Medicamento">
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
+          <AssociationSet Name="FK_DetallesCompras_Producto" Association="Self.FK_DetallesCompras_Producto">
+            <End Role="Productos" EntitySet="Productos" />
             <End Role="Detalles_Compras_Farmacia" EntitySet="Detalles_Compras_Farmacia" />
           </AssociationSet>
           <AssociationSet Name="FK_DetallesFactura_Factura" Association="Self.FK_DetallesFactura_Factura">
             <End Role="Facturas" EntitySet="Facturas" />
             <End Role="Detalles_Factura" EntitySet="Detalles_Factura" />
           </AssociationSet>
-          <AssociationSet Name="FK_DetallesFactura_Medicamento" Association="Self.FK_DetallesFactura_Medicamento">
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
+          <AssociationSet Name="FK_DetallesFactura_Producto" Association="Self.FK_DetallesFactura_Producto">
+            <End Role="Productos" EntitySet="Productos" />
             <End Role="Detalles_Factura" EntitySet="Detalles_Factura" />
           </AssociationSet>
           <AssociationSet Name="FK_Movimientos_Factura" Association="Self.FK_Movimientos_Factura">
@@ -949,25 +1021,21 @@
             <End Role="Lotes" EntitySet="Lotes" />
             <End Role="Inventario" EntitySet="Inventario" />
           </AssociationSet>
-          <AssociationSet Name="FK_Medicamentos_Laboratorio" Association="Self.FK_Medicamentos_Laboratorio">
-            <End Role="Laboratorios" EntitySet="Laboratorios" />
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Lotes_Medicamento" Association="Self.FK_Lotes_Medicamento">
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
+          <AssociationSet Name="FK_Lotes_Producto" Association="Self.FK_Lotes_Producto">
+            <End Role="Productos" EntitySet="Productos" />
             <End Role="Lotes" EntitySet="Lotes" />
           </AssociationSet>
           <AssociationSet Name="FK_Movimientos_Lote" Association="Self.FK_Movimientos_Lote">
             <End Role="Lotes" EntitySet="Lotes" />
             <End Role="Movimientos_Inventario" EntitySet="Movimientos_Inventario" />
           </AssociationSet>
-          <AssociationSet Name="FK_Movimientos_Medicamento" Association="Self.FK_Movimientos_Medicamento">
-            <End Role="Medicamentos" EntitySet="Medicamentos" />
-            <End Role="Movimientos_Inventario" EntitySet="Movimientos_Inventario" />
-          </AssociationSet>
           <AssociationSet Name="FK_Medicos_Persona" Association="Self.FK_Medicos_Persona">
             <End Role="Personas" EntitySet="Personas" />
             <End Role="Medicos" EntitySet="Medicos" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Movimientos_Producto" Association="Self.FK_Movimientos_Producto">
+            <End Role="Productos" EntitySet="Productos" />
+            <End Role="Movimientos_Inventario" EntitySet="Movimientos_Inventario" />
           </AssociationSet>
           <AssociationSet Name="FK_Usuarios_Persona" Association="Self.FK_Usuarios_Persona">
             <End Role="Personas" EntitySet="Personas" />
@@ -984,6 +1052,17 @@
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="FarmaUModelStoreContainer" CdmEntityContainer="FarmaUEntities">
+          <EntitySetMapping Name="Carrito">
+            <EntityTypeMapping TypeName="FarmaUModel.Carrito">
+              <MappingFragment StoreEntitySet="Carrito">
+                <ScalarProperty Name="ID_Carrito" ColumnName="ID_Carrito" />
+                <ScalarProperty Name="ID_Usuario" ColumnName="ID_Usuario" />
+                <ScalarProperty Name="ID_Producto" ColumnName="ID_Producto" />
+                <ScalarProperty Name="Cantidad" ColumnName="Cantidad" />
+                <ScalarProperty Name="FechaAgregado" ColumnName="FechaAgregado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Categorias">
             <EntityTypeMapping TypeName="FarmaUModel.Categorias">
               <MappingFragment StoreEntitySet="Categorias">
@@ -1017,7 +1096,7 @@
               <MappingFragment StoreEntitySet="Detalles_Compras_Farmacia">
                 <ScalarProperty Name="id_detalle_compra" ColumnName="id_detalle_compra" />
                 <ScalarProperty Name="ID_Compra" ColumnName="ID_Compra" />
-                <ScalarProperty Name="ID_Medicamento" ColumnName="ID_Medicamento" />
+                <ScalarProperty Name="ID_Producto" ColumnName="ID_Producto" />
                 <ScalarProperty Name="Cantidad" ColumnName="Cantidad" />
                 <ScalarProperty Name="Subtotal" ColumnName="Subtotal" />
               </MappingFragment>
@@ -1028,7 +1107,7 @@
               <MappingFragment StoreEntitySet="Detalles_Factura">
                 <ScalarProperty Name="ID_Detalle_Factura" ColumnName="ID_Detalle_Factura" />
                 <ScalarProperty Name="id_Factura" ColumnName="id_Factura" />
-                <ScalarProperty Name="ID_Medicamento" ColumnName="ID_Medicamento" />
+                <ScalarProperty Name="ID_Producto" ColumnName="ID_Producto" />
                 <ScalarProperty Name="cantidad" ColumnName="cantidad" />
                 <ScalarProperty Name="subtotal" ColumnName="subtotal" />
               </MappingFragment>
@@ -1054,36 +1133,13 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Laboratorios">
-            <EntityTypeMapping TypeName="FarmaUModel.Laboratorios">
-              <MappingFragment StoreEntitySet="Laboratorios">
-                <ScalarProperty Name="ID_Laboratorio" ColumnName="ID_Laboratorio" />
-                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
-                <ScalarProperty Name="pais_origen" ColumnName="pais_origen" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Lotes">
             <EntityTypeMapping TypeName="FarmaUModel.Lotes">
               <MappingFragment StoreEntitySet="Lotes">
                 <ScalarProperty Name="id_Lote" ColumnName="id_Lote" />
-                <ScalarProperty Name="ID_Medicamento" ColumnName="ID_Medicamento" />
+                <ScalarProperty Name="ID_Producto" ColumnName="ID_Producto" />
                 <ScalarProperty Name="cantidad" ColumnName="cantidad" />
                 <ScalarProperty Name="fecha_vencimiento" ColumnName="fecha_vencimiento" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Medicamentos">
-            <EntityTypeMapping TypeName="FarmaUModel.Medicamentos">
-              <MappingFragment StoreEntitySet="Medicamentos">
-                <ScalarProperty Name="ID_Medicamento" ColumnName="ID_Medicamento" />
-                <ScalarProperty Name="ID_Categoría" ColumnName="ID_Categoría" />
-                <ScalarProperty Name="ID_Laboratorio" ColumnName="ID_Laboratorio" />
-                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
-                <ScalarProperty Name="principio_activo" ColumnName="principio_activo" />
-                <ScalarProperty Name="precio_compra" ColumnName="precio_compra" />
-                <ScalarProperty Name="precio_venta" ColumnName="precio_venta" />
-                <ScalarProperty Name="estado" ColumnName="estado" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1101,7 +1157,7 @@
             <EntityTypeMapping TypeName="FarmaUModel.Movimientos_Inventario">
               <MappingFragment StoreEntitySet="Movimientos_Inventario">
                 <ScalarProperty Name="ID_movimiento" ColumnName="ID_movimiento" />
-                <ScalarProperty Name="id_medicamento" ColumnName="id_medicamento" />
+                <ScalarProperty Name="id_Producto" ColumnName="id_Producto" />
                 <ScalarProperty Name="id_Lote" ColumnName="id_Lote" />
                 <ScalarProperty Name="tipo" ColumnName="tipo" />
                 <ScalarProperty Name="cantidad" ColumnName="cantidad" />
@@ -1126,6 +1182,24 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Productos">
+            <EntityTypeMapping TypeName="FarmaUModel.Productos">
+              <MappingFragment StoreEntitySet="Productos">
+                <ScalarProperty Name="ID_Producto" ColumnName="ID_Producto" />
+                <ScalarProperty Name="ID_Categoría" ColumnName="ID_Categoría" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="precio_compra" ColumnName="precio_compra" />
+                <ScalarProperty Name="precio_venta" ColumnName="precio_venta" />
+                <ScalarProperty Name="estado" ColumnName="estado" />
+                <ScalarProperty Name="Indicaciones" ColumnName="Indicaciones" />
+                <ScalarProperty Name="Detalles" ColumnName="Detalles" />
+                <ScalarProperty Name="Ingredientes" ColumnName="Ingredientes" />
+                <ScalarProperty Name="UnidadDeVenta" ColumnName="UnidadDeVenta" />
+                <ScalarProperty Name="ContenidoNeto" ColumnName="ContenidoNeto" />
+                <ScalarProperty Name="Marca" ColumnName="Marca" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Proveedores">
             <EntityTypeMapping TypeName="FarmaUModel.Proveedores">
               <MappingFragment StoreEntitySet="Proveedores">
@@ -1143,6 +1217,17 @@
               <MappingFragment StoreEntitySet="Roles">
                 <ScalarProperty Name="ID_Rol" ColumnName="ID_Rol" />
                 <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="sysdiagrams">
+            <EntityTypeMapping TypeName="FarmaUModel.sysdiagrams">
+              <MappingFragment StoreEntitySet="sysdiagrams">
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="principal_id" ColumnName="principal_id" />
+                <ScalarProperty Name="diagram_id" ColumnName="diagram_id" />
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1177,47 +1262,10 @@
         <DesignerProperty Name="EnablePluralization" Value="false" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
         <DesignerProperty Name="UseLegacyProvider" Value="false" />
-        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
       </DesignerInfoPropertySet>
     </Options>
     <!-- Diagram content (shape and connector positions) -->
-    <Diagrams>
-      <Diagram DiagramId="dbe3ae26f18a4b85badba7158a1b501d" Name="Diagram1">
-        <EntityTypeShape EntityType="FarmaUModel.Categorias" Width="1.5" PointX="0.75" PointY="11.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Clientes" Width="1.5" PointX="3.75" PointY="4.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Compras_Farmacia" Width="1.5" PointX="3" PointY="15" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Detalles_Compras_Farmacia" Width="1.5" PointX="5.25" PointY="11.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Detalles_Factura" Width="1.5" PointX="8.25" PointY="11.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Facturas" Width="1.5" PointX="6" PointY="4" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Inventario" Width="1.5" PointX="7.5" PointY="17.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Laboratorios" Width="1.5" PointX="0.75" PointY="8.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Lotes" Width="1.5" PointX="5.25" PointY="17.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Medicamentos" Width="1.5" PointX="3" PointY="10.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Medicos" Width="1.5" PointX="3.75" PointY="20.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Movimientos_Inventario" Width="1.5" PointX="10.5" PointY="13.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Personas" Width="1.5" PointX="1.5" PointY="3.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Proveedores" Width="1.5" PointX="0.75" PointY="15.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Roles" Width="1.5" PointX="1.5" PointY="19" IsExpanded="true" />
-        <EntityTypeShape EntityType="FarmaUModel.Usuarios" Width="1.5" PointX="3.75" PointY="0.75" IsExpanded="true" />
-        <AssociationConnector Association="FarmaUModel.FK_Medicamentos_Categoría" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Clientes_Persona" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Facturas_Cliente" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Compras_Proveedor" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_DetallesCompras_Compra" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Movimientos_Compra" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_DetallesCompras_Medicamento" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_DetallesFactura_Factura" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_DetallesFactura_Medicamento" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Movimientos_Factura" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Inventario_Lote" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Medicamentos_Laboratorio" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Lotes_Medicamento" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Movimientos_Lote" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Movimientos_Medicamento" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Medicos_Persona" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Usuarios_Persona" ManuallyRouted="false" />
-        <AssociationConnector Association="FarmaUModel.FK_Usuarios_Rol" ManuallyRouted="false" />
-      </Diagram>
-    </Diagrams>
+    <Diagrams></Diagrams>
   </Designer>
 </edmx:Edmx>

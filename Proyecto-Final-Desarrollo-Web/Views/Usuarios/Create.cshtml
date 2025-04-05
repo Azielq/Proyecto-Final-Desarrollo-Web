@@ -1,0 +1,72 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.UsuarioViewModel
+@{
+    ViewBag.Title = "Crear Usuario - FarmaU";
+    ViewBag.CardHeaderClass = "primary";
+    ViewBag.IsAdmin = true;
+    ViewBag.MostrarRol = true;
+    ViewBag.IsEdit = false;
+}
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Usuarios")">Usuarios</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Crear Usuario</li>
+                </ol>
+            </nav>
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Crear Nuevo Usuario</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Error:</strong>
+                            @Html.ValidationSummary(false, "", new { @class = "mb-0 list-unstyled" })
+                        </div>
+                    }
+                    @using (Html.BeginForm("Create", "Usuarios", FormMethod.Post, new
+                    {
+                        @class = "needs-validation",
+                        data_confirm_submit = "true",
+                        data_confirm_title = "Confirmar creación de usuario",
+                        data_confirm_text = "¿Estás seguro de que deseas crear este usuario con la información proporcionada?",
+                        data_confirm_button_text = "Sí, crear usuario"
+                    }))
+                    {
+                        @Html.AntiForgeryToken()
+                        <div class="alert alert-info mb-4">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="bi bi-info-circle-fill fs-3"></i>
+                                </div>
+                                <div>
+                                    <h5>Creación de Usuario (Administración)</h5>
+                                    <p class="mb-0">Está creando un nuevo usuario desde el panel de administración. Puede asignarle cualquier rol disponible en el sistema.</p>
+                                </div>
+                            </div>
+                        </div>
+                        @Html.Partial("_UsuarioFormPartial", Model)
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="@Url.Action("Index", "Usuarios")" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-plus me-1"></i>Crear Usuario
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

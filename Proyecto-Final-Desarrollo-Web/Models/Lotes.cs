@@ -22,13 +22,13 @@ namespace Proyecto_Final_Desarrollo_Web.Models
         }
     
         public int id_Lote { get; set; }
-        public int ID_Medicamento { get; set; }
+        public int ID_Producto { get; set; }
         public int cantidad { get; set; }
         public System.DateTime fecha_vencimiento { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Inventario> Inventario { get; set; }
-        public virtual Medicamentos Medicamentos { get; set; }
+        public virtual Productos Productos { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Movimientos_Inventario> Movimientos_Inventario { get; set; }
     }
