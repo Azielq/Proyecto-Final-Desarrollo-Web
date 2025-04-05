@@ -6,21 +6,19 @@ using System.Web;
 
 namespace Proyecto_Final_Desarrollo_Web.TableViewModels
 {
-    public class MedicamentoTableViewModel
+    public class ProductoTableViewModel
     {
-        public int ID_Medicamento { get; set; }
+        public int ID_Producto { get; set; }
 
         [Display(Name = "Nombre")]
         public string Nombre { get; set; }
 
-        [Display(Name = "Principio Activo")]
-        public string principio_activo { get; set; }
+        // Se eliminó la propiedad 'principio_activo'
 
         [Display(Name = "Categoría")]
         public string NombreCategoria { get; set; }
 
-        [Display(Name = "Laboratorio")]
-        public string NombreLaboratorio { get; set; }
+        // Se eliminó la propiedad 'NombreLaboratorio' (ya no se usa)
 
         [Display(Name = "Precio Compra")]
         [DisplayFormat(DataFormatString = "{0:C2}")]
@@ -47,7 +45,7 @@ namespace Proyecto_Final_Desarrollo_Web.TableViewModels
             }
         }
 
-        // Estas son las propiedades para la tabla
+        // Propiedades adicionales para la tabla
         public bool StockBajo
         {
             get { return StockTotal < 10; }
@@ -56,36 +54,37 @@ namespace Proyecto_Final_Desarrollo_Web.TableViewModels
         public bool TieneLotesProximosAVencer { get; set; }
     }
 
-    public class MedicamentoTableRequest
+    public class ProductoTableRequest
     {
-        // Estos son Parámetros de paginación
+        // Parámetros de paginación
         public int Start { get; set; }
         public int Length { get; set; }
 
-        // Estos son Parámetros de búsqueda
+        // Parámetros de búsqueda
         public string SearchValue { get; set; }
 
-        // Estos son Parámetros de ordenamiento
+        // Parámetros de ordenamiento
         public string SortColumn { get; set; }
         public string SortDirection { get; set; }
 
-        // Estos son Filtros adicionaless
+        // Filtros adicionales
         public int? CategoriaId { get; set; }
-        public int? LaboratorioId { get; set; }
+        // Se elimina LaboratorioId
         public string Estado { get; set; }
         public bool? StockBajo { get; set; }
     }
 
-    public class MedicamentoTableResponse
+    public class ProductoTableResponse
     {
         public int draw { get; set; }
         public int recordsTotal { get; set; }
         public int recordsFiltered { get; set; }
-        public List<MedicamentoTableViewModel> data { get; set; }
+        public List<ProductoTableViewModel> data { get; set; }
 
-        public MedicamentoTableResponse()
+        public ProductoTableResponse()
         {
-            data = new List<MedicamentoTableViewModel>();
+            data = new List<ProductoTableViewModel>();
         }
     }
 }
+    

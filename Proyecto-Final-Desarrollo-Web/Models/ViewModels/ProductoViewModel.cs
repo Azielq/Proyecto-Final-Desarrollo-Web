@@ -7,27 +7,22 @@ using Proyecto_Final_Desarrollo_Web.Models;
 
 namespace Proyecto_Final_Desarrollo_Web.ViewModels
 {
-    public class MedicamentoViewModel
+    public class ProductoViewModel
     {
-        public int ID_Medicamento { get; set; }
+        public int ID_Producto { get; set; }
 
         [Required(ErrorMessage = "El campo Categoría es obligatorio")]
         [Display(Name = "Categoría")]
         public int ID_Categoría { get; set; }
 
-        [Required(ErrorMessage = "El campo Laboratorio es obligatorio")]
-        [Display(Name = "Laboratorio")]
-        public int ID_Laboratorio { get; set; }
+        // Se eliminó la propiedad ID_Laboratorio
 
-        [Required(ErrorMessage = "El nombre del medicamento es obligatorio")]
+        [Required(ErrorMessage = "El nombre del producto es obligatorio")]
         [StringLength(100, ErrorMessage = "El nombre no puede exceder los 100 caracteres")]
         [Display(Name = "Nombre")]
         public string Nombre { get; set; }
 
-        [Required(ErrorMessage = "El principio activo es obligatorio")]
-        [StringLength(100, ErrorMessage = "El principio activo no puede exceder los 100 caracteres")]
-        [Display(Name = "Principio Activo")]
-        public string principio_activo { get; set; }
+        // Se eliminó el campo 'principio_activo'
 
         [Required(ErrorMessage = "El precio de compra es obligatorio")]
         [Range(0.01, 9999999.99, ErrorMessage = "El precio debe ser mayor a 0")]
@@ -42,12 +37,12 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
         [Display(Name = "Estado")]
         public string estado { get; set; }
 
-        // Estas son adicionales para la vista
+        // Propiedades adicionales para la vista
+
         [Display(Name = "Categoría")]
         public string NombreCategoria { get; set; }
 
-        [Display(Name = "Laboratorio")]
-        public string NombreLaboratorio { get; set; }
+        // Se eliminó 'NombreLaboratorio' ya que la entidad Laboratorios fue removida
 
         [Display(Name = "Stock Disponible")]
         public int StockDisponible { get; set; }
@@ -62,35 +57,29 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
             }
         }
 
-        // El metódillo para convertir la entidad a ViewModel
-        public static MedicamentoViewModel FromEntity(Medicamentos medicamento)
+        // Método para convertir la entidad a ViewModel
+        public static ProductoViewModel FromEntity(Proyecto_Final_Desarrollo_Web.Models.Productos producto)
         {
-            return new MedicamentoViewModel
+            return new ProductoViewModel
             {
-                ID_Medicamento = medicamento.ID_Medicamento,
-                ID_Categoría = medicamento.ID_Categoría,
-                ID_Laboratorio = medicamento.ID_Laboratorio,
-                Nombre = medicamento.Nombre,
-                principio_activo = medicamento.principio_activo,
-                precio_compra = medicamento.precio_compra,
-                precio_venta = medicamento.precio_venta,
-                estado = medicamento.estado,
-                NombreCategoria = medicamento.Categorias?.Nombre,
-                NombreLaboratorio = medicamento.Laboratorios?.Nombre,
-                StockDisponible = medicamento.Lotes != null ? medicamento.Lotes.Sum(l => l.cantidad) : 0
+                ID_Producto = producto.ID_Producto,
+                ID_Categoría = producto.ID_Categoría,
+                Nombre = producto.Nombre,
+                precio_compra = producto.precio_compra,
+                precio_venta = producto.precio_venta,
+                estado = producto.estado,
+                NombreCategoria = producto.Categorias?.Nombre,
+                StockDisponible = producto.Lotes != null ? producto.Lotes.Sum(l => l.cantidad) : 0
             };
         }
 
-        // Al revés en ViewModel a entidad
-        public Medicamentos ToEntity()
+        public Proyecto_Final_Desarrollo_Web.Models.Productos ToEntity()
         {
-            return new Medicamentos
+            return new Proyecto_Final_Desarrollo_Web.Models.Productos
             {
-                ID_Medicamento = this.ID_Medicamento,
+                ID_Producto = this.ID_Producto,
                 ID_Categoría = this.ID_Categoría,
-                ID_Laboratorio = this.ID_Laboratorio,
                 Nombre = this.Nombre,
-                principio_activo = this.principio_activo,
                 precio_compra = this.precio_compra,
                 precio_venta = this.precio_venta,
                 estado = this.estado ?? "Activo"

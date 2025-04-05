@@ -24,7 +24,7 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
         [Display(Name = "Estado")]
         public string estado { get; set; }
 
-        // Información adicional de los cliente
+        // Información adicional del cliente
         [Display(Name = "Nombre del Cliente")]
         public string NombreCliente { get; set; }
 
@@ -34,7 +34,7 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
         [Display(Name = "Teléfono")]
         public string TelefonoCliente { get; set; }
 
-        // Esto es para la lista de detalles de la factura
+        // Lista de detalles de la factura
         public List<DetalleVentaViewModel> Detalles { get; set; }
 
         public VentaViewModel()
@@ -44,7 +44,7 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
             estado = "Pendiente";
         }
 
-        // El metodillo convertir la entidad a ViewModel
+        // Método para convertir la entidad a ViewModel
         public static VentaViewModel FromEntity(Facturas factura)
         {
             var viewModel = new VentaViewModel
@@ -74,7 +74,7 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
             return viewModel;
         }
 
-        // Métodillo para convertir el ViewModel a entidad
+        // Método para convertir el ViewModel a entidad
         public Facturas ToEntity()
         {
             var factura = new Facturas
@@ -89,7 +89,7 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
             return factura;
         }
 
-        // Este método para calcular el total a partir de los detalles
+        // Método para calcular el total a partir de los detalles
         public void CalcularTotal()
         {
             this.total = Detalles?.Sum(d => d.subtotal) ?? 0;
@@ -101,9 +101,9 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
         public int ID_Detalle_Factura { get; set; }
         public int id_Factura { get; set; }
 
-        [Required(ErrorMessage = "Debe seleccionar un medicamento")]
-        [Display(Name = "Medicamento")]
-        public int ID_Medicamento { get; set; }
+        [Required(ErrorMessage = "Debe seleccionar un producto")]
+        [Display(Name = "Producto")]
+        public int ID_Producto { get; set; }
 
         [Required(ErrorMessage = "La cantidad es obligatoria")]
         [Range(1, 10000, ErrorMessage = "La cantidad debe ser mayor a 0")]
@@ -114,39 +114,46 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
         public decimal subtotal { get; set; }
 
         // Propiedades adicionales para la vista
-        [Display(Name = "Nombre del Medicamento")]
-        public string NombreMedicamento { get; set; }
+        [Display(Name = "Nombre del Producto")]
+        public string NombreProducto { get; set; }
 
         [Display(Name = "Categoría")]
         public string Categoria { get; set; }
 
         [Display(Name = "Precio Unitario")]
-        public decimal PrecioUnitario { get; set; }
+        public decimal PrecioUnitario
+        {
+            get { return cantidad > 0 ? Math.Round(subtotal / cantidad, 2) : 0; }
+            set { /* Setter requerido para la propiedad */ }
+        }
 
-        // Métodillo para convertir la entidad a ViewModel
+        // Método para convertir la entidad a ViewModel
         public static DetalleVentaViewModel FromEntity(Detalles_Factura detalle)
         {
             return new DetalleVentaViewModel
             {
                 ID_Detalle_Factura = detalle.ID_Detalle_Factura,
                 id_Factura = detalle.id_Factura,
-                ID_Medicamento = detalle.ID_Medicamento,
+                // Se asume que en la entidad de Detalles_Factura se actualizó a ID_Producto
+                ID_Producto = detalle.ID_Producto,
                 cantidad = detalle.cantidad,
                 subtotal = detalle.subtotal,
-                NombreMedicamento = detalle.Medicamentos?.Nombre,
-                Categoria = detalle.Medicamentos?.Categorias?.Nombre,
+                // Se asume que la relación se renombró de Medicamentos a Productos
+                NombreProducto = detalle.Productos?.Nombre,
+                Categoria = detalle.Productos?.Categorias?.Nombre,
                 PrecioUnitario = detalle.cantidad > 0 ? Math.Round(detalle.subtotal / detalle.cantidad, 2) : 0
             };
         }
 
-        // Al revés, convierte el ViewModel a entidad
+        // Método para convertir el ViewModel a entidad
         public Detalles_Factura ToEntity()
         {
             return new Detalles_Factura
             {
                 ID_Detalle_Factura = this.ID_Detalle_Factura,
                 id_Factura = this.id_Factura,
-                ID_Medicamento = this.ID_Medicamento,
+                // Se mapea la propiedad nueva
+                ID_Producto = this.ID_Producto,
                 cantidad = this.cantidad,
                 subtotal = this.subtotal
             };

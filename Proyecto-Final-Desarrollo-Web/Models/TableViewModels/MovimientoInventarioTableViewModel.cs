@@ -14,8 +14,8 @@ namespace Proyecto_Final_Desarrollo_Web.TableViewModels
         [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy HH:mm}")]
         public DateTime? fecha { get; set; }
 
-        [Display(Name = "Medicamento")]
-        public string NombreMedicamento { get; set; }
+        [Display(Name = "Producto")]
+        public string NombreProducto { get; set; }
 
         [Display(Name = "Lote")]
         public int id_Lote { get; set; }
@@ -76,14 +76,14 @@ namespace Proyecto_Final_Desarrollo_Web.TableViewModels
         // Para la búsqueda
         public string SearchValue { get; set; }
 
-        // Para lo del ordenamiento
+        // Para el ordenamiento
         public string SortColumn { get; set; }
         public string SortDirection { get; set; }
 
-        // Estos son filtros adicionales
+        // Filtros adicionales
         public DateTime? FechaInicio { get; set; }
         public DateTime? FechaFin { get; set; }
-        public int? MedicamentoId { get; set; }
+        public int? ProductoId { get; set; }  // Renombrado de MedicamentoId a ProductoId
         public int? LoteId { get; set; }
         public string Tipo { get; set; }
     }

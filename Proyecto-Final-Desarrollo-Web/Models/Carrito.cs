@@ -12,20 +12,15 @@ namespace Proyecto_Final_Desarrollo_Web.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Movimientos_Inventario
+    public partial class Carrito
     {
-        public int ID_movimiento { get; set; }
-        public int id_Producto { get; set; }
-        public int id_Lote { get; set; }
-        public string tipo { get; set; }
-        public int cantidad { get; set; }
-        public Nullable<System.DateTime> fecha { get; set; }
-        public Nullable<int> id_Compra { get; set; }
-        public Nullable<int> ID_Factura { get; set; }
+        public int ID_Carrito { get; set; }
+        public int ID_Usuario { get; set; }
+        public int ID_Producto { get; set; }
+        public int Cantidad { get; set; }
+        public Nullable<System.DateTime> FechaAgregado { get; set; }
     
-        public virtual Compras_Farmacia Compras_Farmacia { get; set; }
-        public virtual Facturas Facturas { get; set; }
-        public virtual Lotes Lotes { get; set; }
         public virtual Productos Productos { get; set; }
+        public virtual Usuarios Usuarios { get; set; }
     }
 }

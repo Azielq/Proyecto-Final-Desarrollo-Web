@@ -16,8 +16,8 @@ namespace Proyecto_Final_Desarrollo_Web.TableViewModels
         [Display(Name = "Descripción")]
         public string Descripcion { get; set; }
 
-        [Display(Name = "Total Medicamentos")]
-        public int TotalMedicamentos { get; set; }
+        [Display(Name = "Total Productos")]
+        public int TotalProductos { get; set; }
     }
 
     public class CategoriaTableRequest

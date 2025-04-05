@@ -12,12 +12,12 @@ namespace Proyecto_Final_Desarrollo_Web.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Inventario
+    public partial class sysdiagrams
     {
-        public int id_Inventario { get; set; }
-        public int ID_Lote { get; set; }
-        public string ubicacion { get; set; }
-    
-        public virtual Lotes Lotes { get; set; }
+        public string name { get; set; }
+        public int principal_id { get; set; }
+        public int diagram_id { get; set; }
+        public Nullable<int> version { get; set; }
+        public byte[] definition { get; set; }
     }
 }

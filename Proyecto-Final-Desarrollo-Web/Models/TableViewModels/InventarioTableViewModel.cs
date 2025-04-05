@@ -11,14 +11,13 @@ namespace Proyecto_Final_Desarrollo_Web.TableViewModels
         public int id_Inventario { get; set; }
         public int ID_Lote { get; set; }
 
-        [Display(Name = "Medicamento")]
-        public string NombreMedicamento { get; set; }
+        [Display(Name = "Producto")]
+        public string NombreProducto { get; set; }
 
         [Display(Name = "Categoría")]
         public string Categoria { get; set; }
 
-        [Display(Name = "Laboratorio")]
-        public string Laboratorio { get; set; }
+        // Se ha eliminado la propiedad Laboratorio
 
         [Display(Name = "Lote")]
         public string NumeroLote { get; set; }
@@ -50,9 +49,9 @@ namespace Proyecto_Final_Desarrollo_Web.TableViewModels
         public string SortColumn { get; set; }
         public string SortDirection { get; set; }
 
-        // Estos son unos filtros adicionales  
+        // Filtros adicionales  
         public string Ubicacion { get; set; }
-        public int? MedicamentoId { get; set; }
+        public int? ProductoId { get; set; } // Renombrado de MedicamentoId
         public int? CategoriaId { get; set; }
         public bool? SoloVencidos { get; set; }
         public bool? SoloPorVencer { get; set; }

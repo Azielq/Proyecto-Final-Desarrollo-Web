@@ -18,31 +18,31 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         private FarmaUEntities db = new FarmaUEntities();
 
         // GET: Lotes
-        public ActionResult Index(int page = 1, int pageSize = 10, string searchTerm = "", int? medicamentoId = null, int? categoriaId = null, bool? soloVencidos = null, bool? soloPorVencer = null, bool? soloConStock = null)
+        public ActionResult Index(int page = 1, int pageSize = 10, string searchTerm = "", int? productoId = null, int? categoriaId = null, bool? soloVencidos = null, bool? soloPorVencer = null, bool? soloConStock = null)
         {
             try
             {
                 // Carga listas para filtros
-                ViewBag.Medicamentos = new SelectList(db.Medicamentos.Where(m => m.estado == "Activo").OrderBy(m => m.Nombre), "ID_Medicamento", "Nombre");
+                ViewBag.Productos = new SelectList(db.Productos.Where(p => p.estado == "Activo").OrderBy(p => p.Nombre), "ID_Producto", "Nombre");
                 ViewBag.Categorias = new SelectList(db.Categorias.OrderBy(c => c.Nombre), "ID_Categoría", "Nombre");
 
                 // Consulta base
                 var query = db.Lotes
-                    .Include(l => l.Medicamentos)
-                    .Include(l => l.Medicamentos.Categorias)
-                    .Include(l => l.Medicamentos.Laboratorios)
+                    .Include(l => l.Productos)
+                    .Include(l => l.Productos.Categorias)
+                    //.Include(l => l.Productos.Laboratorios) // Eliminada Laboratorios
                     .Include(l => l.Inventario)
                     .AsQueryable();
 
                 // Aplica filtros
-                if (medicamentoId.HasValue)
+                if (productoId.HasValue)
                 {
-                    query = query.Where(l => l.ID_Medicamento == medicamentoId.Value);
+                    query = query.Where(l => l.ID_Producto == productoId.Value);
                 }
 
                 if (categoriaId.HasValue)
                 {
-                    query = query.Where(l => l.Medicamentos.ID_Categoría == categoriaId.Value);
+                    query = query.Where(l => l.Productos.ID_Categoría == categoriaId.Value);
                 }
 
                 if (soloVencidos.HasValue && soloVencidos.Value)
@@ -65,9 +65,8 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     var searchValue = searchTerm.ToLower();
-                    query = query.Where(l => l.Medicamentos.Nombre.ToLower().Contains(searchValue) ||
-                                             l.Medicamentos.Categorias.Nombre.ToLower().Contains(searchValue) ||
-                                             l.Medicamentos.Laboratorios.Nombre.ToLower().Contains(searchValue) ||
+                    query = query.Where(l => l.Productos.Nombre.ToLower().Contains(searchValue) ||
+                                             l.Productos.Categorias.Nombre.ToLower().Contains(searchValue) ||
                                              l.Inventario.Any(i => i.ubicacion.ToLower().Contains(searchValue)));
                 }
 
@@ -86,7 +85,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
                 // Guarda los parámetros de búsqueda
                 ViewBag.SearchTerm = searchTerm;
-                ViewBag.MedicamentoId = medicamentoId;
+                ViewBag.ProductoId = productoId;
                 ViewBag.CategoriaId = categoriaId;
                 ViewBag.SoloVencidos = soloVencidos;
                 ViewBag.SoloPorVencer = soloPorVencer;
@@ -103,9 +102,9 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 var lotesViewModel = lotes.Select(l => new LoteTableViewModel
                 {
                     id_Lote = l.id_Lote,
-                    NombreMedicamento = l.Medicamentos.Nombre,
-                    Categoria = l.Medicamentos.Categorias.Nombre,
-                    Laboratorio = l.Medicamentos.Laboratorios.Nombre,
+                    NombreProducto = l.Productos.Nombre,
+                    Categoria = l.Productos.Categorias.Nombre,
+                    // Se elimina Laboratorio ya que la entidad fue removida
                     cantidad = l.cantidad,
                     fecha_vencimiento = l.fecha_vencimiento,
                     Ubicacion = l.Inventario.FirstOrDefault()?.ubicacion,
@@ -131,9 +130,9 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             }
 
             Lotes lote = db.Lotes
-                .Include(l => l.Medicamentos)
-                .Include(l => l.Medicamentos.Categorias)
-                .Include(l => l.Medicamentos.Laboratorios)
+                .Include(l => l.Productos)
+                .Include(l => l.Productos.Categorias)
+                //.Include(l => l.Productos.Laboratorios) // Eliminada Laboratorios
                 .Include(l => l.Inventario)
                 .Include(l => l.Movimientos_Inventario)
                 .FirstOrDefault(l => l.id_Lote == id);
@@ -157,28 +156,28 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         }
 
         // GET: Lotes/Create
-        public ActionResult Create(int? medicamentoId = null)
+        public ActionResult Create(int? productoId = null)
         {
             var viewModel = new LoteViewModel
             {
                 fecha_vencimiento = DateTime.Now.AddYears(1) // Por defecto 1 año
             };
 
-            if (medicamentoId.HasValue)
+            if (productoId.HasValue)
             {
-                viewModel.ID_Medicamento = medicamentoId.Value;
-                ViewBag.ID_Medicamento = new SelectList(db.Medicamentos
-                    .Where(m => m.ID_Medicamento == medicamentoId && m.estado == "Activo"),
-                    "ID_Medicamento", "Nombre", medicamentoId);
-                ViewBag.ReturnToMedicamento = true;
+                viewModel.ID_Producto = productoId.Value;
+                ViewBag.ID_Producto = new SelectList(db.Productos
+                    .Where(p => p.ID_Producto == productoId && p.estado == "Activo"),
+                    "ID_Producto", "Nombre", productoId);
+                ViewBag.ReturnToProducto = true;
             }
             else
             {
-                ViewBag.ID_Medicamento = new SelectList(db.Medicamentos
-                    .Where(m => m.estado == "Activo")
-                    .OrderBy(m => m.Nombre),
-                    "ID_Medicamento", "Nombre");
-                ViewBag.ReturnToMedicamento = false;
+                ViewBag.ID_Producto = new SelectList(db.Productos
+                    .Where(p => p.estado == "Activo")
+                    .OrderBy(p => p.Nombre),
+                    "ID_Producto", "Nombre");
+                ViewBag.ReturnToProducto = false;
             }
 
             return View(viewModel);
@@ -187,7 +186,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         // POST: Lotes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(LoteViewModel viewModel, bool returnToMedicamento = false, string ubicacion = null)
+        public ActionResult Create(LoteViewModel viewModel, bool returnToProducto = false, string ubicacion = null)
         {
             if (ModelState.IsValid)
             {
@@ -211,7 +210,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 // Registra movimiento de inventario
                 Movimientos_Inventario movimiento = new Movimientos_Inventario
                 {
-                    id_medicamento = lote.ID_Medicamento,
+                    id_Producto = lote.ID_Producto,
                     id_Lote = lote.id_Lote,
                     tipo = "Entrada",
                     cantidad = lote.cantidad,
@@ -224,27 +223,27 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 TempData["Message"] = "Lote creado correctamente";
                 TempData["MessageType"] = "success";
 
-                if (returnToMedicamento)
+                if (returnToProducto)
                 {
-                    return RedirectToAction("Inventario", "Medicamentos", new { id = lote.ID_Medicamento });
+                    return RedirectToAction("Inventario", "Productos", new { id = lote.ID_Producto });
                 }
 
                 return RedirectToAction("Index");
             }
 
-            if (returnToMedicamento)
+            if (returnToProducto)
             {
-                ViewBag.ID_Medicamento = new SelectList(db.Medicamentos
-                    .Where(m => m.ID_Medicamento == viewModel.ID_Medicamento && m.estado == "Activo"),
-                    "ID_Medicamento", "Nombre", viewModel.ID_Medicamento);
-                ViewBag.ReturnToMedicamento = true;
+                ViewBag.ID_Producto = new SelectList(db.Productos
+                    .Where(p => p.ID_Producto == viewModel.ID_Producto && p.estado == "Activo"),
+                    "ID_Producto", "Nombre", viewModel.ID_Producto);
+                ViewBag.ReturnToProducto = true;
             }
             else
             {
-                ViewBag.ID_Medicamento = new SelectList(db.Medicamentos
-                    .Where(m => m.estado == "Activo"),
-                    "ID_Medicamento", "Nombre", viewModel.ID_Medicamento);
-                ViewBag.ReturnToMedicamento = false;
+                ViewBag.ID_Producto = new SelectList(db.Productos
+                    .Where(p => p.estado == "Activo"),
+                    "ID_Producto", "Nombre", viewModel.ID_Producto);
+                ViewBag.ReturnToProducto = false;
             }
 
             return View(viewModel);
@@ -269,9 +268,9 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
             var viewModel = LoteViewModel.FromEntity(lote);
 
-            ViewBag.ID_Medicamento = new SelectList(db.Medicamentos
-                .Where(m => m.estado == "Activo"),
-                "ID_Medicamento", "Nombre", lote.ID_Medicamento);
+            ViewBag.ID_Producto = new SelectList(db.Productos
+                .Where(p => p.estado == "Activo"),
+                "ID_Producto", "Nombre", lote.ID_Producto);
 
             ViewBag.Ubicacion = lote.Inventario.FirstOrDefault()?.ubicacion;
 
@@ -321,7 +320,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 {
                     Movimientos_Inventario movimiento = new Movimientos_Inventario
                     {
-                        id_medicamento = lote.ID_Medicamento,
+                        id_Producto = lote.ID_Producto,
                         id_Lote = lote.id_Lote,
                         tipo = diferenciaStock > 0 ? "Ajuste Entrada" : "Ajuste Salida",
                         cantidad = Math.Abs(diferenciaStock),
@@ -339,9 +338,9 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            ViewBag.ID_Medicamento = new SelectList(db.Medicamentos
-                .Where(m => m.estado == "Activo"),
-                "ID_Medicamento", "Nombre", viewModel.ID_Medicamento);
+            ViewBag.ID_Producto = new SelectList(db.Productos
+                .Where(p => p.estado == "Activo"),
+                "ID_Producto", "Nombre", viewModel.ID_Producto);
 
             ViewBag.Ubicacion = ubicacion;
 
@@ -357,19 +356,19 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         // GET: Lotes/PocoStock
         public ActionResult PocoStock()
         {
-            // Medicamentos con poco stock (menos de 10 unidades en total sumando todos sus lotes)
-            var medicamentosPoco = db.Medicamentos
-                .Where(m => m.estado == "Activo")
-                .Select(m => new {
-                    Medicamento = m,
-                    StockTotal = m.Lotes.Sum(l => l.cantidad)
+            // Productos con poco stock (menos de 10 unidades en total sumando todos sus lotes)
+            var productosPoco = db.Productos
+                .Where(p => p.estado == "Activo")
+                .Select(p => new {
+                    Producto = p,
+                    StockTotal = p.Lotes.Sum(l => l.cantidad)
                 })
                 .Where(x => x.StockTotal < 10)
                 .OrderBy(x => x.StockTotal)
                 .ToList();
 
-            var viewModels = medicamentosPoco
-                .Select(x => MedicamentoViewModel.FromEntity(x.Medicamento))
+            var viewModels = productosPoco
+                .Select(x => ProductoViewModel.FromEntity(x.Producto))
                 .ToList();
 
             return View(viewModels);
@@ -384,9 +383,9 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             }
 
             Lotes lote = db.Lotes
-                .Include(l => l.Medicamentos)
-                .Include(l => l.Medicamentos.Categorias)
-                .Include(l => l.Medicamentos.Laboratorios)
+                .Include(l => l.Productos)
+                .Include(l => l.Productos.Categorias)
+                //.Include(l => l.Productos.Laboratorios) // Eliminada Laboratorios
                 .Include(l => l.Inventario)
                 .Include(l => l.Movimientos_Inventario)
                 .FirstOrDefault(l => l.id_Lote == id);

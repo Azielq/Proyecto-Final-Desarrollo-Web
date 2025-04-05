@@ -21,12 +21,12 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         {
             try
             {
-                // Consulta base
+                // Consulta base: se incluye la relación con Productos
                 var query = db.Categorias
-                    .Include(c => c.Medicamentos)
+                    .Include(c => c.Productos)
                     .AsQueryable();
 
-                // Esto busca por término
+                // Búsqueda por término
                 if (!string.IsNullOrWhiteSpace(searchTerm))
                 {
                     var searchValue = searchTerm.ToLower();
@@ -68,12 +68,12 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 draw = request.Start
             };
 
-            // Consulta base
+            // Consulta base: se incluye la relación con Productos
             var query = db.Categorias
-                .Include(c => c.Medicamentos)
+                .Include(c => c.Productos)
                 .AsQueryable();
 
-            // Esto busca por término
+            // Búsqueda por término
             if (!string.IsNullOrWhiteSpace(request.SearchValue))
             {
                 var searchValue = request.SearchValue.ToLower();
@@ -87,7 +87,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             // Total después de filtrar
             response.recordsFiltered = query.Count();
 
-            // Ordena
+            // Ordenamiento según columna
             if (!string.IsNullOrEmpty(request.SortColumn))
             {
                 if (request.SortDirection.ToLower() == "asc")
@@ -100,8 +100,8 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                         case "Descripcion":
                             query = query.OrderBy(c => c.Descripcion);
                             break;
-                        case "TotalMedicamentos":
-                            query = query.OrderBy(c => c.Medicamentos.Count);
+                        case "TotalProductos":
+                            query = query.OrderBy(c => c.Productos.Count);
                             break;
                         default:
                             query = query.OrderBy(c => c.Nombre);
@@ -118,8 +118,8 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                         case "Descripcion":
                             query = query.OrderByDescending(c => c.Descripcion);
                             break;
-                        case "TotalMedicamentos":
-                            query = query.OrderByDescending(c => c.Medicamentos.Count);
+                        case "TotalProductos":
+                            query = query.OrderByDescending(c => c.Productos.Count);
                             break;
                         default:
                             query = query.OrderByDescending(c => c.Nombre);
@@ -135,13 +135,13 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             // Paginación
             query = query.Skip(request.Start).Take(request.Length);
 
-            // Esto Convierte y asigna a la respuesta
+            // Conversión a ViewModel
             response.data = query.ToList().Select(c => new CategoriaTableViewModel
             {
                 ID_Categoría = c.ID_Categoría,
                 Nombre = c.Nombre,
                 Descripcion = c.Descripcion,
-                TotalMedicamentos = c.Medicamentos.Count(m => m.estado == "Activo")
+                TotalProductos = c.Productos.Count(m => m.estado == "Activo")
             }).ToList();
 
             return Json(response, JsonRequestBehavior.AllowGet);
@@ -155,8 +155,9 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
+            // Se incluye la relación con Productos
             Categorias categoria = db.Categorias
-                .Include(c => c.Medicamentos)
+                .Include(c => c.Productos)
                 .FirstOrDefault(c => c.ID_Categoría == id);
 
             if (categoria == null)
@@ -164,14 +165,13 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return HttpNotFound();
             }
 
-            // Esto obtiene medicamentos activos de esta categoría
-            var medicamentos = db.Medicamentos
-                .Include(m => m.Laboratorios)
-                .Where(m => m.ID_Categoría == id && m.estado == "Activo")
+            // Se obtienen los productos activos de esta categoría
+            var productos = db.Productos
+                .Where(p => p.ID_Categoría == id && p.estado == "Activo")
                 .ToList();
 
-            ViewBag.Medicamentos = medicamentos;
-            ViewBag.TotalMedicamentos = medicamentos.Count;
+            ViewBag.Productos = productos;
+            ViewBag.TotalProductos = productos.Count;
 
             return View(categoria);
         }
@@ -246,7 +246,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             }
 
             Categorias categoria = db.Categorias
-                .Include(c => c.Medicamentos)
+                .Include(c => c.Productos)
                 .FirstOrDefault(c => c.ID_Categoría == id);
 
             if (categoria == null)
@@ -254,15 +254,15 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return HttpNotFound();
             }
 
-            // Esto verifica si tiene medicamentos asociados
-            if (categoria.Medicamentos.Any())
+            // Verifica si tiene productos asociados
+            if (categoria.Productos.Any())
             {
-                ViewBag.TieneMedicamentos = true;
-                ViewBag.TotalMedicamentos = categoria.Medicamentos.Count;
+                ViewBag.TieneProductos = true;
+                ViewBag.TotalProductos = categoria.Productos.Count;
             }
             else
             {
-                ViewBag.TieneMedicamentos = false;
+                ViewBag.TieneProductos = false;
             }
 
             return View(categoria);
@@ -274,13 +274,13 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Categorias categoria = db.Categorias
-                .Include(c => c.Medicamentos)
+                .Include(c => c.Productos)
                 .FirstOrDefault(c => c.ID_Categoría == id);
 
-            // Esto verifica si tiene medicamentos asociados
-            if (categoria.Medicamentos.Any())
+            // Verifica si tiene productos asociados
+            if (categoria.Productos.Any())
             {
-                TempData["Message"] = "No se puede eliminar la categoría porque tiene medicamentos asociados";
+                TempData["Message"] = "No se puede eliminar la categoría porque tiene productos asociados";
                 TempData["MessageType"] = "error";
                 return RedirectToAction("Delete", new { id = id });
             }
@@ -294,20 +294,20 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             return RedirectToAction("Index");
         }
 
-        // GET: Categorías/MedicamentosPorCategoria
-        public ActionResult MedicamentosPorCategoria()
+        // GET: Categorías/ProductosPorCategoria
+        public ActionResult ProductosPorCategoria()
         {
             var categorias = db.Categorias
-                .Include(c => c.Medicamentos)
+                .Include(c => c.Productos)
                 .ToList()
                 .Select(c => new
                 {
                     Categoria = c.Nombre,
-                    TotalMedicamentos = c.Medicamentos.Count(m => m.estado == "Activo"),
-                    MedicamentosActivos = c.Medicamentos.Where(m => m.estado == "Activo").Count(),
-                    MedicamentosInactivos = c.Medicamentos.Where(m => m.estado != "Activo").Count()
+                    TotalProductos = c.Productos.Count(m => m.estado == "Activo"),
+                    ProductosActivos = c.Productos.Where(m => m.estado == "Activo").Count(),
+                    ProductosInactivos = c.Productos.Where(m => m.estado != "Activo").Count()
                 })
-                .OrderByDescending(c => c.TotalMedicamentos)
+                .OrderByDescending(c => c.TotalProductos)
                 .ToList();
 
             return Json(categorias, JsonRequestBehavior.AllowGet);

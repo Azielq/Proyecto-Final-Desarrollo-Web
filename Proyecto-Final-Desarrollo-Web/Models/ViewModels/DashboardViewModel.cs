@@ -7,41 +7,40 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
 {
     public class DashboardViewModel
     {
-        // Estos son las estadísticas generales
-        public int TotalMedicamentos { get; set; }
+        // Estadísticas generales
+        public int TotalProductos { get; set; }
         public int TotalClientes { get; set; }
         public int TotalProveedores { get; set; }
         public int TotalVentasMes { get; set; }
         public decimal MontoTotalVentasMes { get; set; }
-        public int MedicamentosPorVencer { get; set; }
-        public int MedicamentosBajoStock { get; set; }
+        public int ProductosPorVencer { get; set; }
+        public int ProductosBajoStock { get; set; }
 
-        // Estos son los datos para gráficos
+        // Datos para gráficos
         public List<VentasDiariasViewModel> VentasUltimos7Dias { get; set; }
-        public List<TopMedicamentoViewModel> TopMedicamentos { get; set; }
+        public List<TopProductoViewModel> TopProductos { get; set; }
 
         public DashboardViewModel()
         {
             VentasUltimos7Dias = new List<VentasDiariasViewModel>();
-            TopMedicamentos = new List<TopMedicamentoViewModel>();
+            TopProductos = new List<TopProductoViewModel>();
         }
 
-        // Este de acá es el método para cargar datos desde la base de datos
+        // Método para cargar datos desde la base de datos
         public static DashboardViewModel CargarDatos(FarmaUEntities db)
         {
             var viewModel = new DashboardViewModel();
 
-            // Con esto se obtiene fecha actual y cálculos de fechas
             DateTime fechaActual = DateTime.Now;
             DateTime inicioMes = new DateTime(fechaActual.Year, fechaActual.Month, 1);
             DateTime finMes = inicioMes.AddMonths(1).AddDays(-1);
 
-            // Estas son estadísticas generales
-            viewModel.TotalMedicamentos = db.Medicamentos.Count(m => m.estado == "Activo");
+            // Estadísticas generales
+            viewModel.TotalProductos = db.Productos.Count(p => p.estado == "Activo");
             viewModel.TotalClientes = db.Clientes.Count();
             viewModel.TotalProveedores = db.Proveedores.Count(p => p.activo);
 
-            // Para las ventas del mes actual
+            // Ventas del mes actual
             var ventasMes = db.Facturas
                 .Where(f => f.fecha >= inicioMes && f.fecha <= finMes && f.estado == "Completada")
                 .ToList();
@@ -49,23 +48,23 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
             viewModel.TotalVentasMes = ventasMes.Count;
             viewModel.MontoTotalVentasMes = ventasMes.Sum(v => v.total);
 
-            // Para los medicamentos por vencer (próximos 30 días)
+            // Productos por vencer (próximos 30 días)
             DateTime fechaLimiteVencimiento = fechaActual.AddDays(30);
-            viewModel.MedicamentosPorVencer = db.Lotes
+            viewModel.ProductosPorVencer = db.Lotes
                 .Count(l => l.fecha_vencimiento > fechaActual &&
                             l.fecha_vencimiento <= fechaLimiteVencimiento &&
                             l.cantidad > 0);
 
-            // Para los medicamentos con bajo stock
-            viewModel.MedicamentosBajoStock = db.Medicamentos
-                .Where(m => m.estado == "Activo")
-                .Select(m => new {
-                    Medicamento = m,
-                    StockTotal = m.Lotes.Sum(l => l.cantidad)
+            // Productos con bajo stock
+            viewModel.ProductosBajoStock = db.Productos
+                .Where(p => p.estado == "Activo")
+                .Select(p => new {
+                    Producto = p,
+                    StockTotal = p.Lotes.Sum(l => l.cantidad)
                 })
                 .Count(x => x.StockTotal < 10);
 
-            // Este de acá es para el gráfico de ventas de los últimos 7 días
+            // Ventas de los últimos 7 días
             var fechaInicio7dias = fechaActual.AddDays(-6);
             var ventasUltimos7Dias = db.Facturas
                 .Where(f => f.fecha >= fechaInicio7dias && f.estado == "Completada")
@@ -78,7 +77,7 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
                 .OrderBy(x => x.Fecha)
                 .ToList();
 
-            // Con esto de acá se crea el array para todos los días incluso sin ventas
+            // Asegura que se cree la lista para los 7 días, incluso sin ventas
             for (int i = 0; i < 7; i++)
             {
                 var fecha = fechaInicio7dias.AddDays(i);
@@ -93,23 +92,23 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
                 });
             }
 
-            // Sirve para el top 5 medicamentos más vendidos del mes.
-            var topMedicamentos = db.Detalles_Factura
+            // Top 5 productos más vendidos del mes
+            var topProductos = db.Detalles_Factura
                 .Where(d => d.Facturas.fecha >= inicioMes &&
                             d.Facturas.fecha <= finMes &&
                             d.Facturas.estado == "Completada")
-                .GroupBy(d => new { d.Medicamentos.ID_Medicamento, d.Medicamentos.Nombre })
-                .Select(g => new TopMedicamentoViewModel
+                .GroupBy(d => new { d.Productos.ID_Producto, d.Productos.Nombre })
+                .Select(g => new TopProductoViewModel
                 {
-                    ID_Medicamento = g.Key.ID_Medicamento,
-                    Medicamento = g.Key.Nombre,
+                    ID_Producto = g.Key.ID_Producto,
+                    Producto = g.Key.Nombre,
                     Cantidad = g.Sum(d => d.cantidad)
                 })
                 .OrderByDescending(x => x.Cantidad)
                 .Take(5)
                 .ToList();
 
-            viewModel.TopMedicamentos = topMedicamentos;
+            viewModel.TopProductos = topProductos;
 
             return viewModel;
         }
@@ -123,10 +122,10 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
         public int Cantidad { get; set; }
     }
 
-    public class TopMedicamentoViewModel
+    public class TopProductoViewModel
     {
-        public int ID_Medicamento { get; set; }
-        public string Medicamento { get; set; }
+        public int ID_Producto { get; set; }
+        public string Producto { get; set; }
         public int Cantidad { get; set; }
     }
 }

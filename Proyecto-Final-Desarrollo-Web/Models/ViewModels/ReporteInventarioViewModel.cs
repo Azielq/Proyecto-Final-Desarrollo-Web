@@ -9,10 +9,10 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
         public List<ReporteInventarioDetalleViewModel> DetallesInventario { get; set; }
         public DateTime FechaReporte { get; set; }
         public decimal ValorTotalInventario { get; set; }
-        public int TotalMedicamentos { get; set; }
+        public int TotalProductos { get; set; }           // Antes: TotalMedicamentos
         public int TotalUnidades { get; set; }
-        public int MedicamentosVencidos { get; set; }
-        public int MedicamentosPorVencer { get; set; }
+        public int ProductosVencidos { get; set; }          // Antes: MedicamentosVencidos
+        public int ProductosPorVencer { get; set; }         // Antes: MedicamentosPorVencer
 
         public ReporteInventarioViewModel()
         {
@@ -23,16 +23,15 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
 
     public class ReporteInventarioDetalleViewModel
     {
-        public int ID_Medicamento { get; set; }
+        public int ID_Producto { get; set; }                // Antes: ID_Medicamento
 
-        [Display(Name = "Medicamento")]
-        public string NombreMedicamento { get; set; }
+        [Display(Name = "Producto")]                        // Antes: "Medicamento"
+        public string NombreProducto { get; set; }          // Antes: NombreMedicamento
 
         [Display(Name = "Categoría")]
         public string Categoria { get; set; }
 
-        [Display(Name = "Laboratorio")]
-        public string Laboratorio { get; set; }
+        // Se omite la propiedad Laboratorio, ya que la entidad ya no existe
 
         [Display(Name = "Stock Total")]
         public int StockTotal { get; set; }
@@ -83,7 +82,7 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
 
     public class ReporteVentasViewModel
     {
-        // Esto es para los datos del los filtros
+        // Datos para los filtros
         [Display(Name = "Fecha Inicio")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
@@ -94,7 +93,7 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime FechaFin { get; set; }
 
-        // Esto es para los resultados del reporte
+        // Datos del reporte
         public DateTime FechaReporte { get; set; }
         public int TotalVentas { get; set; }
 
@@ -106,14 +105,14 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
 
         public List<VentaReporteViewModel> Ventas { get; set; }
         public List<VentaPorDiaViewModel> VentasPorDia { get; set; }
-        public List<TopMedicamentoVentaViewModel> TopMedicamentos { get; set; }
+        public List<TopProductoVentaViewModel> TopProductos { get; set; }  // Renombrado
 
         public ReporteVentasViewModel()
         {
             FechaReporte = DateTime.Now;
             Ventas = new List<VentaReporteViewModel>();
             VentasPorDia = new List<VentaPorDiaViewModel>();
-            TopMedicamentos = new List<TopMedicamentoVentaViewModel>();
+            TopProductos = new List<TopProductoVentaViewModel>();           // Renombrado
 
             // Por defecto, es del último mes
             FechaFin = DateTime.Now;
@@ -157,11 +156,11 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
         public decimal Total { get; set; }
     }
 
-    public class TopMedicamentoVentaViewModel
+    public class TopProductoVentaViewModel    // Renombrado: de TopMedicamentoVentaViewModel a TopProductoVentaViewModel
     {
-        public int ID_Medicamento { get; set; }
+        public int ID_Producto { get; set; }    // Antes: ID_Medicamento
 
-        [Display(Name = "Medicamento")]
+        [Display(Name = "Producto")]          // Antes: "Medicamento"
         public string Nombre { get; set; }
 
         [Display(Name = "Categoría")]
