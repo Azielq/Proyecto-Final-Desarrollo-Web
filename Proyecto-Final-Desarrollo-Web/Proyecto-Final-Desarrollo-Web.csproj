@@ -388,11 +388,16 @@
     <Content Include="Content\img\cuidado.jpg" />
     <Content Include="Content\img\entrega.jpg" />
     <Content Include="Content\img\facebook.jpg" />
+    <Content Include="Content\img\farmaceutica-hispana.png" />
+    <Content Include="Content\img\farmaceutica-L.jpg" />
+    <Content Include="Content\img\farmaceutico-C.png" />
+    <Content Include="Content\img\FarmaU-ETeam1.png" />
     <Content Include="Content\img\FarmaU.png" />
     <Content Include="Content\img\googleplay.jpg" />
     <Content Include="Content\img\instagram.jpg" />
     <Content Include="Content\img\lealtad.jpg" />
     <Content Include="Content\img\linkedin.jpg" />
+    <Content Include="Content\img\marcas-de-calidad-costa-rica.jpg" />
     <Content Include="Content\img\maternidad.jpg" />
     <Content Include="Content\img\medicamentos.jpg" />
     <Content Include="Content\img\proveedor.png" />

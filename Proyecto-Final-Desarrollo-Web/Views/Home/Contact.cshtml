@@ -1,21 +1,197 @@
 ﻿@{
-    ViewBag.Title = "Contact";
+    ViewBag.Title = "Contacto - FarmaU";
+    Layout = "~/Views/Shared/_Layout.cshtml"; // Explícito para claridad
 }
-<div class="container mt-auto pt-5">
-    <main aria-labelledby="title">
-        <h2 id="title">@ViewBag.Title.</h2>
-        <h3>@ViewBag.Message</h3>
 
-        <address>
-            One Microsoft Way<br />
-            Redmond, WA 98052-6399<br />
-            <abbr title="Phone">P:</abbr>
-            425.555.0100
-        </address>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Contacto</li>
+                </ol>
+            </nav>
 
-        <address>
-            <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-            <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-        </address>
-    </main>
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-success text-white">
+                    <h2 class="mb-0"><i class="bi bi-headset me-2"></i>Contáctenos</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Sección de Información de Contacto -->
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <h4 class="mb-4"><i class="bi bi-info-circle me-2"></i>Información de Contacto</h4>
+
+                            <div class="mb-4">
+                                <h5><i class="bi bi-geo-alt me-2"></i>Sede Principal</h5>
+                                <address class="mb-0">
+                                    Avenida Central #123<br>
+                                    San José, Costa Rica<br>
+                                    Código Postal 10101
+                                </address>
+                                <a href="https://maps.google.com" target="_blank" class="btn btn-sm btn-outline-success mt-2">
+                                    <i class="bi bi-map me-1"></i>Ver en Mapa
+                                </a>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5><i class="bi bi-telephone me-2"></i>Teléfonos</h5>
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-phone me-2"></i> (506) 2222-3333</li>
+                                    <li><i class="bi bi-whatsapp me-2"></i> (506) 8888-9999</li>
+                                </ul>
+                                <p class="text-muted small mb-0">
+                                    <i class="bi bi-clock me-1"></i>Horario: L-S 7:00 AM - 9:00 PM
+                                </p>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5><i class="bi bi-envelope me-2"></i>Correos Electrónicos</h5>
+                                <ul class="list-unstyled">
+                                    <li><i class="bi bi-envelope-at me-2"></i> info@farmaU.com</li>
+                                    <li><i class="bi bi-envelope-at me-2"></i> servicio@farmaU.com</li>
+                                </ul>
+                            </div>
+
+                            <div class="mb-4">
+                                <h5><i class="bi bi-people me-2"></i>Redes Sociales</h5>
+                                <div class="social-links mt-2">
+                                    <a href="#" class="me-3 text-primary" aria-label="Facebook"><i class="bi bi-facebook fs-4"></i></a>
+                                    <a href="#" class="me-3 text-danger" aria-label="Instagram"><i class="bi bi-instagram fs-4"></i></a>
+                                    <a href="#" class="me-3 text-dark" aria-label="Twitter"><i class="bi bi-twitter-x fs-4"></i></a>
+                                    <a href="#" class="me-3 text-success" aria-label="WhatsApp"><i class="bi bi-whatsapp fs-4"></i></a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sección del Formulario -->
+                        <div class="col-md-6">
+                            <h4 class="mb-4"><i class="bi bi-send me-2"></i>Envíenos un Mensaje</h4>
+                            <form id="contactForm" method="post" action="@Url.Action("EnviarMensaje", "Contacto")">
+                                @Html.AntiForgeryToken() <!-- Protección CSRF -->
+
+                                <div class="mb-3">
+                                    <label for="nombre" class="form-label">Nombre Completo *</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" required placeholder="Ej: Juan Pérez">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Correo Electrónico *</label>
+                                    <input type="email" class="form-control" id="email" name="email" required placeholder="Ej: ejemplo@dominio.com">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="telefono" class="form-label">Teléfono</label>
+                                    <input type="tel" class="form-control" id="telefono" name="telefono" placeholder="Ej: 8888-9999">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="asunto" class="form-label">Asunto *</label>
+                                    <select class="form-select" id="asunto" name="asunto" required>
+                                        <option value="" selected disabled>Seleccione un asunto</option>
+                                        <option value="consulta">Consulta de medicamentos</option>
+                                        <option value="pedido">Realizar un pedido</option>
+                                        <option value="servicio">Servicio a domicilio</option>
+                                        <option value="queja">Queja o reclamo</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="mensaje" class="form-label">Mensaje *</label>
+                                    <textarea class="form-control" id="mensaje" name="mensaje" rows="5" required placeholder="Escriba su mensaje aquí..."></textarea>
+                                </div>
+
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-send-check me-2"></i>Enviar Mensaje
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Preguntas Frecuentes -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h4 class="mb-4"><i class="bi bi-question-circle me-2"></i>Preguntas Frecuentes</h4>
+                            <div class="accordion" id="faqAccordion">
+                                <!-- Ítem FAQ 1 -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingOne">
+                                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                            <i class="bi bi-truck me-2"></i> ¿Ofrecen servicio a domicilio?
+                                        </button>
+                                    </h2>
+                                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            Sí, entregamos en toda el área metropolitana de San José. Los pedidos antes de las 2:00 PM se entregan el mismo día. Usamos nuestro servicio propio para garantizar la cadena de frío cuando sea necesario.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Ítem FAQ 2 -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingTwo">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                            <i class="bi bi-file-earmark-medical me-2"></i> ¿Aceptan recetas digitales?
+                                        </button>
+                                    </h2>
+                                    <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            Aceptamos recetas electrónicas de la CCSS y médicos privados. Envíelas a recetas@farmaU.com o por WhatsApp al (506) 8888-9999. Nuestros farmacéuticos las validarán en menos de 1 hora hábil.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Ítem FAQ 3 -->
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="headingThree">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                            <i class="bi bi-percent me-2"></i> ¿Tienen programa de descuentos?
+                                        </button>
+                                    </h2>
+                                    <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#faqAccordion">
+                                        <div class="accordion-body">
+                                            Sí, con nuestro programa <strong>FarmaU Beneficios</strong> obtienes descuentos progresivos, promociones exclusivas y seguimiento farmacéutico gratuito. Regístrate en nuestra app o en cualquier sucursal.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mapa -->
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            <h4 class="mb-4"><i class="bi bi-geo-alt me-2"></i>Ubicación</h4>
+                            <div class="ratio ratio-16x9">
+                                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3929.982511423282!2d-84.07743272401906!3d9.935602573642934!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8fa0e342c50d15c5%3A0xe6746a6a9f11b882!2sSan%20Jos%C3%A9%2C%20Costa%20Rica!5e0!3m2!1ses!2sus!4v1712021234567!5m2!1ses!2sus"
+                                        allowfullscreen=""
+                                        loading="lazy"
+                                        referrerpolicy="no-referrer-when-downgrade"
+                                        aria-label="Mapa de ubicación de FarmaU en San José">
+                                </iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+    // Validación del formulario
+        document.getElementById('contactForm').addEventListener('submit', function (e) {
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            this.classList.add('was-validated');
+        });
+
+    </script>
+}
