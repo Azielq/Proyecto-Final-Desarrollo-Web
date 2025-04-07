@@ -21,6 +21,13 @@
 <!-- Sección de Lista de Proveedores -->
 <section class="providers-list" id="lista-proveedores">
     <div class="container pt-4">
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-@TempData["MessageType"]">
+                @TempData["Message"]
+            </div>
+        }
+
         <div class="actions">
             <a href="@Url.Action("Create", "Proveedores")" class="btn btn-success">Agregar Proveedor</a>
         </div>
@@ -48,11 +55,24 @@
                         </td>
                         <td>
                             <a href="@Url.Action("Details", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-info">Ver Detalles</a>
+                            <a href="@Url.Action("Edit", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-warning">Editar</a>
                             <button class="btn btn-danger">Eliminar</button>
                         </td>
                     </tr>
                 }
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">
+                            @(ViewBag.MensajeVacio ?? "No se encontraron proveedores.")
+                        </td>
+                    </tr>
+                }
+
+
             </tbody>
         </table>
+        @Html.Partial("_Paginacion")
+
     </div>
 </section>

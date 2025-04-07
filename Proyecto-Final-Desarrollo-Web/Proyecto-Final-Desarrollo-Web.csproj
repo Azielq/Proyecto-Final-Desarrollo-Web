@@ -357,6 +357,7 @@
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
     <Compile Include="Models\ViewModels\LoteViewModel.cs" />
     <Compile Include="Models\ViewModels\ProductoViewModel.cs" />
+    <Compile Include="Models\ViewModels\ProveedorViewModel.cs" />
     <Compile Include="Models\ViewModels\ReporteInventarioViewModel.cs" />
     <Compile Include="Models\ViewModels\VentaViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -505,6 +506,9 @@
     <Content Include="Views\Productos\Vitaminas.cshtml" />
     <Content Include="Views\Proveedores\Details.cshtml" />
     <Content Include="Views\Proveedores\Index.cshtml" />
+    <Content Include="Views\Proveedores\Create.cshtml" />
+    <Content Include="Views\Shared\_Paginacion.cshtml" />
+    <Content Include="Views\Proveedores\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

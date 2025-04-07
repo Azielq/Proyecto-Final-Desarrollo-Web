@@ -10,6 +10,7 @@ using Proyecto_Final_Desarrollo_Web.Models;
 using Proyecto_Final_Desarrollo_Web.ViewModels;
 using Proyecto_Final_Desarrollo_Web.TableViewModels;
 using Proyecto_Final_Desarrollo_Web.Helpers;
+using Proyecto_Final_Desarrollo_Web.Models.ViewModels;
 
 namespace Proyecto_Final_Desarrollo_Web.Controllers
 {
@@ -73,6 +74,12 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                     UltimaCompra = p.Compras_Farmacia.OrderByDescending(c => c.fecha).Select(c => c.fecha).FirstOrDefault(),
                     NumeroCompras = p.Compras_Farmacia.Count
                 }).ToList();
+
+                // Agrega mensaje si no se encuentran proveedores con los filtros actuales
+                if (!proveedoresViewModel.Any())
+                {
+                    ViewBag.MensajeVacio = "No se encontraron proveedores con los filtros aplicados.";
+                }
 
                 return View(proveedoresViewModel);
             }
@@ -140,31 +147,51 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         // GET: Proveedores/Create
         public ActionResult Create()
         {
-            var proveedor = new Proveedores
+            // Se crea el ViewModel para la vista
+            var proveedorViewModel = new ProveedorViewModel
             {
-                activo = true
+                activo = true  // Por defecto se deja activo
             };
 
-            return View(proveedor);
+            return View(proveedorViewModel);
         }
+
 
         // POST: Proveedores/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Pk_Proveedor,Nombre,Correo,Telefono,direccion,activo")] Proveedores proveedor)
+        public ActionResult Create([Bind(Include = "Pk_Proveedor,Nombre,Correo,Telefono,direccion,activo")] ProveedorViewModel proveedorViewModel)
         {
             if (ModelState.IsValid)
             {
+                bool proveedorExiste = db.Proveedores.Any(p =>
+                    p.Nombre.Trim().ToLower() == proveedorViewModel.Nombre.Trim().ToLower());
+
+                if (proveedorExiste)
+                {
+                    ModelState.AddModelError("", "Ya existe un proveedor con el mismo nombre.");
+                    return View(proveedorViewModel);
+                }
+
+                var proveedor = new Proveedores
+                {
+                    Nombre = proveedorViewModel.Nombre,
+                    Correo = proveedorViewModel.Correo,
+                    Telefono = proveedorViewModel.Telefono,
+                    direccion = proveedorViewModel.direccion,
+                    activo = proveedorViewModel.activo
+                };
+
                 db.Proveedores.Add(proveedor);
                 db.SaveChanges();
 
                 TempData["Message"] = "Proveedor creado correctamente";
                 TempData["MessageType"] = "success";
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", new { soloActivos = (bool?)null, page = 1 });
             }
 
-            return View(proveedor);
+            return View(proveedorViewModel);
         }
 
         // GET: Proveedores/Edit
@@ -181,16 +208,50 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return HttpNotFound();
             }
 
-            return View(proveedor);
+            var proveedorViewModel = new ProveedorViewModel
+            {
+                Pk_Proveedor = proveedor.Pk_Proveedor,
+                Nombre = proveedor.Nombre,
+                Correo = proveedor.Correo,
+                Telefono = proveedor.Telefono,
+                direccion = proveedor.direccion,
+                activo = proveedor.activo
+            };
+
+            return View(proveedorViewModel);
         }
 
         // POST: Proveedores/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Pk_Proveedor,Nombre,Correo,Telefono,direccion,activo")] Proveedores proveedor)
+        public ActionResult Edit(ProveedorViewModel proveedorViewModel)
         {
             if (ModelState.IsValid)
             {
+                bool duplicado = db.Proveedores.Any(p =>
+                    p.Nombre.Trim().ToLower() == proveedorViewModel.Nombre.Trim().ToLower() &&
+                    p.Pk_Proveedor != proveedorViewModel.Pk_Proveedor);
+
+                if (duplicado)
+                {
+                    ModelState.AddModelError("", "Ya existe otro proveedor con el mismo nombre.");
+                    return View(proveedorViewModel);
+                }
+
+                // Buscamos el proveedor real en la base
+                var proveedor = db.Proveedores.Find(proveedorViewModel.Pk_Proveedor);
+                if (proveedor == null)
+                {
+                    return HttpNotFound();
+                }
+
+                // Actualizamos los campos
+                proveedor.Nombre = proveedorViewModel.Nombre;
+                proveedor.Correo = proveedorViewModel.Correo;
+                proveedor.Telefono = proveedorViewModel.Telefono;
+                proveedor.direccion = proveedorViewModel.direccion;
+                proveedor.activo = proveedorViewModel.activo;
+
                 db.Entry(proveedor).State = EntityState.Modified;
                 db.SaveChanges();
 
@@ -200,8 +261,9 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View(proveedor);
+            return View(proveedorViewModel);
         }
+
 
         // GET: Proveedores/ComprasProveedor
         public ActionResult ComprasProveedor(int? id)
