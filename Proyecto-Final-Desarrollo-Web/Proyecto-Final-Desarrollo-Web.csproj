@@ -259,6 +259,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CarritoController.cs" />
     <Compile Include="Controllers\CategoriasController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -351,6 +352,7 @@
     <Compile Include="Models\Usuarios.cs">
       <DependentUpon>FarmaU.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\CarritoItemViewModel.cs" />
     <Compile Include="Models\ViewModels\ClienteViewModel.cs" />
     <Compile Include="Models\ViewModels\CompraViewModel.cs" />
     <Compile Include="Models\ViewModels\DashboardViewModel.cs" />
@@ -509,6 +511,8 @@
     <Content Include="Views\Proveedores\Create.cshtml" />
     <Content Include="Views\Shared\_Paginacion.cshtml" />
     <Content Include="Views\Proveedores\Edit.cshtml" />
+    <Content Include="Views\Carrito\Index.cshtml" />
+    <Content Include="Views\Carrito\_CarritoMini.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
