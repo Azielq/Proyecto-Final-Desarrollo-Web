@@ -1,0 +1,135 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.ImagenProductoViewModel
+@{
+    ViewBag.Title = "Agregar Imagen";
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Productos")">Productos</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Details", "Productos", new { id = Model.ID_Producto })">@Model.NombreProducto</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "ImagenesProducto", new { productoId = Model.ID_Producto })">Imágenes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Agregar Imagen</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4">@ViewBag.Title</h2>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-image"></i> Nueva Imagen para @Model.NombreProducto</h5>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("Create", "ImagenesProducto", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.ID_Producto)
+                @Html.HiddenFor(model => model.FechaCreacion)
+                @Html.HiddenFor(model => model.Estado)
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="ImagenFile" class="form-label">Seleccionar Imagen</label>
+                            <input type="file" class="form-control" id="ImagenFile" name="ImagenFile" accept="image/*">
+                            <div class="form-text">O ingrese una URL directamente en el campo de la derecha.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(model => model.Descripcion, new { @class = "form-label" })
+                            @Html.TextBoxFor(model => model.Descripcion, new { @class = "form-control", placeholder = "Descripción de la imagen" })
+                            @Html.ValidationMessageFor(model => model.Descripcion, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            @Html.CheckBoxFor(model => model.EsPrincipal, new { @class = "form-check-input" })
+                            @Html.LabelFor(model => model.EsPrincipal, new { @class = "form-check-label" })
+                            <div class="form-text">Si marca esta opción, esta imagen se establecerá como la principal del producto.</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            @Html.LabelFor(model => model.URL, new { @class = "form-label" })
+                            @Html.TextBoxFor(model => model.URL, new { @class = "form-control", placeholder = "URL de la imagen (opcional si sube archivo)" })
+                            @Html.ValidationMessageFor(model => model.URL, "", new { @class = "text-danger" })
+                            <div class="form-text">Ingrese la URL completa si ya tiene la imagen en la nube, o suba un archivo en el campo de la izquierda.</div>
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Vista previa</h6>
+                            </div>
+                            <div class="card-body text-center" id="previewContainer" style="height: 300px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa;">
+                                <div class="py-5 text-muted">
+                                    <i class="bi bi-image" style="font-size: 3rem;"></i>
+                                    <p>La vista previa aparecerá aquí</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar Imagen
+                    </button>
+                    <a href="@Url.Action("Index", "ImagenesProducto", new { productoId = Model.ID_Producto })" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver a la Lista
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            // Vista previa cuando se selecciona un archivo
+            $('#ImagenFile').change(function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#previewContainer').html(`
+                    <div style="height: 280px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                        <img src="${e.target.result}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                    </div>
+                `);
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+            // Vista previa cuando se ingresa una URL
+            $('#URL').on('input', function () {
+                var url = $(this).val();
+                if (url) {
+                    $('#previewContainer').html(`
+                <div style="height: 280px; display: flex; align-items: center; justify-content: center; width: 100%;">
+                    <img src="${url}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                </div>
+            `);
+                } else {
+                    $('#previewContainer').html('<div class="py-5 text-muted"><i class="bi bi-image" style="font-size: 3rem;"></i><p>La vista previa aparecerá aquí</p></div>');
+                }
+            });
+
+            // Limpia el campo de URL si se selecciona un archivo
+            $('#ImagenFile').change(function () {
+                if (this.files && this.files[0]) {
+                    $('#URL').val('');
+                }
+            });
+
+            // Limpia el campo de archivo si se ingresa una URL
+            $('#URL').on('input', function () {
+                if ($(this).val()) {
+                    $('#ImagenFile').val('');
+                }
+            });
+        });
+    </script>
+}

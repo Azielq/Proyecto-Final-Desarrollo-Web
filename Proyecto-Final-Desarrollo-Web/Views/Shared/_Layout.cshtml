@@ -44,6 +44,7 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
                                 <li>@Html.ActionLink("Medicamentos", "Medicamentos", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink("Productos", "Index", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
                                 <li>@Html.ActionLink("Cuidado Personal", "CuidadoPersonal", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
                                 <li>@Html.ActionLink("Vitaminas y Suplementos", "Vitaminas", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
                                 <li>@Html.ActionLink("Bebés y Maternidad", "Bebes", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
@@ -235,6 +236,8 @@
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/libs")
+    <script src="~/Scripts/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+
     @RenderSection("scripts", required: false)
 
     <script>

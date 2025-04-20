@@ -13,12 +13,8 @@ namespace Proyecto_Final_Desarrollo_Web.TableViewModels
         [Display(Name = "Nombre")]
         public string Nombre { get; set; }
 
-        // Se eliminó la propiedad 'principio_activo'
-
         [Display(Name = "Categoría")]
         public string NombreCategoria { get; set; }
-
-        // Se eliminó la propiedad 'NombreLaboratorio' (ya no se usa)
 
         [Display(Name = "Precio Compra")]
         [DisplayFormat(DataFormatString = "{0:C2}")]
@@ -45,6 +41,10 @@ namespace Proyecto_Final_Desarrollo_Web.TableViewModels
             }
         }
 
+        // Propiedad para la imagen principal
+        [Display(Name = "Imagen")]
+        public string UrlImagenPrincipal { get; set; }
+
         // Propiedades adicionales para la tabla
         public bool StockBajo
         {
@@ -52,6 +52,10 @@ namespace Proyecto_Final_Desarrollo_Web.TableViewModels
         }
 
         public bool TieneLotesProximosAVencer { get; set; }
+
+        // Cantidad de imágenes asociadas
+        [Display(Name = "Imágenes")]
+        public int CantidadImagenes { get; set; }
     }
 
     public class ProductoTableRequest

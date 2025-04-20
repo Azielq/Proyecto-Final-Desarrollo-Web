@@ -10,7 +10,9 @@ body {
     background-color: #f5f7fa;
     color: #333;
     line-height: 1.6;
-    padding-top: 20px; /* Altura aproximada de el navbar */
+    padding-top: 70px; /* Espacio para el navbar fijo. Altura aproximada de el navbar */
+    position: relative;
+    min-height: 100vh;
     transition: padding-top 0.3s ease;
 }
 
@@ -22,6 +24,7 @@ a {
     width: 100%;
     max-width: 100%;
     margin: 0 auto;
+    padding: 0 1px; /* Opcional: Esto maneja el padding lateral para moldear el ancho del container */
 }
 
 .btn {
@@ -592,7 +595,7 @@ footer {
 
 /* Estilos para login y registro */
 .login-container, .register-container {
-    margin-top: 80px;
+    margin-top: 40px;
     margin-bottom: 20px;
     padding: 30px;
     border-radius: 8px;
@@ -897,4 +900,9 @@ footer {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+/* Para que no se vea el upgrade de TityMCE */
+.tox-promotion-link {
+    display: none !important;
 }

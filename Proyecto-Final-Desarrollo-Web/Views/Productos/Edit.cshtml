@@ -1,0 +1,401 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.ProductoViewModel
+
+@{
+    ViewBag.Title = "Editar Producto";
+    ViewBag.NeedsTinyMCE = true;
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Productos")">Productos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Editar Producto</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4">@ViewBag.Title</h2>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-pencil"></i> Editar Producto: @Model.Nombre</h5>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("Edit", "Productos", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation", data_confirm_submit = "true", data_confirm_title = "Confirmar modificación", data_confirm_text = "¿Está seguro de que desea guardar los cambios a este producto?" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.ID_Producto)
+
+                <ul class="nav nav-tabs mb-4" id="productTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info-content" type="button" role="tab" aria-controls="info-content" aria-selected="true">
+                            <i class="bi bi-info-circle"></i> Información Básica
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details-content" type="button" role="tab" aria-controls="details-content" aria-selected="false">
+                            <i class="bi bi-file-text"></i> Detalles
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="images-tab" data-bs-toggle="tab" data-bs-target="#images-content" type="button" role="tab" aria-controls="images-content" aria-selected="false">
+                            <i class="bi bi-images"></i> Imágenes
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="productTabContent">
+                    <!-- Pestaña de Información Básica -->
+                    <div class="tab-pane fade show active" id="info-content" role="tabpanel" aria-labelledby="info-tab">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    @Html.LabelFor(model => model.Nombre, new { @class = "form-label" })
+                                    @Html.TextBoxFor(model => model.Nombre, new { @class = "form-control", placeholder = "Nombre del producto" })
+                                    @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+                                </div>
+
+                                <div class="mb-3">
+                                    @Html.LabelFor(model => model.ID_Categoría, new { @class = "form-label" })
+                                    @Html.DropDownListFor(model => model.ID_Categoría, (SelectList)ViewBag.ID_Categoría, "Seleccione una categoría", new { @class = "form-select" })
+                                    @Html.ValidationMessageFor(model => model.ID_Categoría, "", new { @class = "text-danger" })
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            @Html.LabelFor(model => model.precio_compra, new { @class = "form-label" })
+                                            @Html.TextBoxFor(model => model.precio_compra, "{0:0.00}", new { @class = "form-control", type = "number", step = "0.01", min = "0.01" })
+                                            @Html.ValidationMessageFor(model => model.precio_compra, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            @Html.LabelFor(model => model.precio_venta, new { @class = "form-label" })
+                                            @Html.TextBoxFor(model => model.precio_venta, "{0:0.00}", new { @class = "form-control", type = "number", step = "0.01", min = "0.01" })
+                                            @Html.ValidationMessageFor(model => model.precio_venta, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            @Html.LabelFor(model => model.Marca, new { @class = "form-label" })
+                                            @Html.TextBoxFor(model => model.Marca, new { @class = "form-control", placeholder = "Marca del producto" })
+                                            @Html.ValidationMessageFor(model => model.Marca, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            @Html.LabelFor(model => model.UnidadDeVenta, new { @class = "form-label" })
+                                            @Html.TextBoxFor(model => model.UnidadDeVenta, new { @class = "form-control", placeholder = "Unidad (caja, frasco, etc.)" })
+                                            @Html.ValidationMessageFor(model => model.UnidadDeVenta, "", new { @class = "text-danger" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    @Html.LabelFor(model => model.ContenidoNeto, new { @class = "form-label" })
+                                    @Html.TextBoxFor(model => model.ContenidoNeto, new { @class = "form-control", placeholder = "Contenido neto (100ml, 30 tabletas, etc.)" })
+                                    @Html.ValidationMessageFor(model => model.ContenidoNeto, "", new { @class = "text-danger" })
+                                </div>
+
+                                <div class="mb-3">
+                                    @Html.LabelFor(model => model.estado, new { @class = "form-label" })
+                                    @Html.DropDownListFor(model => model.estado, new List<SelectListItem>
+                                    {
+                                        new SelectListItem { Text = "Activo", Value = "Activo" },
+                                        new SelectListItem { Text = "Inactivo", Value = "Inactivo" }
+                                    }, new { @class = "form-select" })
+                                    @Html.ValidationMessageFor(model => model.estado, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="card mb-3">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">Información del Producto</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <dl class="row">
+                                            <dt class="col-sm-5">ID:</dt>
+                                            <dd class="col-sm-7">@Model.ID_Producto</dd>
+
+                                            <dt class="col-sm-5">Categoría:</dt>
+                                            <dd class="col-sm-7">@Model.NombreCategoria</dd>
+
+                                            <dt class="col-sm-5">Stock Disponible:</dt>
+                                            <dd class="col-sm-7">
+                                                <span class="badge @(Model.StockDisponible < 10 ? "bg-danger" : "bg-success")">
+                                                    @Model.StockDisponible unidades
+                                                </span>
+                                            </dd>
+
+                                            <dt class="col-sm-5">Margen de Ganancia:</dt>
+                                            <dd class="col-sm-7">@Model.MargenGanancia.ToString("0.00")%</dd>
+                                        </dl>
+                                    </div>
+                                </div>
+
+                                <!-- Vista previa de la imagen principal -->
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">Imagen Principal</h6>
+                                    </div>
+                                    <div class="card-body text-center">
+                                        @if (!string.IsNullOrEmpty(Model.UrlImagenPrincipal))
+                                        {
+                                            <img src="@Model.UrlImagenPrincipal" class="img-fluid img-thumbnail" style="max-height: 200px;" alt="@Model.Nombre">
+                                        }
+                                        else
+                                        {
+                                            <div class="py-5 text-muted">
+                                                <i class="bi bi-image" style="font-size: 3rem;"></i>
+                                                <p>No hay imagen principal</p>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pestaña de Detalles -->
+                    <div class="tab-pane fade" id="details-content" role="tabpanel" aria-labelledby="details-tab">
+                        <div class="mb-4">
+                            @Html.LabelFor(model => model.Detalles, new { @class = "form-label" })
+                            @Html.TextAreaFor(model => model.Detalles, new { @class = "form-control tinymce", rows = "8" })
+                            @Html.ValidationMessageFor(model => model.Detalles, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="mb-4">
+                            @Html.LabelFor(model => model.Indicaciones, new { @class = "form-label" })
+                            @Html.TextAreaFor(model => model.Indicaciones, new { @class = "form-control tinymce", rows = "8" })
+                            @Html.ValidationMessageFor(model => model.Indicaciones, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="mb-4">
+                            @Html.LabelFor(model => model.Ingredientes, new { @class = "form-label" })
+                            @Html.TextAreaFor(model => model.Ingredientes, new { @class = "form-control tinymce-ingredientes", rows = "5" })
+                            @Html.ValidationMessageFor(model => model.Ingredientes, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <!-- Pestaña de Imágenes -->
+                    <div class="tab-pane fade" id="images-content" role="tabpanel" aria-labelledby="images-tab">
+                        <ul class="nav nav-tabs mb-3" id="imageTabEdit" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="file-tab-edit" data-bs-toggle="tab" data-bs-target="#file-content-edit" type="button" role="tab" aria-controls="file-content-edit" aria-selected="true">
+                                    <i class="bi bi-upload"></i> Subir desde PC
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="url-tab-edit" data-bs-toggle="tab" data-bs-target="#url-content-edit" type="button" role="tab" aria-controls="url-content-edit" aria-selected="false">
+                                    <i class="bi bi-link"></i> Usar URL
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content" id="imageTabContentEdit">
+                            <div class="tab-pane fade show active" id="file-content-edit" role="tabpanel" aria-labelledby="file-tab-edit">
+                                <div class="mb-4">
+                                    <label for="imagenes" class="form-label">Subir Nuevas Imágenes</label>
+                                    <input type="file" class="form-control" id="imagenes" name="imagenes" multiple accept="image/*">
+                                    <div class="form-text">Puede seleccionar múltiples imágenes. Para establecer una imagen como principal, vaya a la sección de Gestionar Imágenes.</div>
+                                </div>
+
+                                <div id="previewContainer" class="mb-4"></div>
+                            </div>
+
+                            <div class="tab-pane fade" id="url-content-edit" role="tabpanel" aria-labelledby="url-tab-edit">
+                                <div class="row g-2">
+                                    <div class="col-md-9">
+                                        <input type="text" class="form-control" id="imagenUrl" placeholder="https://ejemplo.com/imagen.jpg">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="button" id="btnAgregarUrlEdit" class="btn btn-outline-primary w-100">
+                                            <i class="bi bi-plus"></i> Agregar
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="form-text">Ingrese la URL de una imagen en la nube y haga clic en "Agregar".</div>
+
+                                <div id="urlsContainerEdit" class="mt-3 mb-4">
+                                    <!-- Aquí se mostrarán las URLs agregadas -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <h5>Imágenes Actuales</h5>
+                            @if (Model.Imagenes != null && Model.Imagenes.Any())
+                            {
+                                <div class="row">
+                                    @foreach (var imagen in Model.Imagenes)
+                                    {
+                                        <div class="col-md-3 col-sm-4 mb-3">
+                                            <div class="card h-100">
+                                                <div class="card-img-container" style="height: 200px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                                                    <img src="@imagen.URL" class="img-fluid" alt="@imagen.Descripcion" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                                </div>
+                                                <div class="card-body p-2">
+                                                    @if (imagen.EsPrincipal)
+                                                    {
+                                                        <span class="badge bg-success mb-1">Principal</span>
+                                                    }
+                                                    <p class="card-text small text-truncate">@imagen.Descripcion</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="mt-2">
+                                    <a href="@Url.Action("GestionarImagenes", "Productos", new { id = Model.ID_Producto })" class="btn btn-outline-primary btn-sm">
+                                        <i class="bi bi-images"></i> Gestionar Todas las Imágenes
+                                    </a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle-fill me-2"></i>
+                                    Este producto no tiene imágenes asociadas.
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 d-flex justify-content-between">
+                    <div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Guardar Cambios
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Volver a la Lista
+                        </a>
+                    </div>
+
+                    <div>
+                        <a href="@Url.Action("Details", "Productos", new { id = Model.ID_Producto })" class="btn btn-info">
+                            <i class="bi bi-eye"></i> Ver Detalles
+                        </a>
+                        <a href="@Url.Action("Inventario", "Productos", new { id = Model.ID_Producto })" class="btn btn-success">
+                            <i class="bi bi-box"></i> Inventario
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        // Variables para almacenar las URLs de imágenes
+        let imageUrls = [];
+
+        // Función para actualizar el contenedor de URLs
+        function updateUrlsContainer() {
+            const container = $('#urlsContainerEdit');
+            container.empty();
+
+            if (imageUrls.length === 0) {
+                container.html('<div class="alert alert-info mt-2"><i class="bi bi-info-circle-fill me-2"></i>No hay URLs agregadas.</div>');
+                return;
+            }
+
+            let html = '<div class="row g-2">';
+
+            imageUrls.forEach((url, index) => {
+                html += `
+                        <div class="col-md-6 mb-2">
+                            <div class="card">
+                                <div class="card-body p-2">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="text-truncate me-2">
+                                            <small>${url}</small>
+                                        </div>
+                                        <button type="button" class="btn-close" data-index="${index}" aria-label="Close"></button>
+                                    </div>
+                                </div>
+                                <div class="card-footer p-0" style="height: 150px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa;">
+                                    <img src="${url}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                </div>
+                            </div>
+                            <input type="hidden" name="imagenesUrl" value="${url}">
+                        </div>
+                    `;
+            });
+
+            html += '</div>';
+            container.html(html);
+
+            // Agrega manejadores de eventos para los botones de eliminar
+            container.find('.btn-close').on('click', function () {
+                const index = $(this).data('index');
+                imageUrls.splice(index, 1);
+                updateUrlsContainer();
+            });
+        }
+
+        $(document).ready(function () {
+            // Maneja el botón de agregar URL
+            $('#btnAgregarUrlEdit').on('click', function () {
+                const url = $('#imagenUrl').val().trim();
+                if (url) {
+                    imageUrls.push(url);
+                    $('#imagenUrl').val('');
+                    updateUrlsContainer();
+                }
+            });
+
+            // También agregar URL al presionar Enter
+            $('#imagenUrl').on('keypress', function (e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    $('#btnAgregarUrlEdit').click();
+                }
+            });
+
+            // Vista previa para subida de archivos
+            $('#imagenes').on('change', function (e) {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    $('#previewContainer').empty();
+
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            const preview = `
+                                    <div class="card mt-2">
+                                        <div class="card-header bg-light py-1">
+                                            <small>${file.name}</small>
+                                        </div>
+                                        <div class="card-body p-0 text-center" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+                                            <img src="${e.target.result}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                        </div>
+                                    </div>
+                                `;
+
+                            $('#previewContainer').append(preview);
+                        };
+
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+
+            // Asegura que las URLs se envíen con el formulario
+            $('form').on('submit', function (e) {
+                imageUrls.forEach((url, index) => {
+                    $(this).append(`<input type="hidden" name="imagenesUrl[${index}]" value="${url}">`);
+                });
+            });
+        });
+    </script>
+}
