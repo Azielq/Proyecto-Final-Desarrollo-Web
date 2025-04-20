@@ -505,6 +505,10 @@
     <Content Include="Views\Productos\Vitaminas.cshtml" />
     <Content Include="Views\Proveedores\Details.cshtml" />
     <Content Include="Views\Proveedores\Index.cshtml" />
+    <Content Include="Views\Lotes\Index.cshtml" />
+    <Content Include="Views\Lotes\Create.cshtml" />
+    <Content Include="Views\Inventario\Index.cshtml" />
+    <Content Include="Views\Inventario\Create.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
