@@ -473,5 +473,97 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             }
             base.Dispose(disposing);
         }
+
+        // GET: Carrito/ObtenerTotalElementos
+        [ChildActionOnly]
+        public ActionResult ObtenerTotalElementos()
+        {
+            int totalItems = 0;
+
+            if (Session["UserID"] != null)
+            {
+                try
+                {
+                    int idUsuario = Convert.ToInt32(Session["UserID"]);
+
+                    // Versión segura para manejar posibles valores nulos
+                    var itemsCount = db.Carrito
+                        .Where(c => c.ID_Usuario == idUsuario)
+                        .Select(c => c.Cantidad)
+                        .ToList();
+
+                    // Sumar solo si hay elementos
+                    if (itemsCount.Any())
+                    {
+                        totalItems = itemsCount.Sum();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Registrar el error para depuración
+                    System.Diagnostics.Debug.WriteLine("Error al obtener total de elementos: " + ex.Message);
+                    totalItems = 0;
+                }
+            }
+
+            return Content(totalItems.ToString());
+        }
+
+        // GET: Carrito/ObtenerResumenCarrito
+        [ChildActionOnly]
+        public ActionResult ObtenerResumenCarrito()
+        {
+            if (Session["UserID"] == null)
+            {
+                return PartialView("_ResumenCarritoMini", new CarritoViewModel());
+            }
+
+            try
+            {
+                int idUsuario = Convert.ToInt32(Session["UserID"]);
+
+                var carritoItems = db.Carrito
+                    .Include(c => c.Productos)
+                    .Where(c => c.ID_Usuario == idUsuario)
+                    .ToList();
+
+                // Verificar si hay items
+                if (carritoItems == null || !carritoItems.Any())
+                {
+                    return PartialView("_ResumenCarritoMini", new CarritoViewModel { ID_Usuario = idUsuario });
+                }
+
+                // Si hay items, crear el viewmodel
+                var viewModel = new CarritoViewModel
+                {
+                    ID_Usuario = idUsuario,
+                    Items = carritoItems.Select(item => new CarritoItemViewModel
+                    {
+                        ID_Carrito = item.ID_Carrito,
+                        ID_Producto = item.ID_Producto,
+                        ID_Usuario = item.ID_Usuario,
+                        NombreProducto = item.Productos.Nombre,
+                        // No hay ImagenUrl en el modelo Productos, usamos una ruta predeterminada
+                        ImagenUrl = "/Content/images/no-image.png",
+                        PrecioUnitario = item.Productos.precio_venta,
+                        Cantidad = item.Cantidad,
+                        FechaAgregado = item.FechaAgregado
+                    }).ToList()
+                };
+
+                return PartialView("_ResumenCarritoMini", viewModel);
+            }
+            catch (Exception ex)
+            {
+                // Registrar el error para depuración
+                System.Diagnostics.Debug.WriteLine("Error al obtener resumen del carrito: " + ex.Message);
+
+                // Devolver un viewmodel vacío en caso de error
+                return PartialView("_ResumenCarritoMini", new CarritoViewModel
+                {
+                    ID_Usuario = Convert.ToInt32(Session["UserID"])
+                });
+            }
+        }
     }
 }
