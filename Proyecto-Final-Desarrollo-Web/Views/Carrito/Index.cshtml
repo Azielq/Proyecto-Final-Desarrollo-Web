@@ -1,0 +1,338 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.CarritoViewModel
+
+@{
+    ViewBag.Title = "Mi Carrito - FarmaU";
+}
+
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Mi Carrito</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="bi bi-cart-fill me-2"></i>Mi Carrito de Compras</h4>
+                        <div>
+                            @if (Model.Items.Any())
+                            {
+                                <span class="badge bg-light text-primary fs-6 me-2">@Model.TotalItems artículos</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (!Model.Items.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-cart-x text-muted" style="font-size: 5rem;"></i>
+                            <h3 class="mt-3">Tu carrito está vacío</h3>
+                            <p class="text-muted">Parece que aún no has agregado productos a tu carrito.</p>
+                            <a href="@Url.Action("Index", "Productos")" class="btn btn-primary mt-3">
+                                <i class="bi bi-shop me-2"></i>Ir a la tienda
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50px;"></th>
+                                        <th>Producto</th>
+                                        <th class="text-center">Precio Unitario</th>
+                                        <th class="text-center">Cantidad</th>
+                                        <th class="text-end">Subtotal</th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in Model.Items)
+                                    {
+                                        <tr id="item-@item.ID_Carrito">
+                                            <td class="align-middle">
+                                                <img src="@(item.ImagenUrl ?? "/Content/images/no-image.png")" alt="@item.NombreProducto" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                            </td>
+                                            <td class="align-middle">
+                                                <h6 class="mb-0">@item.NombreProducto</h6>
+                                                <small class="text-muted">Agregado: @(item.FechaAgregado.HasValue ? item.FechaAgregado.Value.ToString("dd/MM/yyyy HH:mm") : "-")</small>
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                @item.PrecioUnitario.ToString("C")
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <div class="d-flex align-items-center justify-content-center">
+                                                    <div class="input-group" style="width: 130px;">
+                                                        <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn"
+                                                                data-action="decrease" data-item-id="@item.ID_Carrito"
+                                                                @(item.Cantidad <= 1 ? "disabled" : "")>
+                                                            <i class="bi bi-dash"></i>
+                                                        </button>
+                                                        <input type="number" class="form-control text-center quantity-input"
+                                                               value="@item.Cantidad" min="1" max="100" data-item-id="@item.ID_Carrito">
+                                                        <button type="button" class="btn btn-outline-secondary btn-sm quantity-btn"
+                                                                data-action="increase" data-item-id="@item.ID_Carrito"
+                                                                @(item.Cantidad >= 100 ? "disabled" : "")>
+                                                            <i class="bi bi-plus"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="text-end align-middle subtotal-cell" data-item-id="@item.ID_Carrito">
+                                                @item.Subtotal.ToString("C")
+                                            </td>
+                                            <td class="text-center align-middle">
+                                                <div class="d-flex justify-content-center">
+                                                    <button type="button" class="btn btn-outline-success btn-sm me-2 update-item-btn"
+                                                            data-item-id="@item.ID_Carrito" title="Actualizar cantidad">
+                                                        <i class="bi bi-arrow-repeat"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-danger btn-sm delete-item-btn"
+                                                            data-item-id="@item.ID_Carrito" title="Eliminar del carrito">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr class="bg-light">
+                                        <td colspan="4" class="text-end fw-bold">Subtotal:</td>
+                                        <td class="text-end fw-bold" id="cart-subtotal">@Model.Subtotal.ToString("C")</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <div>
+                                @using (Html.BeginForm("VaciarCarrito", "Carrito", FormMethod.Post, new
+                                {
+                                    id = "vaciarCarritoForm",
+                                    data_confirm_submit = "true",
+                                    data_confirm_title = "¿Vaciar carrito?",
+                                    data_confirm_text = "Esta acción eliminará todos los productos de tu carrito.",
+                                    data_confirm_button_text = "Sí, vaciar carrito"
+                                }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        <i class="bi bi-trash me-2"></i>Vaciar Carrito
+                                    </button>
+                                }
+                            </div>
+                            <div>
+                                <a href="@Url.Action("Index", "Productos")" class="btn btn-outline-secondary me-2">
+                                    <i class="bi bi-arrow-left me-2"></i>Seguir Comprando
+                                </a>
+                                <a href="@Url.Action("ProcederPago", "Carrito")" class="btn btn-success">
+                                    <i class="bi bi-credit-card me-2"></i>Proceder al Pago
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* Formularios ocultos para operaciones *@
+@using (Html.BeginForm("Actualizar", "Carrito", FormMethod.Post, new { id = "actualizarCarritoForm" }))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="ID_Carrito" name="ID_Carrito" value="" />
+    <input type="hidden" id="Cantidad" name="Cantidad" value="" />
+}
+
+@using (Html.BeginForm("Eliminar", "Carrito", FormMethod.Post, new { id = "eliminarItemForm" }))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" id="ID_Carrito_Eliminar" name="ID_Carrito" value="" />
+}
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Botones para incrementar/decrementar cantidad
+            $('.quantity-btn').on('click', function () {
+                const action = $(this).data('action');
+                const itemId = $(this).data('item-id');
+                const input = $(`.quantity-input[data-item-id="${itemId}"]`);
+                let currentValue = parseInt(input.val());
+
+                if (action === 'increase' && currentValue < 100) {
+                    input.val(++currentValue);
+                } else if (action === 'decrease' && currentValue > 1) {
+                    input.val(--currentValue);
+                }
+
+                // Habilitar/deshabilitar botones según límites
+                $(`.quantity-btn[data-action="decrease"][data-item-id="${itemId}"]`).prop('disabled', currentValue <= 1);
+                $(`.quantity-btn[data-action="increase"][data-item-id="${itemId}"]`).prop('disabled', currentValue >= 100);
+            });
+
+            // Actualizar cantidad mediante AJAX
+            $('.update-item-btn').on('click', function () {
+                const itemId = $(this).data('item-id');
+                const cantidad = $(`.quantity-input[data-item-id="${itemId}"]`).val();
+
+                // Mostrar indicador de carga
+                Swal.fire({
+                    title: 'Actualizando...',
+                    text: 'Actualizando cantidad en el carrito',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                $.ajax({
+                    url: '@Url.Action("ActualizarAjax", "Carrito")',
+                    type: 'POST',
+                    data: { idCarrito: itemId, cantidad: cantidad },
+                    success: function (response) {
+                        if (response.success) {
+                            // Actualizar el subtotal del producto
+                            $(`.subtotal-cell[data-item-id="${itemId}"]`).text(
+                                new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(response.subtotal)
+                            );
+
+                            // Actualizar el subtotal del carrito
+                            $('#cart-subtotal').text(
+                                new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(response.totalCarrito)
+                            );
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Actualizado!',
+                                text: response.message,
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ocurrió un error al actualizar el carrito'
+                        });
+                    }
+                });
+            });
+
+            // Eliminar producto mediante AJAX
+            $('.delete-item-btn').on('click', function () {
+                const itemId = $(this).data('item-id');
+
+                Swal.fire({
+                    title: '¿Eliminar producto?',
+                    text: '¿Estás seguro que deseas eliminar este producto del carrito?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Mostrar indicador de carga
+                        Swal.fire({
+                            title: 'Eliminando...',
+                            allowOutsideClick: false,
+                            showConfirmButton: false,
+                            willOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+
+                        $.ajax({
+                            url: '@Url.Action("EliminarAjax", "Carrito")',
+                            type: 'POST',
+                            data: { idCarrito: itemId },
+                            success: function (response) {
+                                if (response.success) {
+                                    // Eliminar la fila de la tabla
+                                    $(`#item-${itemId}`).fadeOut(300, function () {
+                                        $(this).remove();
+
+                                        // Actualizar el subtotal del carrito
+                                        $('#cart-subtotal').text(
+                                            new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(response.totalCarrito)
+                                        );
+
+                                        // Si no quedan productos, recargar la página
+                                        if (response.totalItems === 0) {
+                                            location.reload();
+                                        }
+                                    });
+
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: '¡Eliminado!',
+                                        text: response.message,
+                                        timer: 1500,
+                                        showConfirmButton: false
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: response.message
+                                    });
+                                }
+                            },
+                            error: function () {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Ocurrió un error al eliminar el producto'
+                                });
+                            }
+                        });
+                    }
+                });
+            });
+
+            // Confirmar vaciado de carrito
+            $('form[data-confirm-submit="true"]').on('submit', function (e) {
+                e.preventDefault();
+                const form = $(this);
+                const confirmTitle = form.data('confirm-title');
+                const confirmText = form.data('confirm-text');
+                const confirmButtonText = form.data('confirm-button-text');
+
+                Swal.fire({
+                    title: confirmTitle,
+                    text: confirmText,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: confirmButtonText,
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.off('submit').submit();
+                    }
+                });
+            });
+        });
+    </script>
+}
