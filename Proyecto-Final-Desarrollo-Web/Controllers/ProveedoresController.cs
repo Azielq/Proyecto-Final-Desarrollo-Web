@@ -335,6 +335,14 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 .Include(p => p.Compras_Farmacia)
                 .FirstOrDefault(p => p.Pk_Proveedor == id);
 
+            // Verifica si el proveedor existe
+            if (proveedor == null)
+            {
+                TempData["Message"] = "Proveedor no encontrado";
+                TempData["MessageType"] = "error";
+                return RedirectToAction("Index");
+            }
+
             // Verifica si tiene compras asociadas
             if (proveedor.Compras_Farmacia.Any())
             {
@@ -343,11 +351,13 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return RedirectToAction("Delete", new { id = id });
             }
 
-            db.Proveedores.Remove(proveedor);
+            // Eliminación lógica
+            proveedor.activo = false;
+            db.Entry(proveedor).State = EntityState.Modified;
             db.SaveChanges();
 
-            TempData["Message"] = "Proveedor eliminado correctamente";
-            TempData["MessageType"] = "success";
+            TempData["Message"] = "Proveedor desactivado correctamente";
+            TempData["MessageType"] = "warning";
 
             return RedirectToAction("Index");
         }

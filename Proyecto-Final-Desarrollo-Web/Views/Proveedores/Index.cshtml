@@ -1,4 +1,5 @@
 ﻿@model IEnumerable<Proyecto_Final_Desarrollo_Web.TableViewModels.ProveedorTableViewModel>
+@using Proyecto_Final_Desarrollo_Web.Helpers
 @{
     ViewBag.Title = "Lista de Proveedores";
 }
@@ -28,9 +29,27 @@
             </div>
         }
 
-        <div class="actions">
+        <!-- Filtro -->
+        <div class="mb-3">
+            <form method="get" action="@Url.Action("Index", "Proveedores")" class="form-inline d-flex justify-content-between align-items-center">
+                <div class="form-group">
+                    <label for="searchTerm" class="me-2">Buscar:</label>
+                    <input type="text" id="searchTerm" name="searchTerm" class="form-control me-3" value="@ViewBag.SearchTerm" placeholder="Buscar proveedor..." />
+                </div>
+
+                <div class="form-group form-check me-3">
+                    <input type="checkbox" id="soloActivos" name="soloActivos" class="form-check-input" value="true" @(ViewBag.SoloActivos != null && (bool)ViewBag.SoloActivos ? "checked" : "") />
+                    <label class="form-check-label" for="soloActivos">Solo Activos</label>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
+            </form>
+        </div>
+
+        <div class="actions mb-3">
             <a href="@Url.Action("Create", "Proveedores")" class="btn btn-success">Agregar Proveedor</a>
         </div>
+
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -56,7 +75,13 @@
                         <td>
                             <a href="@Url.Action("Details", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-info">Ver Detalles</a>
                             <a href="@Url.Action("Edit", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-warning">Editar</a>
-                            <button class="btn btn-danger">Eliminar</button>
+                            @using (Html.BeginForm("Delete", "Proveedores", new { id = proveedor.Pk_Proveedor }, FormMethod.Post, new { id = "formEliminar_" + proveedor.Pk_Proveedor }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <div class="btn-group" role="group">
+                                    <button type="button" class="btn btn-danger" onclick="return confirmarEliminacion('formEliminar_@proveedor.Pk_Proveedor')">Eliminar</button>
+                                </div>
+                            }
                         </td>
                     </tr>
                 }
@@ -68,11 +93,54 @@
                         </td>
                     </tr>
                 }
-
-
             </tbody>
         </table>
-        @Html.Partial("_Paginacion")
+
+        @Html.RenderPagination(
+    currentPage: (int)ViewData["CurrentPage"],
+    totalPages: (int)ViewData["TotalPages"],
+    pageSize: (int)ViewData["PageSize"],
+    actionName: "Index",
+    controllerName: "Proveedores",
+    routeValues: new
+         {
+        searchTerm = ViewBag.SearchTerm,
+        soloActivos = ViewBag.SoloActivos
+    }
+)
 
     </div>
+
+    @section Scripts {
+        <script>
+            function changePageSize(size) {
+                const url = new URL(window.location.href);
+                url.searchParams.set("pageSize", size);
+                url.searchParams.set("page", 1); // Reinicia a la primera página
+                window.location.href = url.toString();
+            }
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <script>
+            function confirmarEliminacion(formId) {
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¡No podrás revertir esto!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById(formId).submit();
+                    }
+                });
+                return false;
+            }
+        </script>
+    }
 </section>
