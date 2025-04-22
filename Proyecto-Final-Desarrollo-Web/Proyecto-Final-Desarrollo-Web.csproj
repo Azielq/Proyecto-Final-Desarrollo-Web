@@ -334,6 +334,7 @@
     <Compile Include="Models\Inventario.cs">
       <DependentUpon>FarmaU.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\FacturaViewModel.cs" />
     <Compile Include="Models\ViewModels\ImagenProductoViewModel.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
     <Compile Include="Models\Lotes.cs">
@@ -651,6 +652,10 @@
     <Content Include="Views\Shared\AccesoDenegado.cshtml" />
     <Content Include="Views\Proveedores\Details.cshtml" />
     <Content Include="Views\Proveedores\Index.cshtml" />
+    <Content Include="Views\Lotes\Index.cshtml" />
+    <Content Include="Views\Lotes\Create.cshtml" />
+    <Content Include="Views\Inventario\Index.cshtml" />
+    <Content Include="Views\Inventario\Create.cshtml" />
     <Content Include="Views\Proveedores\Create.cshtml" />
     <Content Include="Views\Proveedores\Edit.cshtml" />
     <Content Include="Views\Carrito\Index.cshtml" />
@@ -658,6 +663,16 @@
     <Content Include="Views\Carrito\_CarritoItems.cshtml" />
     <Content Include="Views\Carrito\_ResumenCarrito.cshtml" />
     <Content Include="Views\Carrito\ConfirmacionPedido.cshtml" />
+    <Content Include="Views\Inventario\Details.cshtml" />
+    <Content Include="Views\Inventario\Edit.cshtml" />
+    <Content Include="Views\Inventario\Delete.cshtml" />
+    <Content Include="Views\Inventario\Reporte.cshtml" />
+    <Content Include="Views\Inventario\MovimientosInventario.cshtml" />
+    <Content Include="Views\Lotes\Details.cshtml" />
+    <Content Include="Views\Lotes\Delete.cshtml" />
+    <Content Include="Views\Lotes\Edit.cshtml" />
+    <Content Include="Views\Lotes\LotesVencidos.cshtml" />
+    <Content Include="Views\Lotes\PocoStock.cshtml" />
     <Content Include="Views\Reportes\ReportesVentas.cshtml" />
     <Content Include="Views\Reportes\ReportesInventario.cshtml" />
     <Content Include="Views\Reportes\Index.cshtml" />

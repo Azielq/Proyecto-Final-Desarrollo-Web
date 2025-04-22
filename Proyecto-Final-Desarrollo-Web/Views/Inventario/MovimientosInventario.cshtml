@@ -1,0 +1,509 @@
+﻿@{
+    ViewBag.Title = "Movimientos de Inventario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <!-- Migas de pan -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Inventario")">Inventario</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Movimientos de Inventario</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-exchange-alt me-2"></i>Movimientos de Inventario</h5>
+            <div>
+                <a href="@Url.Action("ExportarExcel", "Inventario", new { report = "movimientos" })" class="btn btn-success btn-sm">
+                    <i class="fas fa-file-excel me-1"></i>Exportar Excel
+                </a>
+                <a href="@Url.Action("ExportarPDF", "Inventario", new { report = "movimientos" })" class="btn btn-danger btn-sm">
+                    <i class="fas fa-file-pdf me-1"></i>Exportar PDF
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Filtros de búsqueda -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Fecha Inicio</label>
+                    <input type="date" id="fechaInicio" class="form-control" />
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Fecha Fin</label>
+                    <input type="date" id="fechaFin" class="form-control" />
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Tipo de Movimiento</label>
+                    <select id="tipoMovimiento" class="form-select">
+                        <option value="">Todos</option>
+                        <option value="Entrada">Entradas</option>
+                        <option value="Entrada Inicial">Entradas Iniciales</option>
+                        <option value="Ajuste Entrada">Ajustes de Entrada</option>
+                        <option value="Salida">Salidas</option>
+                        <option value="Ajuste Salida">Ajustes de Salida</option>
+                    </select>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Producto</label>
+                    <select id="productoId" class="form-select">
+                        <option value="">Todos los productos</option>
+                        <!-- Se cargará vía AJAX -->
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Lote</label>
+                    <select id="loteId" class="form-select">
+                        <option value="">Todos los lotes</option>
+                        <!-- Se cargará vía AJAX -->
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="input-group mt-4">
+                        <input type="text" id="searchTerm" class="form-control" placeholder="Buscar...">
+                        <button class="btn btn-primary" type="button" id="btnSearch">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="col-md-3 text-end mt-4">
+                    <button type="button" class="btn btn-success" id="btnAplicarFiltros">
+                        <i class="fas fa-filter me-1"></i>Aplicar Filtros
+                    </button>
+                </div>
+            </div>
+
+            <!-- Estadísticas de Movimientos -->
+            <div class="row mb-4" id="estadisticas" style="display: none;">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card bg-primary text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-0">Total Movimientos</h6>
+                                    <h3 class="mb-0" id="totalMovimientos">0</h3>
+                                </div>
+                                <i class="fas fa-exchange-alt fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card bg-success text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-0">Total Entradas</h6>
+                                    <h3 class="mb-0" id="totalEntradas">0</h3>
+                                </div>
+                                <i class="fas fa-arrow-down fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card bg-danger text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-0">Total Salidas</h6>
+                                    <h3 class="mb-0" id="totalSalidas">0</h3>
+                                </div>
+                                <i class="fas fa-arrow-up fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="card bg-info text-white h-100">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="fw-bold mb-0">Valor Neto</h6>
+                                    <h3 class="mb-0" id="valorNeto">$0.00</h3>
+                                </div>
+                                <i class="fas fa-dollar-sign fa-2x"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabla de movimientos -->
+            <div class="table-responsive">
+                <table id="tablaMovimientos" class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag me-1"></i>ID</th>
+                            <th><i class="fas fa-calendar-alt me-1"></i>Fecha</th>
+                            <th><i class="fas fa-prescription-bottle-alt me-1"></i>Producto</th>
+                            <th><i class="fas fa-box me-1"></i>Lote</th>
+                            <th><i class="fas fa-calendar-alt me-1"></i>Vencimiento</th>
+                            <th><i class="fas fa-tags me-1"></i>Tipo</th>
+                            <th><i class="fas fa-cubes me-1"></i>Cantidad</th>
+                            <th><i class="fas fa-file-alt me-1"></i>Documento</th>
+                            <th><i class="fas fa-dollar-sign me-1"></i>Valor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Los datos se cargarán vía AJAX -->
+                        <tr>
+                            <td colspan="9" class="text-center">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                                <p class="mt-2">Cargando datos de movimientos...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <nav aria-label="Paginación">
+                        <ul class="pagination" id="paginacion">
+                            <!-- Se generará dinámicamente -->
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="d-inline-flex align-items-center">
+                        <label class="me-2">Mostrar:</label>
+                        <select id="pageSizeSelector" class="form-select form-select-sm">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de información adicional -->
+    <div class="card mt-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información sobre Movimientos de Inventario</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h6 class="mb-0">Tipos de Entrada</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Entrada Inicial</strong>
+                                        <p class="mb-0">Primer ingreso de un producto al sistema</p>
+                                    </div>
+                                    <span class="badge bg-success rounded-pill">
+                                        <i class="fas fa-arrow-down"></i>
+                                    </span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Entrada</strong>
+                                        <p class="mb-0">Ingresos por compras de inventario</p>
+                                    </div>
+                                    <span class="badge bg-success rounded-pill">
+                                        <i class="fas fa-arrow-down"></i>
+                                    </span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Ajuste Entrada</strong>
+                                        <p class="mb-0">Correcciones positivas al inventario</p>
+                                    </div>
+                                    <span class="badge bg-success rounded-pill">
+                                        <i class="fas fa-arrow-down"></i>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-danger text-white">
+                            <h6 class="mb-0">Tipos de Salida</h6>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Salida</strong>
+                                        <p class="mb-0">Salidas por venta de productos</p>
+                                    </div>
+                                    <span class="badge bg-danger rounded-pill">
+                                        <i class="fas fa-arrow-up"></i>
+                                    </span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Ajuste Salida</strong>
+                                        <p class="mb-0">Correcciones negativas al inventario</p>
+                                    </div>
+                                    <span class="badge bg-danger rounded-pill">
+                                        <i class="fas fa-arrow-up"></i>
+                                    </span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <strong>Merma</strong>
+                                        <p class="mb-0">Salidas por productos dañados o vencidos</p>
+                                    </div>
+                                    <span class="badge bg-danger rounded-pill">
+                                        <i class="fas fa-arrow-up"></i>
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            var datosMovimientos = {
+                draw: 0,
+                recordsTotal: 0,
+                recordsFiltered: 0,
+                data: [],
+                TotalEntradas: 0,
+                TotalSalidas: 0,
+                ValorTotalEntradas: 0,
+                ValorTotalSalidas: 0
+            };
+
+            var paginaActual = 1;
+            var tamanioPagina = 10;
+
+            // Establecer fechas por defecto (último mes)
+            var fechaFin = new Date();
+            var fechaInicio = new Date();
+            fechaInicio.setMonth(fechaInicio.getMonth() - 1);
+
+            $('#fechaInicio').val(fechaInicio.toISOString().split('T')[0]);
+            $('#fechaFin').val(fechaFin.toISOString().split('T')[0]);
+
+            // Cargar productos para el selector
+            cargarProductos();
+
+            // Cargar datos iniciales
+            cargarMovimientos();
+
+            // Evento para aplicar filtros
+            $('#btnAplicarFiltros').click(function() {
+                paginaActual = 1; // Volver a la primera página
+                cargarMovimientos();
+            });
+
+            // Eventos de búsqueda
+            $('#searchTerm').keypress(function(e) {
+                if (e.which === 13) {
+                    cargarMovimientos();
+                    return false;
+                }
+            });
+
+            $('#btnSearch').click(function() {
+                cargarMovimientos();
+            });
+
+            // Evento para cambiar tamaño de página
+            $('#pageSizeSelector').change(function() {
+                tamanioPagina = parseInt($(this).val());
+                paginaActual = 1; // Volver a la primera página
+                cargarMovimientos();
+            });
+
+            // Evento cuando se selecciona un producto
+            $('#productoId').change(function() {
+                var productoId = $(this).val();
+                if (productoId) {
+                    cargarLotesPorProducto(productoId);
+                } else {
+                    // Si no hay producto seleccionado, limpiar lotes
+                    $('#loteId').html('<option value="">Todos los lotes</option>');
+                }
+            });
+
+            function cargarProductos() {
+                $.ajax({
+                    url: '@Url.Action("GetProductos", "Productos")',
+                    type: 'GET',
+                    success: function(data) {
+                        var options = '<option value="">Todos los productos</option>';
+                        $.each(data, function(i, item) {
+                            options += '<option value="' + item.ID_Producto + '">' + item.Nombre + '</option>';
+                        });
+                        $('#productoId').html(options);
+                    }
+                });
+            }
+
+            function cargarLotesPorProducto(productoId) {
+                $.ajax({
+                    url: '@Url.Action("GetLotesPorProducto", "Lotes")',
+                    type: 'GET',
+                    data: { productoId: productoId },
+                    success: function(data) {
+                        var options = '<option value="">Todos los lotes</option>';
+                        $.each(data, function(i, item) {
+                            options += '<option value="' + item.id_Lote + '">Lote #' + item.id_Lote + ' - Vence: ' +
+                                      new Date(parseInt(item.fecha_vencimiento.substr(6))).toLocaleDateString() + '</option>';
+                        });
+                        $('#loteId').html(options);
+                    }
+                });
+            }
+
+            function cargarMovimientos() {
+                $('#tablaMovimientos tbody').html('<tr><td colspan="9" class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div><p class="mt-2">Cargando datos de movimientos...</p></td></tr>');
+
+                var request = {
+                    Start: (paginaActual - 1) * tamanioPagina,
+                    Length: tamanioPagina,
+                    SearchValue: $('#searchTerm').val(),
+                    SortColumn: 'fecha',
+                    SortDirection: 'desc',
+                    FechaInicio: $('#fechaInicio').val() ? new Date($('#fechaInicio').val()) : null,
+                    FechaFin: $('#fechaFin').val() ? new Date($('#fechaFin').val()) : null,
+                    ProductoId: $('#productoId').val() ? parseInt($('#productoId').val()) : null,
+                    LoteId: $('#loteId').val() ? parseInt($('#loteId').val()) : null,
+                    Tipo: $('#tipoMovimiento').val()
+                };
+
+                $.ajax({
+                    url: '@Url.Action("GetMovimientos", "Inventario")',
+                    type: 'POST',
+                    data: JSON.stringify(request),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        datosMovimientos = response;
+                        mostrarMovimientos();
+                        actualizarEstadisticas();
+                        generarPaginacion();
+
+                        // Mostrar las estadísticas
+                        $('#estadisticas').show();
+                    },
+                    error: function(error) {
+                        console.error('Error al cargar los movimientos:', error);
+                        $('#tablaMovimientos tbody').html('<tr><td colspan="9" class="text-center text-danger"><i class="fas fa-exclamation-circle me-2"></i>Error al cargar los datos. Intente nuevamente.</td></tr>');
+                    }
+                });
+            }
+
+            function mostrarMovimientos() {
+                var html = '';
+
+                if (datosMovimientos.data.length === 0) {
+                    html = '<tr><td colspan="9" class="text-center">No se encontraron movimientos con los criterios de búsqueda.</td></tr>';
+                } else {
+                    $.each(datosMovimientos.data, function(i, item) {
+                        var tipoClase = '';
+                        var iconoTipo = '';
+
+                        if (item.tipo.indexOf('Entrada') >= 0) {
+                            tipoClase = 'bg-success';
+                            iconoTipo = 'arrow-down';
+                        } else if (item.tipo.indexOf('Salida') >= 0) {
+                            tipoClase = 'bg-danger';
+                            iconoTipo = 'arrow-up';
+                        } else {
+                            tipoClase = 'bg-info';
+                            iconoTipo = 'exchange-alt';
+                        }
+
+                        html += '<tr>';
+                        html += '<td>' + item.ID_movimiento + '</td>';
+                        html += '<td>' + new Date(parseInt(item.fecha.substr(6))).toLocaleString() + '</td>';
+                        html += '<td>' + item.NombreProducto + '</td>';
+                        html += '<td>' + item.id_Lote + '</td>';
+                        html += '<td>' + new Date(parseInt(item.FechaVencimiento.substr(6))).toLocaleDateString() + '</td>';
+                        html += '<td><span class="badge ' + tipoClase + '"><i class="fas fa-' + iconoTipo + ' me-1"></i>' + item.tipo + '</span></td>';
+                        html += '<td>' + item.cantidad + '</td>';
+                        html += '<td>' + (item.DocumentoReferencia || 'N/A') + '</td>';
+                        html += '<td>' + formatCurrency(item.ValorMovimiento) + '</td>';
+                        html += '</tr>';
+                    });
+                }
+
+                $('#tablaMovimientos tbody').html(html);
+            }
+
+            function actualizarEstadisticas() {
+                $('#totalMovimientos').text(datosMovimientos.recordsFiltered);
+                $('#totalEntradas').text(datosMovimientos.TotalEntradas);
+                $('#totalSalidas').text(datosMovimientos.TotalSalidas);
+
+                var valorNeto = datosMovimientos.ValorTotalEntradas - datosMovimientos.ValorTotalSalidas;
+                $('#valorNeto').text(formatCurrency(valorNeto));
+
+                if (valorNeto >= 0) {
+                    $('#valorNeto').parent().addClass('text-success').removeClass('text-danger');
+                } else {
+                    $('#valorNeto').parent().addClass('text-danger').removeClass('text-success');
+                }
+            }
+
+            function generarPaginacion() {
+                var totalPaginas = Math.ceil(datosMovimientos.recordsFiltered / tamanioPagina);
+                var html = '';
+
+                // Anterior
+                html += '<li class="page-item ' + (paginaActual === 1 ? 'disabled' : '') + '">';
+                html += '<a class="page-link" href="javascript:void(0)" data-page="' + (paginaActual - 1) + '">Anterior</a>';
+                html += '</li>';
+
+                // Números de página
+                var startPage = Math.max(1, paginaActual - 2);
+                var endPage = Math.min(totalPaginas, paginaActual + 2);
+
+                for (var i = startPage; i <= endPage; i++) {
+                    html += '<li class="page-item ' + (i === paginaActual ? 'active' : '') + '">';
+                    html += '<a class="page-link" href="javascript:void(0)" data-page="' + i + '">' + i + '</a>';
+                    html += '</li>';
+                }
+
+                // Siguiente
+                html += '<li class="page-item ' + (paginaActual === totalPaginas || totalPaginas === 0 ? 'disabled' : '') + '">';
+                html += '<a class="page-link" href="javascript:void(0)" data-page="' + (paginaActual + 1) + '">Siguiente</a>';
+                html += '</li>';
+
+                $('#paginacion').html(html);
+
+                // Evento para cambiar de página
+                $('#paginacion .page-link').click(function() {
+                    if (!$(this).parent().hasClass('disabled')) {
+                        paginaActual = parseInt($(this).data('page'));
+                        cargarMovimientos();
+                    }
+                });
+            }
+
+            function formatCurrency(value) {
+                return '$' + value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+            }
+        });
+    </script>
+}

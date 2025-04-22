@@ -1,0 +1,155 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.LoteViewModel
+
+@{
+    ViewBag.Title = "Crear Lote";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <!-- Migas de pan -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Lotes")">Lotes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Crear Lote</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Crear Nuevo Lote</h5>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm())
+            {
+                @Html.AntiForgeryToken()
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <input type="hidden" name="returnToProducto" value="@ViewBag.ReturnToProducto" />
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-prescription-bottle-alt me-1"></i>Producto
+                            </label>
+                            @Html.DropDownList("ID_Producto", (SelectList)ViewBag.ID_Producto,
+                                new { @class = "form-select", required = "required" })
+                            @Html.ValidationMessageFor(model => model.ID_Producto, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-cubes me-1"></i>Cantidad
+                            </label>
+                            @Html.EditorFor(model => model.cantidad, new
+                            {
+                                htmlAttributes =
+                                new { @class = "form-control", type = "number", min = "1", required = "required" }
+                            })
+                            @Html.ValidationMessageFor(model => model.cantidad, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-calendar-alt me-1"></i>Fecha de Vencimiento
+                            </label>
+                            @Html.EditorFor(model => model.fecha_vencimiento, new
+                            {
+                                htmlAttributes =
+                                new { @class = "form-control", type = "date", required = "required" }
+                            })
+                            @Html.ValidationMessageFor(model => model.fecha_vencimiento, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="fas fa-map-marker-alt me-1"></i>Ubicación (opcional)
+                            </label>
+                            <select name="ubicacion" class="form-select">
+                                <option value="">-- Sin ubicación inicial --</option>
+                                <option value="Bodega A">Bodega A</option>
+                                <option value="Bodega B">Bodega B</option>
+                                <option value="Bodega C">Bodega C</option>
+                                <option value="Refrigerado">Refrigerado</option>
+                                <option value="Productos Controlados">Productos Controlados</option>
+                                <option value="Mostrador">Mostrador</option>
+                                <option value="Estante 1">Estante 1</option>
+                                <option value="Estante 2">Estante 2</option>
+                                <option value="Estante 3">Estante 3</option>
+                            </select>
+                            <small class="form-text text-muted">
+                                Si no asigna una ubicación, podrá hacerlo más tarde desde el módulo de Inventario.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <div class="d-flex justify-content-end">
+                        @if (ViewBag.ReturnToProducto)
+                        {
+                            <a href="@Url.Action("Inventario", "Productos", new { id = Model.ID_Producto })" class="btn btn-secondary me-2">
+                                <i class="fas fa-arrow-left me-1"></i>Volver al Producto
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="@Url.Action("Index", "Lotes")" class="btn btn-secondary me-2">
+                                <i class="fas fa-arrow-left me-1"></i>Volver
+                            </a>
+                        }
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i>Guardar
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Panel informativo -->
+    <div class="card mt-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información sobre lotes</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <p><strong>Recomendaciones para la creación de lotes:</strong></p>
+                <ul>
+                    <li>Asegúrese de que la fecha de vencimiento sea correcta según la documentación del producto.</li>
+                    <li>Es recomendable asignar una ubicación para facilitar el seguimiento en el inventario.</li>
+                    <li>Para productos controlados o que requieren refrigeración, use las ubicaciones específicas.</li>
+                    <li>La cantidad debe reflejar el número exacto de unidades recibidas.</li>
+                </ul>
+                <p class="mb-0">Recuerde que este lote será rastreado hasta su vencimiento o agotamiento.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function () {
+            // Establecer la fecha mínima como hoy
+            var today = new Date().toISOString().split('T')[0];
+            $('#fecha_vencimiento').attr('min', today);
+
+            // Si hay un error, mostrar alerta
+            if ($('.validation-summary-errors').length > 0) {
+                $('html, body').animate({
+                    scrollTop: $('.validation-summary-errors').offset().top - 100
+                }, 500);
+            }
+        });
+    </script>
+}
