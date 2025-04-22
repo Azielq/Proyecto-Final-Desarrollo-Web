@@ -382,6 +382,7 @@
     <Compile Include="Utilities\AuthorizeRolesAttribute.cs" />
     <Compile Include="Utilities\PaginationHelper.cs" />
     <Compile Include="Utilities\PBKDF2PasswordHasher.cs" />
+    <Compile Include="Utilities\SweetAlertHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
@@ -390,6 +391,8 @@
     <Content Include="Content\bootstrap-grid.rtl.min.css" />
     <Content Include="Content\bootstrap-icons\bootstrap-icons.css" />
     <Content Include="Content\bootstrap-icons\bootstrap-icons.min.css" />
+    <Content Include="Content\bootstrap-icons\font\bootstrap-icons.css" />
+    <Content Include="Content\bootstrap-icons\font\bootstrap-icons.min.css" />
     <Content Include="Content\bootstrap-reboot.css" />
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap-reboot.rtl.css" />
@@ -606,6 +609,9 @@
     <Content Include="Scripts\tinymce\CHANGELOG.md" />
     <Content Include="Scripts\tinymce\langs\README.md" />
     <Content Include="Scripts\tinymce\license.md" />
+    <Content Include="Content\bootstrap-icons\font\bootstrap-icons.json" />
+    <Content Include="Content\bootstrap-icons\font\fonts\bootstrap-icons.woff" />
+    <Content Include="Content\bootstrap-icons\font\fonts\bootstrap-icons.woff2" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
@@ -669,6 +675,14 @@
     <Content Include="Views\ImagenesProducto\Details.cshtml" />
     <Content Include="Views\ImgBB\Index.cshtml" />
     <Content Include="Views\ImgBB\ProductImages.cshtml" />
+    <Content Include="Views\Clientes\Index.cshtml" />
+    <Content Include="Views\Categorias\Index.cshtml" />
+    <Content Include="Views\Clientes\Create.cshtml" />
+    <Content Include="Views\Clientes\Edit.cshtml" />
+    <Content Include="Views\Clientes\Details.cshtml" />
+    <Content Include="Views\Clientes\Delete.cshtml" />
+    <Content Include="Views\Clientes\ComprasCliente.cshtml" />
+    <Content Include="Views\Shared\_SweetAlertPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

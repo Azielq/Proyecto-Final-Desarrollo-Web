@@ -1,0 +1,24 @@
+﻿@if (TempData["SweetAlertMessage"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            Swal.fire({
+                title: '@TempData["SweetAlertTitle"]',
+                text: '@TempData["SweetAlertMessage"]',
+                icon: '@TempData["SweetAlertType"]',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                // Si hay una URL de redirección almacenada, redirigir después de hacer clic en OK
+                @if (TempData["RedirectUrl"] != null)
+                {
+                    <text>
+                    if (result.isConfirmed) {
+                        window.location.href = '@TempData["RedirectUrl"]';
+                    }
+                    </text>
+                }
+            });
+        });
+    </script>
+}
