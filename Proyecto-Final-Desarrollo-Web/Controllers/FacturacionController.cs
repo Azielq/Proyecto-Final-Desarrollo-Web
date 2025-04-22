@@ -31,7 +31,8 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                     new SelectListItem { Value = "", Text = "Todos" },
                     new SelectListItem { Value = "Pendiente", Text = "Pendiente" },
                     new SelectListItem { Value = "Completada", Text = "Completada" },
-                    new SelectListItem { Value = "Cancelada", Text = "Cancelada" }
+                    new SelectListItem { Value = "Cancelada", Text = "Cancelada" },
+                    new SelectListItem { Value = "pagado", Text = "Pagado" }
                 };
 
                 // Consulta base
@@ -287,149 +288,376 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             return View(viewModel);
         }
 
-        // POST: Facturacion/BuscarProducto
-        [HttpPost]
+
+        [HttpGet]
+        public ActionResult BuscarClientes(string term)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return Json(new List<object>(), JsonRequestBehavior.AllowGet);
+
+            // Intentar convertir el término a número para buscar por documento
+            int docNum;
+            bool esNumero = int.TryParse(term, out docNum);
+
+            // Consulta base
+            var query = db.Clientes.Include(c => c.Personas).AsQueryable();
+
+            // Aplicar filtros según si el término es numérico o no
+            if (esNumero)
+            {
+                // Si el término es un número, buscamos por número de documento o por texto
+                query = query.Where(c =>
+                    c.Personas.Nombre.Contains(term) ||
+                    c.Personas.Apellido_1.Contains(term) ||
+                    c.Personas.numero_documento == docNum
+                );
+            }
+            else
+            {
+                // Si no es número, solo buscar por texto
+                query = query.Where(c =>
+                    c.Personas.Nombre.Contains(term) ||
+                    c.Personas.Apellido_1.Contains(term)
+                );
+            }
+
+            // Obtener resultados y formatear los resultados después de extraer los datos
+            var clientesDb = query.Take(10).ToList();
+
+            // Ahora que tenemos los datos en memoria, podemos usar string.Format o interpolación
+            var lista = clientesDb.Select(c => new {
+                id = c.id_cliente,
+                label = c.Personas.Nombre + " " + c.Personas.Apellido_1 + " (" + c.Personas.numero_documento + ")",
+                value = c.Personas.Nombre + " " + c.Personas.Apellido_1
+            }).ToList();
+
+            return Json(lista, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [HttpGet]  // acepta GET para que jQuery UI no necesite antiforgery
         public ActionResult BuscarProducto(string term)
         {
             if (string.IsNullOrWhiteSpace(term))
-                return Json(new List<object>());
+                return Json(new List<object>(), JsonRequestBehavior.AllowGet);
 
-            var productos = db.Productos
-                .Where(p => p.estado == "Activo" &&
-                       (p.Nombre.Contains(term) ||
-                        p.Marca.Contains(term) ||
-                        p.Categorias.Nombre.Contains(term)))
-                .Select(p => new
-                {
-                    id = p.ID_Producto,
-                    label = p.Nombre + " (" + p.Marca + ")",
-                    value = p.Nombre,
-                    precio = p.precio_venta,
-                    imagen = p.Imagenes_Producto
-                        .Where(i => i.Estado && i.EsPrincipal)
-                        .Select(i => i.URL)
-                        .FirstOrDefault(),
-                    stock = p.Lotes.Sum(l => l.cantidad),
-                    categoria = p.Categorias.Nombre
-                })
+            // Intentar convertir el término a número para buscar por ID
+            int idTerm;
+            bool esNumero = int.TryParse(term, out idTerm);
+
+            // Consulta base
+            var query = db.Productos
+                .Where(p => p.estado == "Activo")
+                .AsQueryable();
+
+            // Aplicar filtros según si el término es numérico o no
+            if (esNumero)
+            {
+                // Si el término es un número, buscar por ID o texto
+                query = query.Where(p =>
+                    p.Nombre.Contains(term) ||
+                    p.Marca.Contains(term) ||
+                    p.Categorias.Nombre.Contains(term) ||
+                    p.ID_Producto == idTerm
+                );
+            }
+            else
+            {
+                // Si no es número, solo buscar por texto
+                query = query.Where(p =>
+                    p.Nombre.Contains(term) ||
+                    p.Marca.Contains(term) ||
+                    p.Categorias.Nombre.Contains(term)
+                );
+            }
+
+            // Ejecutar la consulta para obtener los datos en memoria
+            var productosDb = query
+                .Include(p => p.Categorias)
+                .Include(p => p.Imagenes_Producto)
+                .Include(p => p.Lotes)
                 .Take(10)
                 .ToList();
+
+            // Ahora que los datos están en memoria, podemos formatear los resultados
+            var productos = productosDb.Select(p => new {
+                id = p.ID_Producto,
+                label = p.Nombre + " (" + p.ID_Producto + ")",  // lo que ve el usuario
+                value = p.Nombre,                               // lo que inserta en el input
+                precio = p.precio_venta,
+                imagen = p.Imagenes_Producto
+                    .Where(i => i.Estado && i.EsPrincipal)
+                    .Select(i => i.URL)
+                    .FirstOrDefault(),
+                stock = p.Lotes.Sum(l => l.cantidad),
+                categoria = p.Categorias.Nombre
+            }).ToList();
 
             return Json(productos, JsonRequestBehavior.AllowGet);
         }
 
-        // POST: Facturacion/Procesar
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Procesar(POSViewModel model)
-        {
-            // Verificar que haya un cliente seleccionado
-            if (model.ID_Cliente <= 0)
-            {
-                ModelState.AddModelError("ID_Cliente", "Debe seleccionar un cliente");
-                return Json(new { success = false, message = "Debe seleccionar un cliente" });
-            }
 
-            // Verificar que haya productos seleccionados
-            if (model.ProductosSeleccionados == null || model.ProductosSeleccionados.Count == 0)
+            // POST: Facturacion/Procesar
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public async Task<ActionResult> Procesar(POSViewModel model)
             {
-                ModelState.AddModelError("", "Debe agregar al menos un producto");
-                return Json(new { success = false, message = "Debe agregar al menos un producto" });
-            }
-
-            try
-            {
-                // Crear la factura
-                var factura = new Facturas
+                try
                 {
-                    fecha = DateTime.Now,
-                    ID_Cliente = model.ID_Cliente,
-                    total = model.Total,
-                    estado = "Completada"
-                };
+                    System.Diagnostics.Debug.WriteLine("=== INICIO PROCESAMIENTO DE VENTA ===");
 
-                db.Facturas.Add(factura);
-                await db.SaveChangesAsync();
-
-                // Crear los detalles de la factura y reducir inventario
-                foreach (var item in model.ProductosSeleccionados)
-                {
-                    var producto = await db.Productos.FindAsync(item.ID_Producto);
-
-                    if (producto == null)
+                    // Verificaciones iniciales
+                    if (model.ID_Cliente <= 0)
                     {
-                        throw new Exception($"Producto con ID {item.ID_Producto} no encontrado");
+                        return Json(new { success = false, message = "Debe seleccionar un cliente" }, JsonRequestBehavior.AllowGet);
                     }
 
-                    // Crear detalle de factura
-                    var detalle = new Detalles_Factura
+                    if (model.ProductosSeleccionados == null || model.ProductosSeleccionados.Count == 0)
                     {
-                        id_Factura = factura.id_Factura,
-                        ID_Producto = item.ID_Producto,
-                        cantidad = item.Cantidad,
-                        subtotal = item.Cantidad * item.PrecioUnitario
-                    };
-
-                    db.Detalles_Factura.Add(detalle);
-
-                    // Reducir el stock
-                    int cantidadPendiente = item.Cantidad;
-                    var lotes = db.Lotes
-                        .Where(l => l.ID_Producto == item.ID_Producto && l.cantidad > 0)
-                        .OrderBy(l => l.cantidad) // Usar primero los lotes con menos unidades
-                        .ToList();
-
-                    foreach (var lote in lotes)
-                    {
-                        if (cantidadPendiente <= 0) break;
-
-                        if (lote.cantidad >= cantidadPendiente)
-                        {
-                            lote.cantidad -= cantidadPendiente;
-                            cantidadPendiente = 0;
-                        }
-                        else
-                        {
-                            cantidadPendiente -= lote.cantidad;
-                            lote.cantidad = 0;
-                        }
-
-                        db.Entry(lote).State = EntityState.Modified;
+                        return Json(new { success = false, message = "Debe agregar al menos un producto" }, JsonRequestBehavior.AllowGet);
                     }
 
-                    // Registrar movimiento de inventario (adaptado a tu modelo real)
-                    var movimiento = new Movimientos_Inventario
+                    // Paso 1: Solo crear la factura 
+                    try
                     {
-                        id_Producto = item.ID_Producto,
-                        id_Lote = lotes.First().id_Lote, // ¡CORRECCIÓN! Usar id_Lote en lugar de id_lote
-                        tipo = "Venta",
-                        cantidad = item.Cantidad * -1, // Negativo porque es salida
-                        fecha = DateTime.Now,
-                        ID_Factura = factura.id_Factura
-                    };
+                        System.Diagnostics.Debug.WriteLine("PASO 1: Creando factura principal");
 
-                    db.Movimientos_Inventario.Add(movimiento);
+                        // Crear la factura
+                        var factura = new Facturas
+                        {
+                            fecha = DateTime.Now,
+                            ID_Cliente = model.ID_Cliente,
+                            total = model.Total,
+                            estado = "pagado"
+                        };
+
+                        db.Facturas.Add(factura);
+                        await db.SaveChangesAsync();
+
+                        System.Diagnostics.Debug.WriteLine($"Factura creada con ID: {factura.id_Factura}");
+
+                        // Paso 2: Crear los detalles de factura (sin tocar inventario aún)
+                        try
+                        {
+                            System.Diagnostics.Debug.WriteLine("PASO 2: Creando detalles de factura");
+
+                            foreach (var item in model.ProductosSeleccionados)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Creando detalle para producto ID: {item.ID_Producto}");
+
+                                // Verificar que el producto exista
+                                var producto = await db.Productos.FindAsync(item.ID_Producto);
+                                if (producto == null)
+                                {
+                                    throw new Exception($"Producto con ID {item.ID_Producto} no encontrado");
+                                }
+
+                                // Crear detalle de factura
+                                var detalle = new Detalles_Factura
+                                {
+                                    id_Factura = factura.id_Factura,
+                                    ID_Producto = item.ID_Producto,
+                                    cantidad = item.Cantidad,
+                                    subtotal = item.Cantidad * item.PrecioUnitario
+                                };
+
+                                db.Detalles_Factura.Add(detalle);
+                            }
+
+                            // Guardar los detalles
+                            await db.SaveChangesAsync();
+                            System.Diagnostics.Debug.WriteLine("Detalles de factura guardados correctamente");
+
+                            // Paso 3: Actualizar el inventario
+                            try
+                            {
+                                System.Diagnostics.Debug.WriteLine("PASO 3: Actualizando inventario");
+
+                                foreach (var item in model.ProductosSeleccionados)
+                                {
+                                    System.Diagnostics.Debug.WriteLine($"Actualizando inventario para producto ID: {item.ID_Producto}");
+
+                                    // Obtener lotes disponibles
+                                    var lotes = db.Lotes
+                                        .Where(l => l.ID_Producto == item.ID_Producto && l.cantidad > 0)
+                                        .OrderBy(l => l.cantidad)
+                                        .ToList();
+
+                                    if (lotes.Count == 0)
+                                    {
+                                        throw new Exception($"No se encontraron lotes para el producto ID {item.ID_Producto}");
+                                    }
+
+                                    // Reducir el stock de los lotes
+                                    int cantidadPendiente = item.Cantidad;
+
+                                    System.Diagnostics.Debug.WriteLine($"Cantidad a reducir: {cantidadPendiente}, Lotes disponibles: {lotes.Count}");
+
+                                    foreach (var lote in lotes)
+                                    {
+                                        System.Diagnostics.Debug.WriteLine($"Procesando lote ID: {lote.id_Lote}, Stock actual: {lote.cantidad}");
+
+                                        if (cantidadPendiente <= 0) break;
+
+                                        if (lote.cantidad >= cantidadPendiente)
+                                        {
+                                            lote.cantidad -= cantidadPendiente;
+                                            System.Diagnostics.Debug.WriteLine($"Reduciendo {cantidadPendiente} unidades, stock resultante: {lote.cantidad}");
+                                            cantidadPendiente = 0;
+                                        }
+                                        else
+                                        {
+                                            cantidadPendiente -= lote.cantidad;
+                                            System.Diagnostics.Debug.WriteLine($"Reduciendo todas las {lote.cantidad} unidades, pendiente: {cantidadPendiente}");
+                                            lote.cantidad = 0;
+                                        }
+
+                                        db.Entry(lote).State = EntityState.Modified;
+                                    }
+
+                                    if (cantidadPendiente > 0)
+                                    {
+                                        throw new Exception($"No hay suficiente stock para el producto {item.NombreProducto}");
+                                    }
+                                }
+
+                                // Guardar cambios de inventario
+                                await db.SaveChangesAsync();
+                                System.Diagnostics.Debug.WriteLine("Inventario actualizado correctamente");
+
+                                // Paso 4: Registrar movimientos de inventario
+                                try
+                                {
+                                    System.Diagnostics.Debug.WriteLine("PASO 4: Registrando movimientos de inventario");
+
+                                    foreach (var item in model.ProductosSeleccionados)
+                                    {
+                                        var loteId = db.Lotes
+                                            .Where(l => l.ID_Producto == item.ID_Producto)
+                                            .OrderByDescending(l => l.cantidad)
+                                            .Select(l => l.id_Lote)
+                                            .FirstOrDefault();
+
+                                        System.Diagnostics.Debug.WriteLine($"Registrando movimiento para producto ID: {item.ID_Producto}, Lote ID: {loteId}");
+
+                                        var movimiento = new Movimientos_Inventario
+                                        {
+                                            id_Producto = item.ID_Producto,
+                                            id_Lote = loteId,
+                                            tipo = "Venta",
+                                            cantidad = item.Cantidad * -1, // Negativo porque es salida
+                                            fecha = DateTime.Now,
+                                            ID_Factura = factura.id_Factura
+                                        };
+
+                                        db.Movimientos_Inventario.Add(movimiento);
+                                    }
+
+                                    // Guardar cambios de movimientos
+                                    await db.SaveChangesAsync();
+                                    System.Diagnostics.Debug.WriteLine("Movimientos de inventario registrados correctamente");
+
+                                    // Todo fue exitoso
+                                    System.Diagnostics.Debug.WriteLine("=== VENTA PROCESADA CORRECTAMENTE ===");
+
+                                    return Json(new
+                                    {
+                                        success = true,
+                                        message = $"Factura #{factura.id_Factura} creada correctamente",
+                                        facturaId = factura.id_Factura
+                                    }, JsonRequestBehavior.AllowGet);
+                                }
+                                catch (Exception exMovimientos)
+                                {
+                                    // Error en paso 4
+                                    string errorMessageMovimientos = ObtenerMensajeExcepcionDetallado(exMovimientos, "Error al registrar movimientos de inventario");
+                                    System.Diagnostics.Debug.WriteLine(errorMessageMovimientos);
+                                    throw new Exception(errorMessageMovimientos, exMovimientos);
+                                }
+                            }
+                            catch (Exception exInventario)
+                            {
+                                // Error en paso 3
+                                string errorMessageInventario = ObtenerMensajeExcepcionDetallado(exInventario, "Error al actualizar inventario");
+                                System.Diagnostics.Debug.WriteLine(errorMessageInventario);
+                                throw new Exception(errorMessageInventario, exInventario);
+                            }
+                        }
+                        catch (Exception exDetalles)
+                        {
+                            // Error en paso 2
+                            string errorMessageDetalles = ObtenerMensajeExcepcionDetallado(exDetalles, "Error al crear detalles de factura");
+                            System.Diagnostics.Debug.WriteLine(errorMessageDetalles);
+                            throw new Exception(errorMessageDetalles, exDetalles);
+                        }
+                    }
+                    catch (Exception exFactura)
+                    {
+                        // Error en paso 1
+                        string errorMessageFactura = ObtenerMensajeExcepcionDetallado(exFactura, "Error al crear factura principal");
+                        System.Diagnostics.Debug.WriteLine(errorMessageFactura);
+                        throw new Exception(errorMessageFactura, exFactura);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Error general
+                    string errorMessage = ObtenerMensajeExcepcionDetallado(ex, "Error general al procesar venta");
+                    System.Diagnostics.Debug.WriteLine(errorMessage);
+
+                    System.Diagnostics.Debug.WriteLine("=== ERROR PROCESANDO VENTA ===");
+
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Error al crear la factura: " + errorMessage
+                    }, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            // Método para obtener el mensaje detallado de una excepción
+            private string ObtenerMensajeExcepcionDetallado(Exception ex, string prefijo)
+            {
+                if (ex == null) return prefijo;
+
+                System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                sb.Append(prefijo).Append(": ").Append(ex.Message);
+
+                // Extraer información detallada de la excepción de EF
+                if (ex is System.Data.Entity.Infrastructure.DbUpdateException dbEx)
+                {
+                    if (dbEx.InnerException != null)
+                    {
+                        sb.Append(" - ").Append(dbEx.InnerException.Message);
+
+                        // Si es System.Data.Entity.Core.UpdateException
+                        if (dbEx.InnerException is System.Data.Entity.Core.UpdateException updateEx &&
+                            updateEx.InnerException != null)
+                        {
+                            sb.Append(" - ").Append(updateEx.InnerException.Message);
+
+                            // Si es System.Data.SqlClient.SqlException
+                            if (updateEx.InnerException is System.Data.SqlClient.SqlException sqlEx)
+                            {
+                                sb.Append(" - SQL Error: ").Append(sqlEx.Number);
+                                sb.Append(" - ").Append(sqlEx.Message);
+                            }
+                        }
+                    }
+                }
+                // Si no es DbUpdateException pero tiene inner exception
+                else if (ex.InnerException != null)
+                {
+                    sb.Append(" - ").Append(ex.InnerException.Message);
+
+                    if (ex.InnerException.InnerException != null)
+                    {
+                        sb.Append(" - ").Append(ex.InnerException.InnerException.Message);
+                    }
                 }
 
-                // Guardar cambios en la base de datos
-                await db.SaveChangesAsync();
-
-                return Json(new
-                {
-                    success = true,
-                    message = $"Factura #{factura.id_Factura} creada correctamente",
-                    facturaId = factura.id_Factura
-                });
+                return sb.ToString();
             }
-            catch (Exception ex)
-            {
-                return Json(new
-                {
-                    success = false,
-                    message = "Error al crear la factura: " + ex.Message
-                });
-            }
-        }
 
         // POST: Facturacion/Cancel/5
         [HttpPost]

@@ -1,104 +1,99 @@
 ﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.FacturaViewModel
 @{
     ViewBag.Title = "Imprimir Factura";
-    Layout = "~/Views/Shared/_LayoutPrint.cshtml"; // Layout simplificado para impresión
+    Layout = "~/Views/Shared/_LayoutPrint.cshtml";
 }
 
-<div class="container-fluid mt-4 mb-5">
-    <div class="row">
-        <div class="col-12 text-center mb-4">
-            <h1 class="fw-bold">FARMAU</h1>
-            <p class="mb-0">Farmacia Universitaria</p>
-            <p class="mb-0">Tel: (506) 2222-5555</p>
-            <p>info@farmau.com</p>
-            <hr class="my-3">
+<!-- Contenido de factura sin márgenes adicionales -->
+<div class="mt-0">
+    <!-- Encabezado de la factura -->
+    <div class="text-center mb-2">
+        <h3 class="fw-bold mb-0">FARMAU</h3>
+        <p class="mb-0 small">Farmacia Universitaria</p>
+        <p class="mb-0 small">Tel: (506) 2222-5555</p>
+        <p class="mb-0 small">info@farmau.com</p>
+        <hr class="my-2">
+    </div>
+
+    <!-- Título de la factura -->
+    <h4 class="text-center mb-2">FACTURA</h4>
+
+    <!-- Información de la factura y cliente en dos columnas -->
+    <div class="row mb-2">
+        <div class="col-6">
+            <p class="mb-1 small"><strong>Factura #:</strong> @Model.id_Factura</p>
+            <p class="mb-1 small"><strong>Fecha:</strong> @(Model.fecha.HasValue ? Model.fecha.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")</p>
+            <p class="mb-1 small"><strong>Estado:</strong> @Model.estado</p>
+        </div>
+        <div class="col-6">
+            <p class="mb-1 small"><strong>Cliente:</strong> @Model.NombreCliente</p>
+            <p class="mb-1 small"><strong>Documento:</strong> @Model.DocumentoCliente</p>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-12">
-            <h2 class="text-center mb-4">FACTURA</h2>
+    <!-- Tabla de productos -->
+    <table class="table table-bordered table-sm small">
+        <thead>
+            <tr class="table-light">
+                <th>Producto</th>
+                <th class="text-center">Cantidad</th>
+                <th class="text-end">Precio Unitario</th>
+                <th class="text-end">Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detalle in Model.Detalles)
+            {
+                <tr>
+                    <td>
+                        @detalle.NombreProducto
+                        <small class="text-muted d-block">@detalle.Categoria</small>
+                    </td>
+                    <td class="text-center">@detalle.cantidad</td>
+                    <td class="text-end">₡@detalle.PrecioUnitario.ToString("N2")</td>
+                    <td class="text-end">₡@detalle.subtotal.ToString("N2")</td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                <td class="text-end">₡@(Model.Detalles.Sum(d => d.subtotal).ToString("N2"))</td>
+            </tr>
+            <tr>
+                <td colspan="3" class="text-end"><strong>IVA (13%):</strong></td>
+                <td class="text-end">₡@((Model.Detalles.Sum(d => d.subtotal) * 0.13m).ToString("N2"))</td>
+            </tr>
+            <tr>
+                <td colspan="3" class="text-end"><strong>TOTAL:</strong></td>
+                <td class="text-end"><strong>₡@Model.total.ToString("N2")</strong></td>
+            </tr>
+        </tfoot>
+    </table>
 
-            <div class="row mb-4">
-                <div class="col-sm-6">
-                    <p><strong>Factura #:</strong> @Model.id_Factura</p>
-                    <p><strong>Fecha:</strong> @(Model.fecha.HasValue ? Model.fecha.Value.ToString("dd/MM/yyyy HH:mm") : "N/A")</p>
-                    <p><strong>Estado:</strong> @Model.estado</p>
-                </div>
-                <div class="col-sm-6">
-                    <p><strong>Cliente:</strong> @Model.NombreCliente</p>
-                    <p><strong>Documento:</strong> @Model.DocumentoCliente</p>
-                </div>
-            </div>
+    <!-- Información adicional -->
+    <div class="mt-2">
+        @if (!string.IsNullOrEmpty(Model.MetodoPagoSeleccionado))
+        {
+            <p class="mb-1 small"><strong>Método de pago:</strong> @Model.MetodoPagoSeleccionado</p>
+        }
 
-            <!-- Detalles de productos -->
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Precio Unitario</th>
-                        <th>Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var detalle in Model.Detalles)
-                    {
-                        <tr>
-                            <td>
-                                @detalle.NombreProducto
-                                <small class="text-muted d-block">@detalle.Categoria</small>
-                            </td>
-                            <td class="text-center">@detalle.cantidad</td>
-                            <td class="text-end">@detalle.PrecioUnitario.ToString("C2")</td>
-                            <td class="text-end">@detalle.subtotal.ToString("C2")</td>
-                        </tr>
-                    }
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
-                        <td class="text-end">@(Model.Detalles.Sum(d => d.subtotal)).ToString("C2")</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" class="text-end"><strong>IVA (13%):</strong></td>
-                        <td class="text-end">@(Model.Detalles.Sum(d => d.subtotal) * 0.13m).ToString("C2")</td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" class="text-end"><strong>TOTAL:</strong></td>
-                        <td class="text-end"><strong>@Model.total.ToString("C2")</strong></td>
-                    </tr>
-                </tfoot>
-            </table>
+        @if (!string.IsNullOrEmpty(Model.notas))
+        {
+            <p class="mb-1 small"><strong>Notas:</strong> @Model.notas</p>
+        }
 
-            <!-- Información adicional -->
-            <div class="row mt-4">
-                <div class="col-12">
-                    @if (!string.IsNullOrEmpty(Model.MetodoPagoSeleccionado))
-                    {
-                        <p><strong>Método de pago:</strong> @Model.MetodoPagoSeleccionado</p>
-                    }
+        <hr class="my-2">
 
-                    @if (!string.IsNullOrEmpty(Model.notas))
-                    {
-                        <p><strong>Notas:</strong> @Model.notas</p>
-                    }
-
-                    <hr class="my-4">
-
-                    <p class="text-center mb-0">¡Gracias por su compra!</p>
-                    <p class="text-center">
-                        <small>Esta factura fue generada el @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</small>
-                    </p>
-                </div>
-            </div>
-        </div>
+        <p class="text-center mb-0 small">¡Gracias por su compra!</p>
+        <p class="text-center small mb-2">
+            <small>Esta factura fue generada el @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</small>
+        </p>
     </div>
 </div>
 
 <script type="text/javascript">
-    // Imprimir automáticamente
-    window.onload = function() {
+    window.onload = function () {
         window.print();
     }
 </script>

@@ -4,6 +4,9 @@
     ViewBag.NeedsJQueryUI = true; // Para el autocomplete
 }
 
+<!-- Asegurarnos de incluir los estilos de jQuery UI en el <head> -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
 <div class="container">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
@@ -101,12 +104,14 @@
                     <form id="formularioVenta">
                         @Html.AntiForgeryToken()
 
-                        <!-- Cliente -->
+                        <!-- Cliente con autocomplete -->
                         <div class="mb-3">
-                            <label for="ID_Cliente" class="form-label">Cliente:</label>
-                            @Html.DropDownList("ID_Cliente", (SelectList)ViewBag.ID_Cliente, "Seleccione un cliente", new { @class = "form-select", required = "required" })
-                            <div class="invalid-feedback">Por favor seleccione un cliente.</div>
+                            <label for="buscarCliente" class="form-label">Cliente:</label>
+                            <input type="text" id="buscarCliente" class="form-control" placeholder="Buscar por nombre o cédula..." autocomplete="off" required />
+                            <input type="hidden" id="ID_Cliente" name="ID_Cliente" />
+                            <div class="invalid-feedback">Por favor seleccione un cliente válido.</div>
                         </div>
+
 
                         <!-- Método de pago -->
                         <div class="mb-3">
@@ -203,6 +208,10 @@
 </div>
 
 @section scripts {
+    <!-- Asegurarnos de que jQuery y jQuery UI se carguen correctamente -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
     <script>
         // Variables globales
         let productos = [];
@@ -210,18 +219,13 @@
         const IVA = 0.13; // 13%
 
         $(document).ready(function () {
+            console.log("jQuery cargado: " + (typeof jQuery !== 'undefined'));
+            console.log("jQuery UI cargado: " + (typeof $.ui !== 'undefined'));
+
             // Configurar autocomplete para búsqueda de productos
             $("#buscarProducto").autocomplete({
-                source: function (request, response) {
-                    $.ajax({
-                        url: '@Url.Action("BuscarProducto", "Facturacion")',
-                        type: "POST",
-                        dataType: "json",
-                        data: { term: request.term },
-                        success: function (data) {
-                            response(data);
-                        }
-                    });
+                source: function(request, response) {
+                    $.getJSON('@Url.Action("BuscarProducto", "Facturacion")', { term: request.term }, response);
                 },
                 minLength: 2,
                 select: function (event, ui) {
@@ -252,6 +256,30 @@
 
                     return false;
                 }
+            }).autocomplete("widget").addClass("autocomplete-results");
+
+            // Botón de búsqueda de productos
+            $("#btnBuscarProducto").click(function() {
+                if ($("#buscarProducto").val().trim() !== "") {
+                    // Simular que el usuario presiona Enter en el campo de búsqueda
+                    $("#buscarProducto").autocomplete("search", $("#buscarProducto").val());
+                }
+            });
+
+            // --- Autocomplete Clientes ---
+            $("#buscarCliente").autocomplete({
+                source: '@Url.Action("BuscarClientes", "Facturacion")',
+                minLength: 2,
+                select: function(event, ui) {
+                    $("#buscarCliente").val(ui.item.value);   // muestra el nombre
+                    $("#ID_Cliente").val(ui.item.id);         // guarda el id real
+                    return false;
+                }
+            }).autocomplete("widget").addClass("autocomplete-results");
+
+            // Si el usuario borra el texto, invalidamos la selección
+            $("#buscarCliente").on("keydown", function() {
+                $("#ID_Cliente").val("");
             });
 
             // Agregar producto al carrito
@@ -261,7 +289,12 @@
 
                 // Validar cantidad
                 if (!cantidad || cantidad <= 0 || cantidad > producto.stock) {
-                    alert("Por favor ingrese una cantidad válida (1-" + producto.stock + ")");
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Cantidad inválida',
+                        text: "Por favor ingrese una cantidad válida (1-" + producto.stock + ")",
+                        confirmButtonColor: '#3085d6'
+                    });
                     return;
                 }
 
@@ -272,7 +305,12 @@
                     // Actualizar cantidad si ya existe
                     const nuevaCantidad = productos[index].cantidad + cantidad;
                     if (nuevaCantidad > producto.stock) {
-                        alert("No hay suficiente stock disponible");
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Stock insuficiente',
+                            text: "No hay suficiente stock disponible",
+                            confirmButtonColor: '#3085d6'
+                        });
                         return;
                     }
                     productos[index].cantidad = nuevaCantidad;
@@ -305,18 +343,33 @@
 
                 // Validar que haya productos
                 if (productos.length === 0) {
-                    alert("Debe agregar al menos un producto");
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Carrito vacío',
+                        text: "Debe agregar al menos un producto",
+                        confirmButtonColor: '#3085d6'
+                    });
                     return;
                 }
 
                 // Validar cliente y método de pago
                 if (!$("#ID_Cliente").val()) {
-                    alert("Debe seleccionar un cliente");
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Cliente requerido',
+                        text: "Debe seleccionar un cliente",
+                        confirmButtonColor: '#3085d6'
+                    });
                     return;
                 }
 
                 if (!$("#MetodoPago").val()) {
-                    alert("Debe seleccionar un método de pago");
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Método de pago requerido',
+                        text: "Debe seleccionar un método de pago",
+                        confirmButtonColor: '#3085d6'
+                    });
                     return;
                 }
 
@@ -325,39 +378,49 @@
                 $("#confirmModal").modal("show");
             });
 
-            // Confirmar venta
+            // Confirmar venta - Implementación alternativa
             $("#btnConfirmarVenta").click(function () {
                 // Ocultar modal de confirmación
                 $("#confirmModal").modal("hide");
 
-                // Preparar datos para enviar
-                const data = {
-                    ID_Cliente: $("#ID_Cliente").val(),
-                    MetodoPago: $("#MetodoPago").val(),
-                    Total: precioTotal,
-                    ProductosSeleccionados: productos.map(p => ({
-                        ID_Producto: p.id,
-                        NombreProducto: p.nombre,
-                        Cantidad: p.cantidad,
-                        PrecioUnitario: p.precio,
-                        Subtotal: p.subtotal
-                    }))
-                };
+                // Crear un formulario real en lugar de usar AJAX directamente
+                var form = $('<form></form>');
+                form.attr('method', 'POST');
+                form.attr('action', '@Url.Action("Procesar", "Facturacion")');
 
-                // Enviar datos al servidor
-                $.ajax({
-                    url: '@Url.Action("Procesar", "Facturacion")',
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify(data),
-                    dataType: "json",
-                    beforeSend: function (xhr) {
-                        // Agregar token antiforgery
-                        xhr.setRequestHeader("RequestVerificationToken",
-                            $('input[name="__RequestVerificationToken"]').val());
-                    },
-                    success: function (response) {
-                        if (response.success) {
+                // Añadir token anti-forgery al formulario
+                form.append($('input[name="__RequestVerificationToken"]').clone());
+
+                // Añadir datos del cliente y método de pago
+                form.append($('<input type="hidden" name="ID_Cliente" />').val($("#ID_Cliente").val()));
+                form.append($('<input type="hidden" name="MetodoPago" />').val($("#MetodoPago").val()));
+                form.append($('<input type="hidden" name="Total" />').val(precioTotal));
+
+                // Añadir productos seleccionados
+                productos.forEach(function(producto, index) {
+                    form.append($('<input type="hidden" name="ProductosSeleccionados[' + index + '].ID_Producto" />').val(producto.id));
+                    form.append($('<input type="hidden" name="ProductosSeleccionados[' + index + '].NombreProducto" />').val(producto.nombre));
+                    form.append($('<input type="hidden" name="ProductosSeleccionados[' + index + '].Cantidad" />').val(producto.cantidad));
+                    form.append($('<input type="hidden" name="ProductosSeleccionados[' + index + '].PrecioUnitario" />').val(producto.precio));
+                    form.append($('<input type="hidden" name="ProductosSeleccionados[' + index + '].Subtotal" />').val(producto.subtotal));
+                });
+
+                // Añadir el formulario al documento y enviarlo
+                $('body').append(form);
+
+                // Crear un iframe oculto para recibir la respuesta sin recargar la página
+                var iframeName = 'submit_iframe_' + new Date().getTime();
+                var iframe = $('<iframe name="' + iframeName + '" style="display:none;"></iframe>');
+                $('body').append(iframe);
+
+                // Configurar el formulario para enviar al iframe
+                form.attr('target', iframeName);
+
+                // Manejar la respuesta en el iframe
+                iframe.on('load', function() {
+                    try {
+                        var response = JSON.parse($(this).contents().find('body').text());
+                        if (response && response.success) {
                             // Mostrar modal de éxito
                             $("#facturaGenerada").text(response.facturaId);
                             $("#btnVerFactura").attr("href", '@Url.Action("Details", "Facturacion")/' + response.facturaId);
@@ -367,21 +430,63 @@
                             // Limpiar formulario
                             limpiarFormulario();
                         } else {
-                            alert("Error: " + response.message);
+                            var errorMsg = response && response.message ? response.message : "Error desconocido al procesar la venta.";
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error al procesar la venta',
+                                text: errorMsg,
+                                confirmButtonColor: '#3085d6'
+                            });
                         }
-                    },
-                    error: function (error) {
-                        console.error(error);
-                        alert("Error al procesar la venta. Por favor intente nuevamente.");
+                    } catch (e) {
+                        // Si no podemos parsear JSON, mostramos el contenido como está
+                        var content = $(this).contents().find('body').html();
+                        if (content.indexOf("success") !== -1 && content.indexOf("facturaId") !== -1) {
+                            // Es probable que sea un éxito pero el JSON no se pudo parsear
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Venta exitosa',
+                                text: "Venta procesada correctamente. Refresque la página para ver los cambios.",
+                                confirmButtonColor: '#3085d6'
+                            });
+                            limpiarFormulario();
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error al procesar la venta',
+                                text: content,
+                                confirmButtonColor: '#3085d6'
+                            });
+                        }
                     }
+
+                    // Limpiar
+                    setTimeout(function() {
+                        form.remove();
+                        iframe.remove();
+                    }, 1000);
                 });
+
+                // Enviar el formulario
+                form.submit();
             });
 
             // Cancelar venta
             $("#btnCancelar").click(function () {
-                if (confirm("¿Está seguro que desea cancelar esta venta?")) {
-                    limpiarFormulario();
-                }
+                Swal.fire({
+                    title: '¿Cancelar venta?',
+                    text: "¿Está seguro que desea cancelar esta venta?",
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Sí, cancelar',
+                    cancelButtonText: 'No, mantener'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        limpiarFormulario();
+                    }
+                });
             });
         });
 
@@ -451,7 +556,12 @@
                     productos[index].subtotal = productos[index].cantidad * productos[index].precio;
                     actualizarTablaProductos();
                 } else {
-                    alert("No hay suficiente stock disponible");
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Stock insuficiente',
+                        text: "No hay suficiente stock disponible",
+                        confirmButtonColor: '#3085d6'
+                    });
                 }
             });
 
@@ -482,6 +592,7 @@
             productos = [];
             actualizarTablaProductos();
             $("#ID_Cliente").val("");
+            $("#buscarCliente").val("");
             $("#MetodoPago").val("");
             $("#buscarProducto").val("");
             $("#productoSeleccionado").addClass("d-none");
