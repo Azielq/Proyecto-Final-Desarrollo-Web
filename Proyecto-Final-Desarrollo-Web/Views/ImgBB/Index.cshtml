@@ -1,0 +1,121 @@
+﻿@{
+    ViewBag.Title = "Gestor de Imágenes con ImgBB";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Gestor de Imágenes</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-images me-2"></i>Gestor de Imágenes con ImgBB</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="bi bi-box-seam me-2"></i>Gestionar Imágenes de Productos</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p>Desde aquí puedes gestionar las imágenes de los productos de tu catálogo.</p>
+                                    <p>Selecciona un producto desde la lista para administrar sus imágenes:</p>
+
+                                    <div class="mb-3">
+                                        <a href="@Url.Action("Index", "Productos")" class="btn btn-primary">
+                                            <i class="bi bi-box2 me-1"></i>Ver Productos
+                                        </a>
+                                    </div>
+
+                                    <div class="alert alert-info">
+                                        <i class="bi bi-info-circle-fill me-2"></i>
+                                        Para gestionar las imágenes de un producto específico, ve a la lista de productos,
+                                        selecciona un producto y haz clic en "Gestionar Imágenes".
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0"><i class="bi bi-cloud-upload me-2"></i>Acerca de ImgBB</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-center mb-3">
+                                        <img src="https://cdn-1.webcatalog.io/catalog/imgbb/imgbb-icon-unplated.png?v=1733731311286" alt="ImgBB Logo" height="60">
+                                    </div>
+
+                                    <p>ImgBB es un servicio gratuito de alojamiento de imágenes que permite subir y compartir tus imágenes de manera sencilla.</p>
+
+                                    <h6>Características:</h6>
+                                    <ul>
+                                        <li>Almacenamiento ilimitado para tus imágenes</li>
+                                        <li>Subida de imágenes hasta 32 MB</li>
+                                        <li>Soporta formatos como JPG, PNG, GIF, WEBP</li>
+                                        <li>Optimización automática de imágenes</li>
+                                        <li>URLs permanentes para tus imágenes</li>
+                                    </ul>
+
+                                    <div class="alert alert-warning">
+                                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                        Para un uso a mayor escala, se tiene que usar una API Key premium de ImgBB
+                                        o migrar a un servicio de almacenamiento propio, para este proyecto por el momento funciona al no ser tan grande.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instrucciones adicionales -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="bi bi-question-circle me-2"></i>Instrucciones de Uso</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-1-circle me-2"></i>Subir imágenes desde archivo local a ImgBB</h6>
+                            <ol>
+                                <li>Selecciona un producto y después ver detalles, una vez dentro selecciona ImágenesImgBB</li>
+                                <li>En la sección "Subir imagen desde archivo", haz clic en "Seleccionar archivo"</li>
+                                <li>Elige una imagen de tu dispositivo (hasta 10 MB)</li>
+                                <li>Agrega una descripción (opcional)</li>
+                                <li>Marca la casilla "Establecer como imagen principal" si lo deseas</li>
+                                <li>Haz clic en "Subir Imagen"</li>
+                            </ol>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="bi bi-2-circle me-2"></i>Agregar imágenes desde URL</h6>
+                            <ol>
+                                <li>Selecciona un producto para gestionar sus imágenes</li>
+                                <li>En la sección "Agregar imagen desde URL", introduce la URL de la imagen</li>
+                                <li>Agrega una descripción (opcional)</li>
+                                <li>Marca la casilla "Establecer como imagen principal" si lo deseas</li>
+                                <li>Haz clic en "Agregar desde URL"</li>
+                            </ol>
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle-fill me-2"></i>
+                                Las imágenes añadidas por URL no se almacenan en ImgBB, sino que se referencia directamente su ubicación original.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            </li>
+            </ol>
+        </div>
+    </div>
+</div>
+    </div>
+</div>

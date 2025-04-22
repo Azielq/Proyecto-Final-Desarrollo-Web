@@ -70,6 +70,18 @@
           <Property Name="total" Type="decimal" Precision="10" Scale="2" Nullable="false" />
           <Property Name="estado" Type="varchar" MaxLength="15" Nullable="false" />
         </EntityType>
+        <EntityType Name="Imagenes_Producto">
+          <Key>
+            <PropertyRef Name="ID_Imagen" />
+          </Key>
+          <Property Name="ID_Imagen" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ID_Producto" Type="int" Nullable="false" />
+          <Property Name="URL" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="Descripcion" Type="varchar" MaxLength="100" />
+          <Property Name="EsPrincipal" Type="bit" Nullable="false" />
+          <Property Name="FechaCreacion" Type="datetime" Nullable="false" />
+          <Property Name="Estado" Type="bit" Nullable="false" />
+        </EntityType>
         <EntityType Name="Inventario">
           <Key>
             <PropertyRef Name="id_Inventario" />
@@ -289,6 +301,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Imagenes_Producto_Productos">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
+          <End Role="Imagenes_Producto" Type="Self.Imagenes_Producto" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
+            </Principal>
+            <Dependent Role="Imagenes_Producto">
+              <PropertyRef Name="ID_Producto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Inventario_Lote">
           <End Role="Lotes" Type="Self.Lotes" Multiplicity="1" />
           <End Role="Inventario" Type="Self.Inventario" Multiplicity="*" />
@@ -417,6 +441,7 @@
           <EntitySet Name="Detalles_Compras_Farmacia" EntityType="Self.Detalles_Compras_Farmacia" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Detalles_Factura" EntityType="Self.Detalles_Factura" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Facturas" EntityType="Self.Facturas" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Imagenes_Producto" EntityType="Self.Imagenes_Producto" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Inventario" EntityType="Self.Inventario" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Lotes" EntityType="Self.Lotes" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Medicos" EntityType="Self.Medicos" Schema="dbo" store:Type="Tables" />
@@ -462,6 +487,10 @@
           <AssociationSet Name="FK_Facturas_Cliente" Association="Self.FK_Facturas_Cliente">
             <End Role="Clientes" EntitySet="Clientes" />
             <End Role="Facturas" EntitySet="Facturas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Imagenes_Producto_Productos" Association="Self.FK_Imagenes_Producto_Productos">
+            <End Role="Productos" EntitySet="Productos" />
+            <End Role="Imagenes_Producto" EntitySet="Imagenes_Producto" />
           </AssociationSet>
           <AssociationSet Name="FK_Inventario_Lote" Association="Self.FK_Inventario_Lote">
             <End Role="Lotes" EntitySet="Lotes" />
@@ -589,6 +618,19 @@
           <NavigationProperty Name="Detalles_Factura" Relationship="Self.FK_DetallesFactura_Factura" FromRole="Facturas" ToRole="Detalles_Factura" />
           <NavigationProperty Name="Movimientos_Inventario" Relationship="Self.FK_Movimientos_Factura" FromRole="Facturas" ToRole="Movimientos_Inventario" />
         </EntityType>
+        <EntityType Name="Imagenes_Producto">
+          <Key>
+            <PropertyRef Name="ID_Imagen" />
+          </Key>
+          <Property Name="ID_Imagen" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ID_Producto" Type="Int32" Nullable="false" />
+          <Property Name="URL" Type="String" MaxLength="255" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Descripcion" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="EsPrincipal" Type="Boolean" Nullable="false" />
+          <Property Name="FechaCreacion" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Estado" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="Productos" Relationship="Self.FK_Imagenes_Producto_Productos" FromRole="Imagenes_Producto" ToRole="Productos" />
+        </EntityType>
         <EntityType Name="Inventario">
           <Key>
             <PropertyRef Name="id_Inventario" />
@@ -674,6 +716,7 @@
           <NavigationProperty Name="Categorias" Relationship="Self.FK_Medicamentos_Categoría" FromRole="Productos" ToRole="Categorias" />
           <NavigationProperty Name="Detalles_Compras_Farmacia" Relationship="Self.FK_DetallesCompras_Producto" FromRole="Productos" ToRole="Detalles_Compras_Farmacia" />
           <NavigationProperty Name="Detalles_Factura" Relationship="Self.FK_DetallesFactura_Producto" FromRole="Productos" ToRole="Detalles_Factura" />
+          <NavigationProperty Name="Imagenes_Producto" Relationship="Self.FK_Imagenes_Producto_Productos" FromRole="Productos" ToRole="Imagenes_Producto" />
           <NavigationProperty Name="Lotes" Relationship="Self.FK_Lotes_Producto" FromRole="Productos" ToRole="Lotes" />
           <NavigationProperty Name="Movimientos_Inventario" Relationship="Self.FK_Movimientos_Producto" FromRole="Productos" ToRole="Movimientos_Inventario" />
         </EntityType>
@@ -867,6 +910,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_Imagenes_Producto_Productos">
+          <End Role="Productos" Type="Self.Productos" Multiplicity="1" />
+          <End Role="Imagenes_Producto" Type="Self.Imagenes_Producto" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Productos">
+              <PropertyRef Name="ID_Producto" />
+            </Principal>
+            <Dependent Role="Imagenes_Producto">
+              <PropertyRef Name="ID_Producto" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_Inventario_Lote">
           <End Role="Lotes" Type="Self.Lotes" Multiplicity="1" />
           <End Role="Inventario" Type="Self.Inventario" Multiplicity="*" />
@@ -959,6 +1014,7 @@
           <EntitySet Name="Detalles_Compras_Farmacia" EntityType="Self.Detalles_Compras_Farmacia" />
           <EntitySet Name="Detalles_Factura" EntityType="Self.Detalles_Factura" />
           <EntitySet Name="Facturas" EntityType="Self.Facturas" />
+          <EntitySet Name="Imagenes_Producto" EntityType="Self.Imagenes_Producto" />
           <EntitySet Name="Inventario" EntityType="Self.Inventario" />
           <EntitySet Name="Lotes" EntityType="Self.Lotes" />
           <EntitySet Name="Medicos" EntityType="Self.Medicos" />
@@ -1016,6 +1072,10 @@
           <AssociationSet Name="FK_Movimientos_Factura" Association="Self.FK_Movimientos_Factura">
             <End Role="Facturas" EntitySet="Facturas" />
             <End Role="Movimientos_Inventario" EntitySet="Movimientos_Inventario" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Imagenes_Producto_Productos" Association="Self.FK_Imagenes_Producto_Productos">
+            <End Role="Productos" EntitySet="Productos" />
+            <End Role="Imagenes_Producto" EntitySet="Imagenes_Producto" />
           </AssociationSet>
           <AssociationSet Name="FK_Inventario_Lote" Association="Self.FK_Inventario_Lote">
             <End Role="Lotes" EntitySet="Lotes" />
@@ -1121,6 +1181,19 @@
                 <ScalarProperty Name="fecha" ColumnName="fecha" />
                 <ScalarProperty Name="total" ColumnName="total" />
                 <ScalarProperty Name="estado" ColumnName="estado" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Imagenes_Producto">
+            <EntityTypeMapping TypeName="FarmaUModel.Imagenes_Producto">
+              <MappingFragment StoreEntitySet="Imagenes_Producto">
+                <ScalarProperty Name="ID_Imagen" ColumnName="ID_Imagen" />
+                <ScalarProperty Name="ID_Producto" ColumnName="ID_Producto" />
+                <ScalarProperty Name="URL" ColumnName="URL" />
+                <ScalarProperty Name="Descripcion" ColumnName="Descripcion" />
+                <ScalarProperty Name="EsPrincipal" ColumnName="EsPrincipal" />
+                <ScalarProperty Name="FechaCreacion" ColumnName="FechaCreacion" />
+                <ScalarProperty Name="Estado" ColumnName="Estado" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1262,7 +1335,7 @@
         <DesignerProperty Name="EnablePluralization" Value="false" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
         <DesignerProperty Name="UseLegacyProvider" Value="false" />
-        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </Options>
     <!-- Diagram content (shape and connector positions) -->
