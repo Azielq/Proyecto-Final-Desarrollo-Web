@@ -659,6 +659,9 @@
     <Content Include="Views\Carrito\_CarritoItems.cshtml" />
     <Content Include="Views\Carrito\_ResumenCarrito.cshtml" />
     <Content Include="Views\Carrito\ConfirmacionPedido.cshtml" />
+    <Content Include="Views\Reportes\ReportesVentas.cshtml" />
+    <Content Include="Views\Reportes\ReportesInventario.cshtml" />
+    <Content Include="Views\Reportes\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_ImagenesProducto.cshtml" />
