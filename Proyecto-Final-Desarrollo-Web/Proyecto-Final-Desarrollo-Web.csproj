@@ -646,6 +646,10 @@
     <Content Include="Views\Shared\AccesoDenegado.cshtml" />
     <Content Include="Views\Proveedores\Details.cshtml" />
     <Content Include="Views\Proveedores\Index.cshtml" />
+    <Content Include="Views\Lotes\Index.cshtml" />
+    <Content Include="Views\Lotes\Create.cshtml" />
+    <Content Include="Views\Inventario\Index.cshtml" />
+    <Content Include="Views\Inventario\Create.cshtml" />
     <Content Include="Views\Proveedores\Create.cshtml" />
     <Content Include="Views\Proveedores\Edit.cshtml" />
     <Content Include="Views\Carrito\Index.cshtml" />
