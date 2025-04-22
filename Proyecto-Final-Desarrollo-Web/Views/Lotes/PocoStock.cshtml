@@ -1,0 +1,133 @@
+﻿@model List<Proyecto_Final_Desarrollo_Web.ViewModels.ProductoViewModel>
+
+@{
+    ViewBag.Title = "Productos con Poco Stock";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <!-- Migas de pan -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Lotes")">Lotes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Productos con Poco Stock</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header bg-warning text-dark d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Productos con Poco Stock</h5>
+            <a href="@Url.Action("Index", "Lotes")" class="btn btn-secondary btn-sm">
+                <i class="fas fa-arrow-left me-1"></i>Volver
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong>¡Atención!</strong> Los siguientes productos tienen menos de 10 unidades disponibles en stock.
+            </div>
+
+            @if (Model != null && Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag me-1"></i>ID</th>
+                                <th><i class="fas fa-prescription-bottle-alt me-1"></i>Producto</th>
+                                <th><i class="fas fa-tags me-1"></i>Categoría</th>
+                                <th><i class="fas fa-cubes me-1"></i>Stock</th>
+                                <th><i class="fas fa-exclamation-circle me-1"></i>Estado</th>
+                                <th><i class="fas fa-cogs me-1"></i>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.ID_Producto</td>
+                                    <td>@item.Nombre</td>
+                                    <td>@item.Categoria</td>
+                                    <td>
+                                        <span class="badge bg-danger">@item.StockTotal</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@(item.activo ? "success" : "danger")">
+                                            @(item.activo ? "Activo" : "Inactivo")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="@Url.Action("Details", "Productos", new { id = item.ID_Producto })" class="btn btn-info btn-sm" data-bs-toggle="tooltip" title="Ver producto">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="@Url.Action("Create", "Lotes", new { productoId = item.ID_Producto })" class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="Crear lote">
+                                                <i class="fas fa-plus"></i>
+                                            </a>
+                                            <a href="@Url.Action("Inventario", "Productos", new { id = item.ID_Producto })" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" title="Ver inventario">
+                                                <i class="fas fa-warehouse"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="text-center mt-3">
+                    <a href="@Url.Action("Create", "Compras")" class="btn btn-success">
+                        <i class="fas fa-shopping-cart me-1"></i>Crear Nueva Compra
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <strong>¡Excelente!</strong> Todos los productos tienen un stock adecuado (10 o más unidades).
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Panel de recomendaciones -->
+    <div class="card mt-4">
+        <div class="card-header bg-light">
+            <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Recomendaciones para la gestión de stock</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><i class="fas fa-check-circle text-success me-1"></i>Mejores prácticas</h6>
+                    <ul>
+                        <li>Establecer niveles mínimos de inventario para cada producto</li>
+                        <li>Configurar alertas automáticas cuando el stock esté bajo</li>
+                        <li>Mantener relaciones con múltiples proveedores para garantizar la disponibilidad</li>
+                        <li>Revisar regularmente los patrones de consumo para ajustar los niveles de inventario</li>
+                        <li>Planificar con anticipación para productos de alta rotación</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6><i class="fas fa-chart-line text-primary me-1"></i>Análisis de demanda</h6>
+                    <ul>
+                        <li>Realizar análisis ABC para identificar los productos más importantes</li>
+                        <li>Considerar la estacionalidad de ciertos productos</li>
+                        <li>Evaluar el tiempo de entrega de los proveedores</li>
+                        <li>Calcular el punto de reorden considerando demanda y lead time</li>
+                        <li>Mantener un stock de seguridad para productos críticos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}

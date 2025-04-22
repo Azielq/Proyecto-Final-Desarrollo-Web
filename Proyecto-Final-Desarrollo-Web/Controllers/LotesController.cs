@@ -22,6 +22,10 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         {
             try
             {
+                // Calcula las fechas FUERA de las consultas LINQ
+                DateTime fechaActual = DateTime.Now;
+                DateTime fechaLimite = fechaActual.AddDays(30);
+
                 // Carga listas para filtros
                 ViewBag.Productos = new SelectList(db.Productos.Where(p => p.estado == "Activo").OrderBy(p => p.Nombre), "ID_Producto", "Nombre");
                 ViewBag.Categorias = new SelectList(db.Categorias.OrderBy(c => c.Nombre), "ID_Categoría", "Nombre");
@@ -47,13 +51,14 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
                 if (soloVencidos.HasValue && soloVencidos.Value)
                 {
-                    query = query.Where(l => l.fecha_vencimiento < DateTime.Now);
+                    query = query.Where(l => l.fecha_vencimiento < fechaActual);
                 }
 
                 if (soloPorVencer.HasValue && soloPorVencer.Value)
                 {
-                    query = query.Where(l => l.fecha_vencimiento > DateTime.Now &&
-                                            l.fecha_vencimiento <= DateTime.Now.AddDays(30));
+                    // Usa las variables calculadas previamente
+                    query = query.Where(l => l.fecha_vencimiento > fechaActual &&
+                                            l.fecha_vencimiento <= fechaLimite);
                 }
 
                 if (soloConStock.HasValue && soloConStock.Value)
@@ -94,9 +99,9 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 // Estadísticas
                 ViewBag.TotalUnidades = query.Sum(l => l.cantidad);
                 ViewBag.TotalLotes = totalRecords;
-                ViewBag.LotesVencidos = query.Count(l => l.fecha_vencimiento < DateTime.Now);
-                ViewBag.LotesPorVencer = query.Count(l => l.fecha_vencimiento > DateTime.Now &&
-                                                        l.fecha_vencimiento <= DateTime.Now.AddDays(30));
+                ViewBag.LotesVencidos = query.Count(l => l.fecha_vencimiento < fechaActual);
+                ViewBag.LotesPorVencer = query.Count(l => l.fecha_vencimiento > fechaActual &&
+                                                        l.fecha_vencimiento <= fechaLimite);
 
                 // Transforma a ViewModel
                 var lotesViewModel = lotes.Select(l => new LoteTableViewModel
@@ -108,7 +113,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                     cantidad = l.cantidad,
                     fecha_vencimiento = l.fecha_vencimiento,
                     Ubicacion = l.Inventario.FirstOrDefault()?.ubicacion,
-                    DiasParaVencer = (int)(l.fecha_vencimiento - DateTime.Now).TotalDays
+                    DiasParaVencer = (int)(l.fecha_vencimiento - fechaActual).TotalDays
                 }).ToList();
 
                 return View(lotesViewModel);
