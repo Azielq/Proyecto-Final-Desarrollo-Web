@@ -906,3 +906,118 @@ footer {
 .tox-promotion-link {
     display: none !important;
 }
+
+/* Estilos para impresión */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+
+    body {
+        background-color: white;
+        margin: 0;
+        padding: 0;
+    }
+
+    a {
+        text-decoration: none !important;
+        color: #000 !important;
+    }
+
+    .container-fluid {
+        width: 100%;
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    @page {
+        size: auto;
+        margin: 15mm;
+    }
+
+    hr {
+        border-top: 1px solid #000;
+        margin: 20px 0;
+    }
+
+    .table {
+        border-color: #000;
+    }
+
+        .table th {
+            background-color: #f0f0f0 !important;
+            color: #000 !important;
+        }
+
+    .table-bordered {
+        border: 1px solid #000;
+    }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #000;
+        }
+
+    /* Estilos específicos para la vista de impresión */
+    .print-header {
+        display: none !important;
+    }
+
+    .logo-print {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+        .logo-print h1 {
+            font-size: 24px;
+            color: #000;
+        }
+
+        .logo-print span {
+            color: #000;
+        }
+
+    .print-footer {
+        margin-top: 30px;
+        text-align: center;
+        font-size: 12px;
+        color: #666;
+    }
+}
+
+/* Estilos para vista de impresión (visible sólo en pantalla) */
+.print-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 10px 0;
+}
+
+    .print-header .btn {
+        border-radius: 30px;
+        transition: all 0.3s ease;
+    }
+
+        .print-header .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+    .print-header .btn-primary {
+        background-color: #4CAF50;
+        border-color: #4CAF50;
+    }
+
+        .print-header .btn-primary:hover {
+            background-color: #388E3C;
+            border-color: #388E3C;
+        }
+
+    .print-header .btn-secondary {
+        background-color: #757575;
+        border-color: #757575;
+    }
+
+        .print-header .btn-secondary:hover {
+            background-color: #616161;
+            border-color: #616161;
+        }

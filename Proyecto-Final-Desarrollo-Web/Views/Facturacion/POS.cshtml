@@ -1,0 +1,491 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.POSViewModel
+@{
+    ViewBag.Title = "Punto de Venta";
+    ViewBag.NeedsJQueryUI = true; // Para el autocomplete
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Facturacion")">Facturas</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Punto de Venta</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4">@ViewBag.Title</h2>
+
+    <div class="row">
+        <!-- Columna izquierda: Productos y búsqueda -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-shop"></i> Productos</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Buscador de productos -->
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <input type="text" id="buscarProducto" class="form-control" placeholder="Buscar producto por nombre, marca o categoría...">
+                            <button class="btn btn-outline-primary" type="button" id="btnBuscarProducto">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">Escriba para buscar productos. Use el código de barras o nombre.</small>
+                    </div>
+
+                    <!-- Producto seleccionado para agregar -->
+                    <div id="productoSeleccionado" class="card mb-3 d-none">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <img id="imagenProducto" src="" class="img-fluid" alt="Producto" style="max-height: 80px;">
+                                </div>
+                                <div class="col-md-4">
+                                    <h5 id="nombreProducto" class="mb-1"></h5>
+                                    <p id="categoriaProducto" class="text-muted small mb-0"></p>
+                                    <p id="stockProducto" class="text-muted small mb-0"></p>
+                                </div>
+                                <div class="col-md-2">
+                                    <p class="mb-0">Precio:</p>
+                                    <h5 id="precioProducto" class="text-success"></h5>
+                                </div>
+                                <div class="col-md-2">
+                                    <label for="cantidadProducto" class="form-label">Cantidad:</label>
+                                    <input type="number" id="cantidadProducto" class="form-control" value="1" min="1">
+                                </div>
+                                <div class="col-md-2 text-end">
+                                    <button id="btnAgregarProducto" class="btn btn-primary">
+                                        <i class="bi bi-plus-circle"></i> Agregar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Productos seleccionados (carrito) -->
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="tablaProductos">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 15%">Imagen</th>
+                                    <th style="width: 25%">Producto</th>
+                                    <th style="width: 15%">Precio</th>
+                                    <th style="width: 15%">Cantidad</th>
+                                    <th style="width: 15%">Subtotal</th>
+                                    <th style="width: 15%">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Los productos se agregarán dinámicamente aquí -->
+                                <tr id="filaVacia">
+                                    <td colspan="6" class="text-center text-muted py-5">
+                                        <i class="bi bi-cart-x fs-1"></i>
+                                        <p>No hay productos agregados</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: Resumen, total y procesar -->
+        <div class="col-md-4">
+            <div class="card sticky-top" style="top: 20px;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-receipt"></i> Resumen de Venta</h5>
+                </div>
+                <div class="card-body">
+                    <form id="formularioVenta">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Cliente -->
+                        <div class="mb-3">
+                            <label for="ID_Cliente" class="form-label">Cliente:</label>
+                            @Html.DropDownList("ID_Cliente", (SelectList)ViewBag.ID_Cliente, "Seleccione un cliente", new { @class = "form-select", required = "required" })
+                            <div class="invalid-feedback">Por favor seleccione un cliente.</div>
+                        </div>
+
+                        <!-- Método de pago -->
+                        <div class="mb-3">
+                            <label for="MetodoPago" class="form-label">Método de pago:</label>
+                            <select class="form-select" id="MetodoPago" name="MetodoPago" required>
+                                <option value="">Seleccione método de pago</option>
+                                <option value="Efectivo">Efectivo</option>
+                                <option value="Tarjeta de Crédito">Tarjeta de Crédito</option>
+                                <option value="Tarjeta de Débito">Tarjeta de Débito</option>
+                                <option value="Transferencia">Transferencia</option>
+                            </select>
+                            <div class="invalid-feedback">Por favor seleccione un método de pago.</div>
+                        </div>
+
+                        <!-- Resumen de cantidades -->
+                        <div class="card bg-light mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Subtotal:</span>
+                                    <span id="subtotal">₡0.00</span>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>I.V.A. (13%):</span>
+                                    <span id="impuesto">₡0.00</span>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between fw-bold">
+                                    <span>TOTAL:</span>
+                                    <span id="total" class="text-success fs-4">₡0.00</span>
+                                </div>
+                                <input type="hidden" id="Total" name="Total" value="0">
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" id="btnProcesar">
+                                <i class="bi bi-check-circle"></i> Procesar Venta
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary" id="btnCancelar">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="confirmModalLabel">Confirmar Venta</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro que desea procesar esta venta?</p>
+                <div class="alert alert-info">
+                    <strong>Total:</strong> <span id="modalTotal">₡0.00</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmarVenta">Confirmar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de éxito -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">Venta Exitosa</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+                <h4 class="mt-3">¡Venta procesada correctamente!</h4>
+                <p>La factura se ha generado con éxito.</p>
+                <p>Número de Factura: <strong id="facturaGenerada"></strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <a href="#" class="btn btn-primary" id="btnVerFactura">Ver Factura</a>
+                <a href="#" class="btn btn-outline-primary" id="btnImprimirFactura" target="_blank">Imprimir</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Variables globales
+        let productos = [];
+        let precioTotal = 0;
+        const IVA = 0.13; // 13%
+
+        $(document).ready(function () {
+            // Configurar autocomplete para búsqueda de productos
+            $("#buscarProducto").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '@Url.Action("BuscarProducto", "Facturacion")',
+                        type: "POST",
+                        dataType: "json",
+                        data: { term: request.term },
+                        success: function (data) {
+                            response(data);
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    // Mostrar el producto seleccionado
+                    $("#productoSeleccionado").removeClass("d-none");
+                    $("#nombreProducto").text(ui.item.value);
+                    $("#categoriaProducto").text(ui.item.categoria);
+                    $("#precioProducto").text("₡" + ui.item.precio.toFixed(2));
+                    $("#stockProducto").text("Stock disponible: " + ui.item.stock);
+                    $("#cantidadProducto").attr("max", ui.item.stock);
+
+                    // Si hay una imagen, mostrarla, sino usar placeholder
+                    if (ui.item.imagen) {
+                        $("#imagenProducto").attr("src", ui.item.imagen);
+                    } else {
+                        $("#imagenProducto").attr("src", "/Content/img/producto-default.png");
+                    }
+
+                    // Guardar datos del producto para agregar al carrito
+                    $("#btnAgregarProducto").data("producto", {
+                        id: ui.item.id,
+                        nombre: ui.item.value,
+                        precio: ui.item.precio,
+                        imagen: ui.item.imagen || "/Content/img/producto-default.png",
+                        stock: ui.item.stock,
+                        categoria: ui.item.categoria
+                    });
+
+                    return false;
+                }
+            });
+
+            // Agregar producto al carrito
+            $("#btnAgregarProducto").click(function () {
+                const producto = $(this).data("producto");
+                const cantidad = parseInt($("#cantidadProducto").val());
+
+                // Validar cantidad
+                if (!cantidad || cantidad <= 0 || cantidad > producto.stock) {
+                    alert("Por favor ingrese una cantidad válida (1-" + producto.stock + ")");
+                    return;
+                }
+
+                // Verificar si el producto ya está en el carrito
+                const index = productos.findIndex(p => p.id === producto.id);
+
+                if (index !== -1) {
+                    // Actualizar cantidad si ya existe
+                    const nuevaCantidad = productos[index].cantidad + cantidad;
+                    if (nuevaCantidad > producto.stock) {
+                        alert("No hay suficiente stock disponible");
+                        return;
+                    }
+                    productos[index].cantidad = nuevaCantidad;
+                    productos[index].subtotal = nuevaCantidad * producto.precio;
+                } else {
+                    // Agregar nuevo producto
+                    productos.push({
+                        id: producto.id,
+                        nombre: producto.nombre,
+                        precio: producto.precio,
+                        cantidad: cantidad,
+                        subtotal: cantidad * producto.precio,
+                        imagen: producto.imagen,
+                        categoria: producto.categoria
+                    });
+                }
+
+                // Actualizar la tabla
+                actualizarTablaProductos();
+
+                // Limpiar y ocultar sección de producto seleccionado
+                $("#buscarProducto").val("");
+                $("#productoSeleccionado").addClass("d-none");
+                $("#cantidadProducto").val(1);
+            });
+
+            // Procesar formulario de venta
+            $("#formularioVenta").submit(function (e) {
+                e.preventDefault();
+
+                // Validar que haya productos
+                if (productos.length === 0) {
+                    alert("Debe agregar al menos un producto");
+                    return;
+                }
+
+                // Validar cliente y método de pago
+                if (!$("#ID_Cliente").val()) {
+                    alert("Debe seleccionar un cliente");
+                    return;
+                }
+
+                if (!$("#MetodoPago").val()) {
+                    alert("Debe seleccionar un método de pago");
+                    return;
+                }
+
+                // Mostrar modal de confirmación
+                $("#modalTotal").text($("#total").text());
+                $("#confirmModal").modal("show");
+            });
+
+            // Confirmar venta
+            $("#btnConfirmarVenta").click(function () {
+                // Ocultar modal de confirmación
+                $("#confirmModal").modal("hide");
+
+                // Preparar datos para enviar
+                const data = {
+                    ID_Cliente: $("#ID_Cliente").val(),
+                    MetodoPago: $("#MetodoPago").val(),
+                    Total: precioTotal,
+                    ProductosSeleccionados: productos.map(p => ({
+                        ID_Producto: p.id,
+                        NombreProducto: p.nombre,
+                        Cantidad: p.cantidad,
+                        PrecioUnitario: p.precio,
+                        Subtotal: p.subtotal
+                    }))
+                };
+
+                // Enviar datos al servidor
+                $.ajax({
+                    url: '@Url.Action("Procesar", "Facturacion")',
+                    type: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify(data),
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        // Agregar token antiforgery
+                        xhr.setRequestHeader("RequestVerificationToken",
+                            $('input[name="__RequestVerificationToken"]').val());
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Mostrar modal de éxito
+                            $("#facturaGenerada").text(response.facturaId);
+                            $("#btnVerFactura").attr("href", '@Url.Action("Details", "Facturacion")/' + response.facturaId);
+                            $("#btnImprimirFactura").attr("href", '@Url.Action("Print", "Facturacion")/' + response.facturaId);
+                            $("#successModal").modal("show");
+
+                            // Limpiar formulario
+                            limpiarFormulario();
+                        } else {
+                            alert("Error: " + response.message);
+                        }
+                    },
+                    error: function (error) {
+                        console.error(error);
+                        alert("Error al procesar la venta. Por favor intente nuevamente.");
+                    }
+                });
+            });
+
+            // Cancelar venta
+            $("#btnCancelar").click(function () {
+                if (confirm("¿Está seguro que desea cancelar esta venta?")) {
+                    limpiarFormulario();
+                }
+            });
+        });
+
+        // Función para actualizar la tabla de productos
+        function actualizarTablaProductos() {
+            const tabla = $("#tablaProductos tbody");
+            tabla.empty();
+
+            if (productos.length === 0) {
+                tabla.append(`
+                    <tr id="filaVacia">
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <i class="bi bi-cart-x fs-1"></i>
+                            <p>No hay productos agregados</p>
+                        </td>
+                    </tr>
+                `);
+
+                // Actualizar totales
+                actualizarTotales();
+                return;
+            }
+
+            // Agregar cada producto a la tabla
+            productos.forEach(function (producto, index) {
+                tabla.append(`
+                    <tr>
+                        <td>
+                            <img src="${producto.imagen}" class="img-thumbnail" alt="${producto.nombre}" style="max-height: 50px;">
+                        </td>
+                        <td>
+                            <strong>${producto.nombre}</strong>
+                            <div class="small text-muted">${producto.categoria}</div>
+                        </td>
+                        <td>₡${producto.precio.toFixed(2)}</td>
+                        <td>
+                            <div class="input-group input-group-sm">
+                                <button class="btn btn-outline-secondary btn-decrementar" type="button" data-index="${index}">-</button>
+                                <input type="text" class="form-control text-center" value="${producto.cantidad}" readonly>
+                                <button class="btn btn-outline-secondary btn-incrementar" type="button" data-index="${index}">+</button>
+                            </div>
+                        </td>
+                        <td>₡${producto.subtotal.toFixed(2)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger btn-eliminar" data-index="${index}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+
+            // Agregar eventos a los botones
+            $(".btn-decrementar").click(function () {
+                const index = $(this).data("index");
+                if (productos[index].cantidad > 1) {
+                    productos[index].cantidad--;
+                    productos[index].subtotal = productos[index].cantidad * productos[index].precio;
+                    actualizarTablaProductos();
+                }
+            });
+
+            $(".btn-incrementar").click(function () {
+                const index = $(this).data("index");
+                if (productos[index].cantidad < productos[index].stock) {
+                    productos[index].cantidad++;
+                    productos[index].subtotal = productos[index].cantidad * productos[index].precio;
+                    actualizarTablaProductos();
+                } else {
+                    alert("No hay suficiente stock disponible");
+                }
+            });
+
+            $(".btn-eliminar").click(function () {
+                const index = $(this).data("index");
+                productos.splice(index, 1);
+                actualizarTablaProductos();
+            });
+
+            // Actualizar totales
+            actualizarTotales();
+        }
+
+        // Función para actualizar los totales
+        function actualizarTotales() {
+            const subtotal = productos.reduce((total, producto) => total + producto.subtotal, 0);
+            const impuesto = subtotal * IVA;
+            precioTotal = subtotal + impuesto;
+
+            $("#subtotal").text("₡" + subtotal.toFixed(2));
+            $("#impuesto").text("₡" + impuesto.toFixed(2));
+            $("#total").text("₡" + precioTotal.toFixed(2));
+            $("#Total").val(precioTotal);
+        }
+
+        // Función para limpiar el formulario
+        function limpiarFormulario() {
+            productos = [];
+            actualizarTablaProductos();
+            $("#ID_Cliente").val("");
+            $("#MetodoPago").val("");
+            $("#buscarProducto").val("");
+            $("#productoSeleccionado").addClass("d-none");
+            $("#cantidadProducto").val(1);
+        }
+    </script>
+}

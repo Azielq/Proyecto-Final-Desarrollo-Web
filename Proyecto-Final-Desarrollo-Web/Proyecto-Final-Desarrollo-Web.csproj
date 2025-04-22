@@ -262,6 +262,7 @@
     <Compile Include="Controllers\CarritoController.cs" />
     <Compile Include="Controllers\CategoriasController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
+    <Compile Include="Controllers\FacturacionController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ImagenesProductoController.cs" />
     <Compile Include="Controllers\ImgBBController.cs" />
@@ -653,6 +654,12 @@
     <Content Include="Views\Carrito\_CarritoItems.cshtml" />
     <Content Include="Views\Carrito\_ResumenCarrito.cshtml" />
     <Content Include="Views\Carrito\ConfirmacionPedido.cshtml" />
+    <Content Include="Views\Facturacion\Index.cshtml" />
+    <Content Include="Views\Facturacion\Reports.cshtml" />
+    <Content Include="Views\Facturacion\POS.cshtml" />
+    <Content Include="Views\Facturacion\Details.cshtml" />
+    <Content Include="Views\Facturacion\Print.cshtml" />
+    <Content Include="Views\Shared\_LayoutPrint.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_ImagenesProducto.cshtml" />

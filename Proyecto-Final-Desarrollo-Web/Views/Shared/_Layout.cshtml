@@ -27,6 +27,30 @@
                                 <i class="bi bi-house-door nav-icon"></i>Home
                             </a>
                         </li>
+                        <!-- NUEVO: Enlace a Facturación -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Facturacion")">
+                                <i class="bi bi-receipt nav-icon"></i>Facturación
+                            </a>
+                        </li>
+                        <!-- NUEVO: Dropdown para sistema POS y reportes -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="posDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-cash-register nav-icon"></i>Ventas
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="posDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("POS", "Facturacion")">
+                                        <i class="bi bi-cart-plus me-2"></i>Punto de Venta (POS)
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Reports", "Facturacion")">
+                                        <i class="bi bi-bar-chart me-2"></i>Reportes de Ventas
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="@Url.Action("About", "Home")">
                                 <i class="bi bi-info-circle nav-icon"></i>About
@@ -37,10 +61,10 @@
                                 <i class="bi bi-envelope nav-icon"></i>Contact
                             </a>
                         </li>
-                        <!-- New addition: Categories Dropdown -->
+                        <!-- Categories Dropdown -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Categorías
+                                <i class="bi bi-tags nav-icon"></i>Categorías
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
                                 <li>@Html.ActionLink("Medicamentos", "Medicamentos", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
@@ -251,6 +275,7 @@
                             <li><a href="#servicios"><i class="bi bi-stars"></i> Servicios</a></li>
                             <li><a href="#testimonios"><i class="bi bi-chat-quote"></i> Testimonios</a></li>
                             <li><a href="#app"><i class="bi bi-phone"></i> App</a></li>
+                            <li><a href="@Url.Action("Index", "Facturacion")"><i class="bi bi-receipt"></i> Facturación</a></li>
                         </ul>
                     </div>
                     <div class="footer-column">
