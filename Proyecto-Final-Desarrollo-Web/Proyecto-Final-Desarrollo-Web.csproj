@@ -658,10 +658,11 @@
     <Content Include="Views\Carrito\_CarritoItems.cshtml" />
     <Content Include="Views\Carrito\_ResumenCarrito.cshtml" />
     <Content Include="Views\Carrito\ConfirmacionPedido.cshtml" />
+    <Content Include="Views\Reportes\ReportesVentas.cshtml" />
+    <Content Include="Views\Reportes\ReportesInventario.cshtml" />
+    <Content Include="Views\Reportes\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
-    <Folder Include="Views\Pedidos\" />
     <Content Include="Views\Shared\_ImagenesProducto.cshtml" />
     <Content Include="Views\Productos\GestionarImagenes.cshtml" />
     <Content Include="Views\Productos\Create.cshtml" />
@@ -687,6 +688,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Scripts\tinymce\js\" />
+    <Folder Include="Views\Pedidos\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
