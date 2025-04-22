@@ -1,0 +1,108 @@
+@model Proyecto_Final_Desarrollo_Web.ViewModels.ReporteVentasViewModel
+
+@{
+    ViewData["Title"] = "Reporte de Ventas";
+}
+
+<div class="container mt-4">
+    <div class="row align-items-center">
+        <div class="col-md-7">
+            <h1 class="text-success">Reporte de Ventas</h1>
+            <p>Consulta las ventas realizadas en FarmaU, filtradas por fecha.</p>
+        </div>
+        <div class="col-md-5 text-end">
+            <img src="~/images/report-illustration.png" alt="Ventas" class="img-fluid" style="max-height: 200px;" />
+        </div>
+    </div>
+
+    <form method="get" class="row g-2 align-items-end my-4" onsubmit="return validateDates()">
+        <div class="col-sm-3">
+            <label asp-for="FechaInicio">Fecha Inicio:</label>
+            <input asp-for="FechaInicio" class="form-control" type="date" />
+        </div>
+        <div class="col-sm-3">
+            <label asp-for="FechaFin">Fecha Fin:</label>
+            <input asp-for="FechaFin" class="form-control" type="date" />
+        </div>
+        <div class="col-sm-2">
+            <button type="submit" class="btn btn-success w-100">Aplicar Filtros</button>
+        </div>
+    </form>
+
+    <div class="row my-4">
+        <div class="col-md-3">
+            <div class="card text-bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Ventas</h5>
+                    <p class="card-text">@Model.TotalVentas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Monto Total</h5>
+                    <p class="card-text">@Model.MontoTotalVentas.ToString("C2")</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Promedio Venta</h5>
+                    <p class="card-text">@Model.PromedioVenta.ToString("C2")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-5">Detalle de Ventas</h3>
+    
+    @if (Model.Ventas != null && Model.Ventas.Any())
+    {
+        <table class="table table-bordered table-hover">
+            <thead class="table-success">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Total</th>
+                    <th>Productos</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var venta in Model.Ventas)
+                {
+                    <tr>
+                        <td>@(venta.Fecha?.ToString("dd/MM/yyyy HH:mm"))</td>
+                        <td>@venta.Cliente</td>
+                        <td>@venta.Total.ToString("C2")</td>
+                        <td>@venta.CantidadProductos</td>
+                        <td>@venta.Estado</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-warning" role="alert">
+            No se encontraron ventas para el rango de fechas seleccionado.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function validateDates() {
+            var fechaInicio = document.getElementById('FechaInicio').value;
+            var fechaFin = document.getElementById('FechaFin').value;
+
+            if (fechaInicio && fechaFin && new Date(fechaInicio) > new Date(fechaFin)) {
+                alert("La fecha de inicio no puede ser posterior a la fecha de fin.");
+                return false;
+            }
+            return true;
+        }
+    </script>
+}
