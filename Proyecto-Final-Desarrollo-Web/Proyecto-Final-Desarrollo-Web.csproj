@@ -657,6 +657,11 @@
     <Content Include="Views\Carrito\_CarritoItems.cshtml" />
     <Content Include="Views\Carrito\_ResumenCarrito.cshtml" />
     <Content Include="Views\Carrito\ConfirmacionPedido.cshtml" />
+    <Content Include="Views\Inventario\Details.cshtml" />
+    <Content Include="Views\Inventario\Edit.cshtml" />
+    <Content Include="Views\Inventario\Delete.cshtml" />
+    <Content Include="Views\Inventario\Reporte.cshtml" />
+    <Content Include="Views\Inventario\MovimientosInventario.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_ImagenesProducto.cshtml" />
