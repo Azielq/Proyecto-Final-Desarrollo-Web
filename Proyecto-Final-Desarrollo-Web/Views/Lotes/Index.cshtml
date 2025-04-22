@@ -195,22 +195,18 @@
                             foreach (var item in Model)
                             {
                                 var badgeClass = "";
-                                var estadoText = "";
 
-                                if (item.DiasParaVencer < 0)
+                                switch (item.Estado)
                                 {
-                                    badgeClass = "bg-danger";
-                                    estadoText = "Vencido";
-                                }
-                                else if (item.DiasParaVencer <= 30)
-                                {
-                                    badgeClass = "bg-warning text-dark";
-                                    estadoText = "Por vencer";
-                                }
-                                else
-                                {
-                                    badgeClass = "bg-success";
-                                    estadoText = "Vigente";
+                                    case "Vencido":
+                                        badgeClass = "bg-danger";
+                                        break;
+                                    case "Por Vencer":
+                                        badgeClass = "bg-warning text-dark";
+                                        break;
+                                    default:
+                                        badgeClass = "bg-success";
+                                        break;
                                 }
 
                                 <tr>
@@ -221,7 +217,7 @@
                                     <td>@item.fecha_vencimiento.ToString("dd/MM/yyyy")</td>
                                     <td>@(string.IsNullOrEmpty(item.Ubicacion) ? "No asignada" : item.Ubicacion)</td>
                                     <td>
-                                        <span class="badge @badgeClass">@estadoText</span>
+                                        <span class="badge @badgeClass">@item.Estado</span>
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">

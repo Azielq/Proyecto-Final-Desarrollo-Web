@@ -1,7 +1,7 @@
 ﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.LoteViewModel
 
 @{
-    ViewBag.Title = "Crear Lote";
+    ViewBag.Title = "Editar Lote";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -11,20 +11,20 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
             <li class="breadcrumb-item"><a href="@Url.Action("Index", "Lotes")">Lotes</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Crear Lote</li>
+            <li class="breadcrumb-item active" aria-current="page">Editar Lote</li>
         </ol>
     </nav>
 
     <div class="card">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Crear Nuevo Lote</h5>
+            <h5 class="mb-0"><i class="fas fa-edit me-2"></i>Editar Lote #@Model.id_Lote</h5>
         </div>
         <div class="card-body">
             @using (Html.BeginForm())
             {
                 @Html.AntiForgeryToken()
                 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <input type="hidden" name="returnToProducto" value="@ViewBag.ReturnToProducto" />
+                @Html.HiddenFor(model => model.id_Lote)
 
                 <div class="row mb-3">
                     <div class="col-md-6">
@@ -71,22 +71,18 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-label">
-                                <i class="fas fa-map-marker-alt me-1"></i>Ubicación (opcional)
+                                <i class="fas fa-map-marker-alt me-1"></i>Ubicación
                             </label>
-                            <select name="ubicacion" class="form-select">
-                                <option value="">-- Sin ubicación inicial --</option>
-                                <option value="Bodega A">Bodega A</option>
-                                <option value="Bodega B">Bodega B</option>
-                                <option value="Bodega C">Bodega C</option>
-                                <option value="Refrigerado">Refrigerado</option>
-                                <option value="Productos Controlados">Productos Controlados</option>
-                                <option value="Mostrador">Mostrador</option>
-                                <option value="Estante 1">Estante 1</option>
-                                <option value="Estante 2">Estante 2</option>
-                                <option value="Estante 3">Estante 3</option>
-                            </select>
+                            <input type="text" name="ubicacion" class="form-control" value="@ViewBag.Ubicacion" />
                             <small class="form-text text-muted">
-                                Si no asigna una ubicación, podrá hacerlo más tarde desde el módulo de Inventario.
+                                @if (ViewBag.Ubicacion != null)
+                                {
+                                    <span>Si desea cambiar la ubicación, edite el valor. Si lo deja en blanco, se mantendrá la ubicación actual.</span>
+                                }
+                                else
+                                {
+                                    <span>Este lote no tiene ubicación asignada. Puede asignar una ahora.</span>
+                                }
                             </small>
                         </div>
                     </div>
@@ -94,20 +90,11 @@
 
                 <div class="mt-3">
                     <div class="d-flex justify-content-end">
-                        @if (ViewBag.ReturnToProducto)
-                        {
-                            <a href="@Url.Action("Inventario", "Productos", new { id = Model.ID_Producto })" class="btn btn-secondary me-2">
-                                <i class="fas fa-arrow-left me-1"></i>Volver al Producto
-                            </a>
-                        }
-                        else
-                        {
-                            <a href="@Url.Action("Index", "Lotes")" class="btn btn-secondary me-2">
-                                <i class="fas fa-arrow-left me-1"></i>Volver
-                            </a>
-                        }
+                        <a href="@Url.Action("Details", "Lotes", new { id = Model.id_Lote })" class="btn btn-secondary me-2">
+                            <i class="fas fa-arrow-left me-1"></i>Volver
+                        </a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>Guardar
+                            <i class="fas fa-save me-1"></i>Guardar Cambios
                         </button>
                     </div>
                 </div>
@@ -115,21 +102,21 @@
         </div>
     </div>
 
-    <!-- Panel informativo -->
+    <!-- Alerta sobre cambios en cantidad -->
     <div class="card mt-4">
-        <div class="card-header bg-info text-white">
-            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información sobre lotes</h5>
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Información Importante</h5>
         </div>
         <div class="card-body">
-            <div class="alert alert-info">
-                <p><strong>Recomendaciones para la creación de lotes:</strong></p>
+            <div class="alert alert-warning">
+                <p><strong>Tenga en cuenta al editar este lote:</strong></p>
                 <ul>
-                    <li>Asegúrese de que la fecha de vencimiento sea correcta según la documentación del producto.</li>
-                    <li>Es recomendable asignar una ubicación para facilitar el seguimiento en el inventario.</li>
-                    <li>Para productos controlados o que requieren refrigeración, use las ubicaciones específicas.</li>
-                    <li>La cantidad debe reflejar el número exacto de unidades recibidas.</li>
+                    <li>Si cambia la cantidad, se registrará automáticamente un movimiento de ajuste en el inventario.</li>
+                    <li>Si aumenta la cantidad, se registrará como un "Ajuste Entrada".</li>
+                    <li>Si reduce la cantidad, se registrará como un "Ajuste Salida".</li>
+                    <li>Estos ajustes se reflejarán en el historial de movimientos del lote.</li>
                 </ul>
-                <p class="mb-0">Recuerde que este lote será rastreado hasta su vencimiento o agotamiento.</p>
+                <p class="mb-0">Asegúrese de que los cambios en la cantidad reflejen la realidad del inventario físico.</p>
             </div>
         </div>
     </div>
@@ -139,17 +126,26 @@
     @Scripts.Render("~/bundles/jqueryval")
 
     <script>
-        $(document).ready(function () {
-            // Establecer la fecha mínima como hoy
-            var today = new Date().toISOString().split('T')[0];
-            $('#fecha_vencimiento').attr('min', today);
-
+        $(document).ready(function() {
             // Si hay un error, mostrar alerta
             if ($('.validation-summary-errors').length > 0) {
                 $('html, body').animate({
                     scrollTop: $('.validation-summary-errors').offset().top - 100
                 }, 500);
             }
+
+            // Confirmar cambios en cantidad
+            var cantidadOriginal = $('#cantidad').val();
+
+            $('form').submit(function() {
+                var nuevaCantidad = $('#cantidad').val();
+
+                if (cantidadOriginal != nuevaCantidad) {
+                    return confirm('¿Está seguro de cambiar la cantidad del lote? Esto generará un movimiento de ajuste en el inventario.');
+                }
+
+                return true;
+            });
         });
     </script>
 }

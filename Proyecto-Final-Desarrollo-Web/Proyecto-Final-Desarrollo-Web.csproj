@@ -662,6 +662,11 @@
     <Content Include="Views\Inventario\Delete.cshtml" />
     <Content Include="Views\Inventario\Reporte.cshtml" />
     <Content Include="Views\Inventario\MovimientosInventario.cshtml" />
+    <Content Include="Views\Lotes\Details.cshtml" />
+    <Content Include="Views\Lotes\Delete.cshtml" />
+    <Content Include="Views\Lotes\Edit.cshtml" />
+    <Content Include="Views\Lotes\LotesVencidos.cshtml" />
+    <Content Include="Views\Lotes\PocoStock.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_ImagenesProducto.cshtml" />

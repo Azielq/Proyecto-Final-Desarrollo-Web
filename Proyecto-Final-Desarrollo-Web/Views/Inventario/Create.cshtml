@@ -172,10 +172,10 @@
                                     var estadoClass = '';
                                     var estadoText = '';
 
-                                    if (diasParaVencer < 0) {
+                                    if (diasParaVencer @Html.Raw("< 0")) {
                                         estadoClass = 'bg-danger';
                                         estadoText = 'Vencido';
-                                    } else if (diasParaVencer <= 30) {
+                                    } else if (diasParaVencer @Html.Raw("<= 30")) {
                                         estadoClass = 'bg-warning text-dark';
                                         estadoText = 'Por vencer';
                                     } else {
