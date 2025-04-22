@@ -16,6 +16,16 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         // GET: Carrito
         public ActionResult Index()
         {
+
+
+
+
+            //CREO QUE TENEMOS QUE ELIMINAR ESTO PORQUE VAMOS A CAMBIAR EL ENFOQUE DE LA APLICACIÓN
+
+
+
+
+
             // Si el usuario no está autenticado, redirigir al login con mensaje
             if (Session["UserID"] == null)
             {
