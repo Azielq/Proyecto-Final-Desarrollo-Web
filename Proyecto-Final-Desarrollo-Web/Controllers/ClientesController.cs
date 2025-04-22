@@ -82,29 +82,6 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             }
         }
 
-        // GET: Clientes/Details
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            Clientes cliente = db.Clientes
-                .Include(c => c.Personas)
-                .Include(c => c.Facturas)
-                .FirstOrDefault(c => c.id_cliente == id);
-
-            if (cliente == null)
-            {
-                return HttpNotFound();
-            }
-
-            var viewModel = ClienteViewModel.FromEntity(cliente);
-
-            return View(viewModel);
-        }
-
         // GET: Clientes/Create
         public ActionResult Create()
         {
@@ -118,30 +95,52 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Esto verifica si ya existe un cliente con el mismo número de documento
-                if (db.Personas.Any(p => p.numero_documento == viewModel.numero_documento))
+                try
                 {
-                    ModelState.AddModelError("numero_documento", "Ya existe una persona con este número de documento");
-                    return View(viewModel);
+                    // Verifica si ya existe un cliente con el mismo número de documento
+                    if (db.Personas.Any(p => p.numero_documento == viewModel.numero_documento))
+                    {
+                        ModelState.AddModelError("numero_documento", "Ya existe una persona con este número de documento");
+                        return View(viewModel);
+                    }
+
+                    // Verifica si ya existe una persona con el mismo correo electrónico
+                    if (db.Personas.Any(p => p.Correo == viewModel.Correo))
+                    {
+                        ModelState.AddModelError("Correo", "El correo electrónico ya está en uso");
+                        return View(viewModel);
+                    }
+
+                    // Verifica si ya existe una persona con el mismo número de teléfono
+                    if (db.Personas.Any(p => p.Teléfono == viewModel.Teléfono))
+                    {
+                        ModelState.AddModelError("Teléfono", "El número de teléfono ya está en uso");
+                        return View(viewModel);
+                    }
+
+                    var entities = viewModel.ToEntities();
+                    var persona = entities.Item1;
+                    var cliente = entities.Item2;
+
+                    // Primero crea la persona
+                    db.Personas.Add(persona);
+                    db.SaveChanges();
+
+                    // Asigna el ID de persona al cliente
+                    cliente.ID_Persona = persona.ID_Persona;
+                    db.Clientes.Add(cliente);
+                    db.SaveChanges();
+
+                    // Reemplazar TempData con SweetAlert
+                    SweetAlertHelper.ShowSweetAlert(this, "¡Éxito!", "Cliente creado correctamente", SweetAlertMessageType.Success);
+                    return RedirectToAction("Index");
                 }
-
-                var entities = viewModel.ToEntities();
-                var persona = entities.Item1;
-                var cliente = entities.Item2;
-
-                // Primero crea la persona
-                db.Personas.Add(persona);
-                db.SaveChanges();
-
-                // Asigna el ID de persona al cliente
-                cliente.ID_Persona = persona.ID_Persona;
-                db.Clientes.Add(cliente);
-                db.SaveChanges();
-
-                TempData["Message"] = "Cliente creado correctamente";
-                TempData["MessageType"] = "success";
-
-                return RedirectToAction("Index");
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error al crear cliente: {ex.Message}");
+                    ModelState.AddModelError("", "Error al crear el cliente: " + ex.Message);
+                    SweetAlertHelper.ShowSweetAlert(this, "Error", "Ha ocurrido un error al crear el cliente", SweetAlertMessageType.Error);
+                }
             }
 
             return View(viewModel);
@@ -176,72 +175,47 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Esto verifica si ya existe otro cliente con el mismo número de documento
-                if (db.Personas.Any(p => p.numero_documento == viewModel.numero_documento && p.ID_Persona != viewModel.ID_Persona))
+                try
                 {
-                    ModelState.AddModelError("numero_documento", "Ya existe otra persona con este número de documento");
-                    return View(viewModel);
+                    // Verifica si ya existe otro cliente con el mismo número de documento
+                    if (db.Personas.Any(p => p.numero_documento == viewModel.numero_documento && p.ID_Persona != viewModel.ID_Persona))
+                    {
+                        ModelState.AddModelError("numero_documento", "Ya existe otra persona con este número de documento");
+                        return View(viewModel);
+                    }
+
+                    // Verifica si ya existe otra persona con el mismo correo electrónico
+                    if (db.Personas.Any(p => p.Correo == viewModel.Correo && p.ID_Persona != viewModel.ID_Persona))
+                    {
+                        ModelState.AddModelError("Correo", "El correo electrónico ya está en uso por otra persona");
+                        return View(viewModel);
+                    }
+
+                    // Verifica si ya existe otra persona con el mismo número de teléfono
+                    if (db.Personas.Any(p => p.Teléfono == viewModel.Teléfono && p.ID_Persona != viewModel.ID_Persona))
+                    {
+                        ModelState.AddModelError("Teléfono", "El número de teléfono ya está en uso por otra persona");
+                        return View(viewModel);
+                    }
+
+                    var entities = viewModel.ToEntities();
+                    var persona = entities.Item1;
+
+                    // Actualiza la persona
+                    db.Entry(persona).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    // Reemplaza TempData con SweetAlert
+                    SweetAlertHelper.ShowSweetAlert(this, "¡Éxito!", "Cliente actualizado correctamente", SweetAlertMessageType.Success);
+                    return RedirectToAction("Details", new { id = viewModel.id_cliente });
                 }
-
-                var entities = viewModel.ToEntities();
-                var persona = entities.Item1;
-
-                // Esto actualiza la persona
-                db.Entry(persona).State = EntityState.Modified;
-                db.SaveChanges();
-
-                TempData["Message"] = "Cliente actualizado correctamente";
-                TempData["MessageType"] = "success";
-
-                return RedirectToAction("Index");
-            }
-
-            return View(viewModel);
-        }
-
-        // GET: Clientes/ComprasCliente
-        public ActionResult ComprasCliente(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            Clientes cliente = db.Clientes
-                .Include(c => c.Personas)
-                .Include(c => c.Facturas)
-                .FirstOrDefault(c => c.id_cliente == id);
-
-            if (cliente == null)
-            {
-                return HttpNotFound();
-            }
-
-            var viewModel = ClienteViewModel.FromEntity(cliente);
-
-            // Esto obtiene las facturas del cliente ordenadas por fecha descendente
-            var facturas = db.Facturas
-                .Include(f => f.Detalles_Factura)
-                .Where(f => f.ID_Cliente == id)
-                .OrderByDescending(f => f.fecha)
-                .ToList()
-                .Select(f => new FacturaResumenViewModel
+                catch (Exception ex)
                 {
-                    id_Factura = f.id_Factura,
-                    fecha = f.fecha,
-                    total = f.total,
-                    estado = f.estado,
-                    CantidadProductos = f.Detalles_Factura.Count
-                })
-                .ToList();
-
-            ViewBag.Facturas = facturas;
-
-            // Estadísticas de compras
-            ViewBag.TotalCompras = facturas.Where(f => f.estado == "Completada").Sum(f => f.total);
-            ViewBag.NumeroCompras = facturas.Count(f => f.estado == "Completada");
-            ViewBag.PromedioCompra = ViewBag.NumeroCompras > 0 ? ViewBag.TotalCompras / ViewBag.NumeroCompras : 0;
-            ViewBag.UltimaCompra = facturas.Where(f => f.estado == "Completada").OrderByDescending(f => f.fecha).Select(f => f.fecha).FirstOrDefault();
+                    System.Diagnostics.Debug.WriteLine($"Error al actualizar cliente: {ex.Message}");
+                    ModelState.AddModelError("", "Error al actualizar el cliente: " + ex.Message);
+                    SweetAlertHelper.ShowSweetAlert(this, "Error", "Ha ocurrido un error al actualizar el cliente", SweetAlertMessageType.Error);
+                }
+            }
 
             return View(viewModel);
         }
@@ -280,45 +254,205 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         }
 
         // POST: Clientes/Delete
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult Delete(int id)
         {
+            try
+            {
+                Clientes cliente = db.Clientes
+                    .Include(c => c.Facturas)
+                    .FirstOrDefault(c => c.id_cliente == id);
+
+                if (cliente == null)
+                {
+                    SweetAlertHelper.ShowSweetAlert(this, "Error", "El cliente no existe", SweetAlertMessageType.Error);
+                    return RedirectToAction("Index");
+                }
+
+                // Verifica si tiene facturas asociadas
+                if (cliente.Facturas.Any())
+                {
+                    SweetAlertHelper.ShowSweetAlert(this, "Acción no permitida", "No se puede eliminar el cliente porque tiene facturas asociadas", SweetAlertMessageType.Warning);
+                    return RedirectToAction("Delete", new { id = id });
+                }
+
+                // Primero obtiene la persona asociada
+                var persona = db.Personas.Find(cliente.ID_Persona);
+
+                // Elimina el cliente
+                db.Clientes.Remove(cliente);
+
+                // Luego elimina la persona si no tiene otras relaciones activas
+                if (persona != null)
+                {
+                    // Verifica que la persona no tenga otras relaciones activas (médico, usuario)
+                    if (!db.Medicos.Any(m => m.ID_Persona == persona.ID_Persona) &&
+                        !db.Usuarios.Any(u => u.ID_Persona == persona.ID_Persona))
+                    {
+                        db.Personas.Remove(persona);
+                    }
+                }
+
+                db.SaveChanges();
+
+                // Mensaje específico para la eliminación correcta del cliente
+                SweetAlertHelper.ShowSweetAlert(this, "¡Éxito!", "El cliente ha sido eliminado correctamente", SweetAlertMessageType.Success);
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al eliminar cliente: {ex.Message}");
+                SweetAlertHelper.ShowSweetAlert(this, "Error", "Error al eliminar el cliente: " + ex.Message, SweetAlertMessageType.Error);
+                return RedirectToAction("Index");
+            }
+        }
+
+        // GET: Clientes/Details
+        public ActionResult Details(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
             Clientes cliente = db.Clientes
+                .Include(c => c.Personas)
                 .Include(c => c.Facturas)
                 .FirstOrDefault(c => c.id_cliente == id);
 
-            // Verifica si tiene facturas asociadas
-            if (cliente.Facturas.Any())
+            if (cliente == null)
             {
-                TempData["Message"] = "No se puede eliminar el cliente porque tiene facturas asociadas";
-                TempData["MessageType"] = "error";
-                return RedirectToAction("Delete", new { id = id });
+                return HttpNotFound();
             }
 
-            // Primero obtiene la persona asociada
-            var persona = db.Personas.Find(cliente.ID_Persona);
+            var viewModel = ClienteViewModel.FromEntity(cliente);
 
-            // Elimina el cliente
-            db.Clientes.Remove(cliente);
+            return View(viewModel);
+        }
 
-            // Luego elimina la persona
-            if (persona != null)
+        // GET: Clientes/GetFacturasByCliente
+        [HttpGet]
+        public ActionResult GetFacturasByCliente(int id)
+        {
+            try
             {
-                // Verifica que la persona no tenga otras relaciones activas (médico, usuario)
-                if (!db.Medicos.Any(m => m.ID_Persona == persona.ID_Persona) &&
-                    !db.Usuarios.Any(u => u.ID_Persona == persona.ID_Persona))
+                var facturas = db.Facturas
+                    .Include(f => f.Detalles_Factura)
+                    .Where(f => f.ID_Cliente == id)
+                    .OrderByDescending(f => f.fecha)
+                    .Take(10)
+                    .Select(f => new {
+                        id_Factura = f.id_Factura,
+                        fecha = f.fecha,
+                        total = f.total,
+                        estado = f.estado,
+                        cantidadProductos = f.Detalles_Factura.Count
+                    })
+                    .ToList();
+
+                return Json(facturas, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al obtener facturas por cliente: {ex.Message}");
+                return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        // GET: Clientes/GetClienteById
+        [HttpGet]
+        public ActionResult GetClienteById(int id)
+        {
+            try
+            {
+                var cliente = db.Clientes
+                    .Include(c => c.Personas)
+                    .Where(c => c.id_cliente == id)
+                    .Select(c => new {
+                        id_cliente = c.id_cliente,
+                        ID_Persona = c.ID_Persona,
+                        Nombre = c.Personas.Nombre,
+                        Apellido_1 = c.Personas.Apellido_1,
+                        Apellido_2 = c.Personas.Apellido_2,
+                        tipo_documento = c.Personas.tipo_documento,
+                        numero_documento = c.Personas.numero_documento,
+                        Correo = c.Personas.Correo,
+                        Teléfono = c.Personas.Teléfono,
+                        dirección = c.Personas.dirección
+                    })
+                    .FirstOrDefault();
+
+                if (cliente == null)
                 {
-                    db.Personas.Remove(persona);
+                    return HttpNotFound();
                 }
+
+                return Json(cliente, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al obtener cliente: {ex.Message}");
+                return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        // GET: Clientes/ComprasCliente
+        public ActionResult ComprasCliente(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            db.SaveChanges();
+            try
+            {
+                // Obtien el cliente con sus datos personales y facturas
+                Clientes cliente = db.Clientes
+                    .Include(c => c.Personas)
+                    .Include(c => c.Facturas)
+                    .FirstOrDefault(c => c.id_cliente == id);
 
-            TempData["Message"] = "Cliente eliminado correctamente";
-            TempData["MessageType"] = "success";
+                if (cliente == null)
+                {
+                    return HttpNotFound();
+                }
 
-            return RedirectToAction("Index");
+                // Convierte a ViewModel
+                var viewModel = ClienteViewModel.FromEntity(cliente);
+
+                // Obtiene las facturas del cliente ordenadas por fecha descendente
+                var facturas = db.Facturas
+                    .Include(f => f.Detalles_Factura)
+                    .Where(f => f.ID_Cliente == id)
+                    .OrderByDescending(f => f.fecha)
+                    .ToList()
+                    .Select(f => new FacturaResumenViewModel
+                    {
+                        id_Factura = f.id_Factura,
+                        fecha = f.fecha,
+                        total = f.total,
+                        estado = f.estado,
+                        CantidadProductos = f.Detalles_Factura.Count
+                    })
+                    .ToList();
+
+                ViewBag.Facturas = facturas;
+
+                // Calcula estadísticas de compras
+                ViewBag.TotalCompras = facturas.Where(f => f.estado == "Completada").Sum(f => f.total);
+                ViewBag.NumeroCompras = facturas.Count(f => f.estado == "Completada");
+                ViewBag.PromedioCompra = ViewBag.NumeroCompras > 0 ? ViewBag.TotalCompras / ViewBag.NumeroCompras : 0;
+                ViewBag.UltimaCompra = facturas.Where(f => f.estado == "Completada").OrderByDescending(f => f.fecha).Select(f => f.fecha).FirstOrDefault();
+
+                return View(viewModel);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al obtener compras del cliente: {ex.Message}");
+                SweetAlertHelper.ShowSweetAlert(this, "Error", "Error al cargar las compras del cliente: " + ex.Message, SweetAlertMessageType.Error);
+                return RedirectToAction("Details", new { id = id });
+            }
         }
 
         protected override void Dispose(bool disposing)
