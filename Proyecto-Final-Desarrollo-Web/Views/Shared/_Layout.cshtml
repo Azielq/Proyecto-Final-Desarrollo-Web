@@ -44,10 +44,54 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
                                 <li>@Html.ActionLink("Medicamentos", "Medicamentos", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
+                                <li>@Html.ActionLink("Productos", "Index", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
                                 <li>@Html.ActionLink("Cuidado Personal", "CuidadoPersonal", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
                                 <li>@Html.ActionLink("Vitaminas y Suplementos", "Vitaminas", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
                                 <li>@Html.ActionLink("Bebés y Maternidad", "Bebes", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
                             </ul>
+                        </li>
+
+
+                        <!-- Opción 1: Botón en formato de ítem de navegación -->
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" href="@Url.Action("Index", "Carrito")">
+                                <i class="bi bi-cart-fill nav-icon"></i>Carrito
+                                @{
+                                    int totalItems = 0;
+                                    if (Session["UserID"] != null)
+                                    {
+                                        try
+                                        {
+                                            using (var db = new Proyecto_Final_Desarrollo_Web.Models.FarmaUEntities())
+                                            {
+                                                int userId = Convert.ToInt32(Session["UserID"]);
+                                                var items = db.Carrito
+                                                    .Where(c => c.ID_Usuario == userId)
+                                                    .Select(c => c.Cantidad)
+                                                    .ToList();
+
+                                                if (items.Any())
+                                                {
+                                                    totalItems = items.Sum();
+                                                }
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            // En caso de error, simplemente no mostramos contador
+                                            totalItems = 0;
+                                            // Opcionalmente registrar el error
+                                            System.Diagnostics.Debug.WriteLine("Error al obtener cantidad de items: " + ex.Message);
+                                        }
+                                    }
+                                }
+                                @if (totalItems > 0)
+                                {
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        @totalItems
+                                    </span>
+                                }
+                            </a>
                         </li>
                     </ul>
 
@@ -235,6 +279,8 @@
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/libs")
+    <script src="~/Scripts/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+
     @RenderSection("scripts", required: false)
 
     <script>
@@ -245,6 +291,145 @@
             } else {
                 console.log('SweetAlert2 cargado correctamente.');
             }
+        });
+
+        // Versión mejorada del JavaScript para actualizar el contador del carrito con AJAX
+        // Agregar este código en un archivo JS o en la sección scripts del layout
+
+        $(document).ready(function () {
+            // Función para actualizar el contador del carrito mediante AJAX
+            function actualizarContadorCarritoAJAX() {
+                $.ajax({
+                    url: '/Carrito/ObtenerTotalElementos',
+                    type: 'GET',
+                    success: function (response) {
+                        var totalItems = parseInt(response) || 0;
+                        var $badge = $('.nav-link .badge');
+
+                        if (totalItems > 0) {
+                            if ($badge.length === 0) {
+                                $('.nav-link.position-relative').append(
+                                    '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' +
+                                    totalItems +
+                                    '</span>'
+                                );
+                            } else {
+                                $badge.text(totalItems);
+                            }
+                        } else {
+                            $badge.remove();
+                        }
+                    },
+                    error: function () {
+                        console.error('Error al obtener cantidad de productos en el carrito');
+                    }
+                });
+            }
+
+            // Actualizar contador al cargar la página
+            actualizarContadorCarritoAJAX();
+
+            // Cuando se hace clic en un botón para añadir al carrito
+            $(document).on('click', '.add-to-cart-btn', function (e) {
+                e.preventDefault();
+
+                var idProducto = $(this).data('producto-id');
+                var cantidad = parseInt($('#cantidad').val() || 1);
+
+                $.ajax({
+                    url: '/Carrito/AgregarAjax',
+                    type: 'POST',
+                    data: { idProducto: idProducto, cantidad: cantidad },
+                    success: function (response) {
+                        if (response.success) {
+                            // Mostrar mensaje de éxito
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Producto agregado!',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                            // Actualizar el contador
+                            var $badge = $('.nav-link .badge');
+
+                            if ($badge.length === 0) {
+                                $('.nav-link.position-relative').append(
+                                    '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge-pulse">' +
+                                    response.totalItems +
+                                    '</span>'
+                                );
+                            } else {
+                                $badge.text(response.totalItems);
+                                $badge.addClass('cart-badge-pulse');
+                            }
+
+                            // Remover la clase de animación después de completarla
+                            setTimeout(function () {
+                                $('.nav-link .badge').removeClass('cart-badge-pulse');
+                            }, 500);
+
+                        } else {
+                            // Mostrar mensaje de error
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ocurrió un error al agregar el producto al carrito'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Agregar este código en un archivo JS o en la sección scripts del layout
+
+        // Función para actualizar el contador del carrito cuando se añade un producto
+        function actualizarContadorCarrito() {
+            // En una implementación real, esto haría una petición AJAX
+            // Por ahora, simplificamos obteniendo el elemento actual y sumando 1
+            var $badge = $('.nav-link .badge');
+            if ($badge.length > 0) {
+                var currentCount = parseInt($badge.text()) || 0;
+                $badge.text(currentCount + 1);
+
+                // Añadir clase para la animación
+                $badge.addClass('cart-badge-pulse');
+
+                // Remover la clase después de la animación
+                setTimeout(function () {
+                    $badge.removeClass('cart-badge-pulse');
+                }, 500);
+            } else {
+                // Si no existe el badge, crearlo
+                $('.nav-link.position-relative').append(
+                    '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge-pulse">1</span>'
+                );
+
+                // Remover la clase después de la animación
+                setTimeout(function () {
+                    $('.nav-link .badge').removeClass('cart-badge-pulse');
+                }, 500);
+            }
+        }
+
+        // Ejemplo de uso - esto se llamaría cuando se añade un producto al carrito
+        $(document).ready(function () {
+            // Cuando se hace clic en un botón para añadir al carrito
+            $('.add-to-cart-btn').on('click', function () {
+                // Lógica para añadir al carrito...
+
+                // Luego actualizar el contador
+                // actualizarContadorCarrito();
+            });
         });
     </script>
 </body>

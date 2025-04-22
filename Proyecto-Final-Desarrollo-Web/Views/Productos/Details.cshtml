@@ -1,0 +1,238 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.ProductoViewModel
+@{
+    ViewBag.Title = "Detalles del Producto";
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Productos")">Productos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Nombre</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>@Model.Nombre</h2>
+        <div>
+            <a href="@Url.Action("Edit", "Productos", new { id = Model.ID_Producto })" class="btn btn-primary">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="@Url.Action("Inventario", "Productos", new { id = Model.ID_Producto })" class="btn btn-success">
+                <i class="bi bi-box"></i> Inventario
+            </a>
+            <a href="@Url.Action("GestionarImagenes", "Productos", new { id = Model.ID_Producto })" class="btn btn-info">
+                <i class="bi bi-images"></i> Imágenes
+            </a>
+            <a href="@Url.Action("ProductImages", "ImgBB", new { id = Model.ID_Producto })" class="btn btn-info">
+                <i class="bi bi-images"></i> ImágenesImgBB
+            </a>
+            <a href="@Url.Action("Index", "Productos")" class="btn btn-secondary">
+                <i class="bi bi-arrow-left"></i> Volver a la Lista
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Producto</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-5">ID:</dt>
+                                <dd class="col-sm-7">@Model.ID_Producto</dd>
+
+                                <dt class="col-sm-5">Categoría:</dt>
+                                <dd class="col-sm-7">@Model.NombreCategoria</dd>
+
+                                <dt class="col-sm-5">Precio de Compra:</dt>
+                                <dd class="col-sm-7">@Html.DisplayFor(model => model.precio_compra)</dd>
+
+                                <dt class="col-sm-5">Precio de Venta:</dt>
+                                <dd class="col-sm-7">@Html.DisplayFor(model => model.precio_venta)</dd>
+
+                                <dt class="col-sm-5">Margen:</dt>
+                                <dd class="col-sm-7">@Model.MargenGanancia.ToString("0.00")%</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <dl class="row">
+                                <dt class="col-sm-5">Marca:</dt>
+                                <dd class="col-sm-7">@(string.IsNullOrEmpty(Model.Marca) ? "No especificado" : Model.Marca)</dd>
+
+                                <dt class="col-sm-5">Unidad:</dt>
+                                <dd class="col-sm-7">@(string.IsNullOrEmpty(Model.UnidadDeVenta) ? "No especificado" : Model.UnidadDeVenta)</dd>
+
+                                <dt class="col-sm-5">Contenido:</dt>
+                                <dd class="col-sm-7">@(string.IsNullOrEmpty(Model.ContenidoNeto) ? "No especificado" : Model.ContenidoNeto)</dd>
+
+                                <dt class="col-sm-5">Stock:</dt>
+                                <dd class="col-sm-7">
+                                    <span class="badge @(Model.StockDisponible < 10 ? "bg-danger" : "bg-success")">
+                                        @Model.StockDisponible unidades
+                                    </span>
+                                </dd>
+
+                                <dt class="col-sm-5">Estado:</dt>
+                                <dd class="col-sm-7">
+                                    <span class="badge @(Model.estado == "Activo" ? "bg-success" : "bg-danger")">
+                                        @Model.estado
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-text"></i> Detalles</h5>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.Detalles))
+                    {
+                        <div class="mb-4">
+                            @Html.Raw(Model.Detalles)
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No hay detalles disponibles para este producto.</p>
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-journal-text"></i> Indicaciones</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (!string.IsNullOrEmpty(Model.Indicaciones))
+                            {
+                                <div>
+                                    @Html.Raw(Model.Indicaciones)
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No hay indicaciones disponibles para este producto.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="bi bi-list-ul"></i> Ingredientes</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (!string.IsNullOrEmpty(Model.Ingredientes))
+                            {
+                                <div>
+                                    @Html.Raw(Model.Ingredientes)
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No hay ingredientes disponibles para este producto.</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-image"></i> Imagen Principal</h5>
+                </div>
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.UrlImagenPrincipal))
+                    {
+                        <img src="@Model.UrlImagenPrincipal" class="img-fluid rounded" style="max-height: 300px;" alt="@Model.Nombre">
+                    }
+                    else
+                    {
+                        <div class="py-5 text-muted">
+                            <i class="bi bi-image" style="font-size: 3rem;"></i>
+                            <p>No hay imagen principal</p>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer bg-transparent">
+                    <a href="@Url.Action("GestionarImagenes", "Productos", new { id = Model.ID_Producto })" class="btn btn-outline-primary btn-sm w-100">
+                        <i class="bi bi-images"></i> Gestionar Imágenes
+                    </a>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-images"></i> Galería de Imágenes</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Imagenes != null && Model.Imagenes.Any())
+                    {
+                        <div class="row g-2">
+                            @foreach (var imagen in Model.Imagenes.Take(6))
+                            {
+                                <div class="col-6 mb-2">
+                                    <a href="@imagen.URL" target="_blank" class="d-block">
+                                        <div style="height: 120px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #dee2e6; border-radius: 0.25rem;">
+                                            <img src="@imagen.URL" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: contain;" alt="@imagen.Descripcion">
+                                        </div>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+
+                        if (Model.Imagenes.Count > 6)
+                        {
+                            <div class="text-center mt-2">
+                                <a href="@Url.Action("GestionarImagenes", "Productos", new { id = Model.ID_Producto })" class="btn btn-outline-primary btn-sm">
+                                    Ver todas (@Model.Imagenes.Count)
+                                </a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-images" style="font-size: 2rem;"></i>
+                            <p>No hay imágenes adicionales</p>
+                            <a href="@Url.Action("GestionarImagenes", "Productos", new { id = Model.ID_Producto })" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-plus"></i> Agregar Imágenes
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-box"></i> Inventario</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Stock Disponible:</span>
+                        <span class="badge @(Model.StockDisponible < 10 ? "bg-danger" : "bg-success") fs-6">
+                            @Model.StockDisponible unidades
+                        </span>
+                    </div>
+
+                    <a href="@Url.Action("Inventario", "Productos", new { id = Model.ID_Producto })" class="btn btn-outline-success btn-sm w-100 mt-2">
+                        <i class="bi bi-box"></i> Ver Detalles de Inventario
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
