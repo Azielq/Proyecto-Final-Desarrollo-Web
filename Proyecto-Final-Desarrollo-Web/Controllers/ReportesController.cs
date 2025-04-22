@@ -14,8 +14,13 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
     {
         private FarmaUEntities db = new FarmaUEntities();
 
+        public ActionResult Index()
+        {
+            return View();
+        }
+
         // GET: Reportes/Inventario
-        public ActionResult Inventario()
+        public ActionResult ReportesInventario()
         {
             var viewModel = new ReporteInventarioViewModel
             {
@@ -82,7 +87,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         }
 
         // GET: Reportes/Ventas
-        public ActionResult Ventas()
+        public ActionResult ReportesVentas()
         {
             var viewModel = new ReporteVentasViewModel();
             return View(viewModel);
@@ -90,7 +95,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
         // POST: Reportes/Ventas
         [HttpPost]
-        public ActionResult Ventas(ReporteVentasViewModel viewModel)
+        public ActionResult ReportesVentas(ReporteVentasViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
@@ -272,5 +277,8 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             }
             base.Dispose(disposing);
         }
+
+
     }
+
 }
