@@ -230,13 +230,19 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 ModelState.AddModelError("ID_Lote", "Este lote ya tiene una ubicación asignada");
             }
 
-            ViewBag.ID_Lote = new SelectList(db.Lotes
+            // Materializa los datos primero con ToList()
+            var lotes = db.Lotes
                 .Include(l => l.Productos)
                 .Where(l => !db.Inventario.Any(i => i.ID_Lote == l.id_Lote))
-                .Select(l => new {
-                    l.id_Lote,
-                    NombreCompleto = l.Productos.Nombre + " - Vence: " + l.fecha_vencimiento.ToString("dd/MM/yyyy")
-                }), "id_Lote", "NombreCompleto", viewModel.ID_Lote);
+                .ToList();  // Materializa la consulta aquí
+
+            // Ahora aplica ToString en memoria
+            var lotesConFormato = lotes.Select(l => new {
+                l.id_Lote,
+                NombreCompleto = l.Productos.Nombre + " - Vence: " + l.fecha_vencimiento.ToString("dd/MM/yyyy")
+            });
+
+            ViewBag.ID_Lote = new SelectList(lotesConFormato, "id_Lote", "NombreCompleto", viewModel.ID_Lote);
 
             return View(viewModel);
         }

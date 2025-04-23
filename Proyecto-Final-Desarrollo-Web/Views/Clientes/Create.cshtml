@@ -1,0 +1,206 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.ClienteViewModel
+@{
+    ViewBag.Title = "Crear Nuevo Cliente - FarmaU";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Clientes")">Clientes</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Crear Nuevo Cliente</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Crear Nuevo Cliente</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Por favor, corrija los errores para continuar.
+                            <ul class="mb-0 mt-2 ps-3">
+                                @foreach (var modelState in ViewData.ModelState.Values)
+                                {
+                                    foreach (var error in modelState.Errors)
+                                    {
+                                        <li>@error.ErrorMessage</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("Create", "Clientes", FormMethod.Post, new { @class = "needs-validation", novalidate = "novalidate" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="bi bi-person-fill me-2"></i>Información Personal</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="Nombre" class="form-label">
+                                            <i class="bi bi-person-fill me-2"></i>@Html.DisplayNameFor(m => m.Nombre)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control" + (ViewData.ModelState["Nombre"]?.Errors.Count > 0 ? " is-invalid" : ""), placeholder = "Nombre", required = "required" })
+                                        <div class="invalid-feedback">
+                                            @Html.ValidationMessageFor(m => m.Nombre)
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="Apellido_1" class="form-label">
+                                            <i class="bi bi-person-fill me-2"></i>@Html.DisplayNameFor(m => m.Apellido_1)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.Apellido_1, new { @class = "form-control" + (ViewData.ModelState["Apellido_1"]?.Errors.Count > 0 ? " is-invalid" : ""), placeholder = "Primer Apellido", required = "required" })
+                                        <div class="invalid-feedback">
+                                            @Html.ValidationMessageFor(m => m.Apellido_1)
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="Apellido_2" class="form-label">
+                                            <i class="bi bi-person-fill me-2"></i>@Html.DisplayNameFor(m => m.Apellido_2)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.Apellido_2, new { @class = "form-control" + (ViewData.ModelState["Apellido_2"]?.Errors.Count > 0 ? " is-invalid" : ""), placeholder = "Segundo Apellido" })
+                                        <div class="invalid-feedback">
+                                            @Html.ValidationMessageFor(m => m.Apellido_2)
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="tipo_documento" class="form-label">
+                                            <i class="bi bi-card-text me-2"></i>@Html.DisplayNameFor(m => m.tipo_documento)
+                                        </label>
+                                        @Html.DropDownListFor(m => m.tipo_documento, new List<SelectListItem>
+                                        {
+                                            new SelectListItem { Text = "Seleccione...", Value = "" },
+                                            new SelectListItem { Text = "DNI", Value = "DNI" },
+                                            new SelectListItem { Text = "Pasaporte", Value = "Pasaporte" },
+                                            new SelectListItem { Text = "Cédula", Value = "Cedula" }
+                                        }, new { @class = "form-select" + (ViewData.ModelState["tipo_documento"]?.Errors.Count > 0 ? " is-invalid" : ""), required = "required" })
+                                        <div class="invalid-feedback">
+                                            @Html.ValidationMessageFor(m => m.tipo_documento)
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="numero_documento" class="form-label">
+                                            <i class="bi bi-card-heading me-2"></i>@Html.DisplayNameFor(m => m.numero_documento)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.numero_documento, new { @class = "form-control" + (ViewData.ModelState["numero_documento"]?.Errors.Count > 0 ? " is-invalid" : ""), placeholder = "Número de documento", required = "required", pattern = "[0-9]{6,12}" })
+                                        <div class="invalid-feedback">
+                                            @Html.ValidationMessageFor(m => m.numero_documento)
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="Correo" class="form-label">
+                                            <i class="bi bi-envelope-fill me-2"></i>@Html.DisplayNameFor(m => m.Correo)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.Correo, new { @class = "form-control" + (ViewData.ModelState["Correo"]?.Errors.Count > 0 ? " is-invalid" : ""), placeholder = "ejemplo@correo.com", type = "email", required = "required" })
+                                        <div class="invalid-feedback">
+                                            @Html.ValidationMessageFor(m => m.Correo)
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="Teléfono" class="form-label">
+                                            <i class="bi bi-phone-fill me-2"></i>@Html.DisplayNameFor(m => m.Teléfono)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.Teléfono, new { @class = "form-control" + (ViewData.ModelState["Teléfono"]?.Errors.Count > 0 ? " is-invalid" : ""), placeholder = "+51 999 999 999", required = "required", pattern = "^[\\+]?[0-9]{8,15}$" })
+                                        <div class="invalid-feedback">
+                                            @Html.ValidationMessageFor(m => m.Teléfono)
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="dirección" class="form-label">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>@Html.DisplayNameFor(m => m.dirección)
+                                    </label>
+                                    @Html.TextBoxFor(m => m.dirección, new { @class = "form-control" + (ViewData.ModelState["dirección"]?.Errors.Count > 0 ? " is-invalid" : ""), placeholder = "Dirección completa", required = "required" })
+                                    <div class="invalid-feedback">
+                                        @Html.ValidationMessageFor(m => m.dirección)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="@Url.Action("Index", "Clientes")" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i>Guardar Cliente
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            // Validación de formulario con Bootstrap
+            (function () {
+                'use strict'
+
+                // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                var forms = document.querySelectorAll('.needs-validation')
+
+                // Loop over them and prevent submission
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })();
+
+            // Validación adicional para el correo electrónico
+            $('#Correo').on('blur', function () {
+                var emailRegex = new RegExp("^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+                var email = $(this).val();
+
+                if (email && !emailRegex.test(email)) {
+                    $(this).addClass('is-invalid');
+                    $(this).siblings('.invalid-feedback').text('Por favor ingrese un correo electrónico válido.');
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+
+            // Validación adicional para el teléfono
+            $('#Teléfono').on('blur', function () {
+                var phoneRegex = new RegExp("^[\\+]?[0-9]{8,15}$");
+                var phone = $(this).val().replace(/[\s\-\(\)]/g, "");
+
+                if (phone && !phoneRegex.test(phone)) {
+                    $(this).addClass('is-invalid');
+                    $(this).siblings('.invalid-feedback').text('Por favor ingrese un número de teléfono válido (8-15 dígitos).');
+                } else {
+                    $(this).removeClass('is-invalid');
+                }
+            });
+        });
+    </script>
+}

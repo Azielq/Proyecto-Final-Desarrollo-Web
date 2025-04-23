@@ -1,0 +1,200 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.ClienteViewModel
+@{
+    ViewBag.Title = "Detalles del Cliente - FarmaU";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Clientes")">Clientes</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Detalles del Cliente</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="bi bi-info-circle me-2"></i>Detalles del Cliente</h4>
+                        <div>
+                            <a href="@Url.Action("Edit", "Clientes", new { id = Model.id_cliente })" class="btn btn-light btn-sm me-2">
+                                <i class="bi bi-pencil me-1"></i>Editar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Primera columna: información general -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Información Personal</h6>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-borderless mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <th style="width: 150px;"><i class="bi bi-person me-1"></i>Nombre:</th>
+                                                <td>@Model.Nombre @Model.Apellido_1 @Model.Apellido_2</td>
+                                            </tr>
+                                            <tr>
+                                                <th><i class="bi bi-card-text me-1"></i>Documento:</th>
+                                                <td>@Model.tipo_documento @Model.numero_documento</td>
+                                            </tr>
+                                            <tr>
+                                                <th><i class="bi bi-phone me-1"></i>Teléfono:</th>
+                                                <td>@Model.Teléfono</td>
+                                            </tr>
+                                            <tr>
+                                                <th><i class="bi bi-envelope me-1"></i>Correo:</th>
+                                                <td>@Model.Correo</td>
+                                            </tr>
+                                            <tr>
+                                                <th><i class="bi bi-geo-alt me-1"></i>Dirección:</th>
+                                                <td>@Model.dirección</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Segunda columna: estadísticas de compras -->
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Historial de Compras</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row text-center mb-3">
+                                        <div class="col-6">
+                                            <div class="p-3 border rounded mb-2 bg-light">
+                                                <h4 class="text-primary">@string.Format("{0:C2}", Model.TotalCompras)</h4>
+                                                <p class="mb-0 text-muted">Total Compras</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-6">
+                                            <div class="p-3 border rounded mb-2 bg-light">
+                                                <h4 class="text-success">@(Model.Facturas != null ? Model.Facturas.Count : 0)</h4>
+                                                <p class="mb-0 text-muted">N° de Compras</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row text-center">
+                                        <div class="col-12">
+                                            <div class="p-3 border rounded bg-light">
+                                                <p class="mb-1 text-muted">Última Compra</p>
+                                                <h4 class="text-info">
+                                                    @if (Model.UltimaCompra.HasValue)
+                                                    {
+                                                        @Model.UltimaCompra.Value.ToString("dd/MM/yyyy")
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>N/A</span>
+                                                    }
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3">
+                                        <a href="@Url.Action("ComprasCliente", "Clientes", new { id = Model.id_cliente })" class="btn btn-primary btn-sm w-100">
+                                            <i class="bi bi-receipt me-1"></i>Ver todas las compras
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Facturas del cliente -->
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Últimas Facturas</h6>
+                                </div>
+                                <div class="card-body p-0">
+                                    @if (Model.Facturas != null && Model.Facturas.Any())
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="table table-sm table-striped mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        <th>N° Factura</th>
+                                                        <th>Fecha</th>
+                                                        <th>Total</th>
+                                                        <th>Estado</th>
+                                                        <th>Productos</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var factura in Model.Facturas)
+                                                    {
+                                                        string estadoClass = "";
+                                                        switch (factura.estado)
+                                                        {
+                                                            case "Completada": estadoClass = "bg-success"; break;
+                                                            case "Pendiente": estadoClass = "bg-warning"; break;
+                                                            case "Cancelada": estadoClass = "bg-danger"; break;
+                                                            default: estadoClass = "bg-secondary"; break;
+                                                        }
+
+                                                        <tr>
+                                                            <td>@factura.id_Factura</td>
+                                                            <td>
+                                                                @if (factura.fecha.HasValue)
+                                                                {
+                                                                    @factura.fecha.Value.ToString("dd/MM/yyyy")
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>N/A</span>
+                                                                }
+                                                            </td>
+                                                            <td>@string.Format("{0:C2}", factura.total)</td>
+                                                            <td><span class="badge @estadoClass">@factura.estado</span></td>
+                                                            <td>@factura.CantidadProductos</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center p-4">
+                                            <i class="bi bi-info-circle me-2"></i>Este cliente no tiene facturas registradas.
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex justify-content-between">
+                        <a href="@Url.Action("Index", "Clientes")" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>Volver a la lista
+                        </a>
+                        <div>
+                            <a href="@Url.Action("Delete", "Clientes", new { id = Model.id_cliente })" class="btn btn-danger">
+                                <i class="bi bi-trash me-1"></i>Eliminar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Inicializa tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}
