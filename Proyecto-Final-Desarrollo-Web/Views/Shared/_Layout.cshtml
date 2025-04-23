@@ -268,12 +268,13 @@
                     <div class="footer-column">
                         <h3><i class="bi bi-tags me-2"></i>Categorías</h3>
                         <ul>
-                            <li><a href="#"><i class="bi bi-prescription2"></i> Medicamentos</a></li>
-                            <li><a href="#"><i class="bi bi-droplet"></i> Cuidado Personal</a></li>
-                            <li><a href="#"><i class="bi bi-capsule"></i> Vitaminas y Suplementos</a></li>
-                            <li><a href="#"><i class="bi bi-balloon"></i> Bebés y Maternidad</a></li>
-                            <li><a href="#"><i class="bi bi-bandaid"></i> Equipo Médico</a></li>
+                            <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 1, Nombre = "Analgésicos" } })"><i class="bi bi-prescription2"></i> Medicamentos</a></li>
+                            <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 2, Nombre = "Antibióticos" } })"><i class="bi bi-droplet"></i> Cuidado Personal</a></li>
+                            <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 3, Nombre = "Antiinflamatorios" } })"><i class="bi bi-capsule"></i> Vitaminas y Suplementos</a></li>
+                            <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 4, Nombre = "Antihistamínicos" } })"><i class="bi bi-balloon"></i> Bebés y Maternidad</a></li>
+                            <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 5, Nombre = "Equipo Médico" } })"><i class="bi bi-bandaid"></i> Equipo Médico</a></li>
                         </ul>
+                    </div>
                     </div>
                     <div class="footer-column">
                         <h3><i class="bi bi-chat-dots me-2"></i>Contacto</h3>
