@@ -368,6 +368,7 @@
     <Compile Include="Models\Usuarios.cs">
       <DependentUpon>FarmaU.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\TiendaViewModel.cs" />
     <Compile Include="Models\ViewModels\CarritoItemViewModel.cs" />
     <Compile Include="Models\ViewModels\ClienteViewModel.cs" />
     <Compile Include="Models\ViewModels\CompraViewModel.cs" />
@@ -408,7 +409,9 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\img\appstore.jpg" />
     <Content Include="Content\img\asesoria.jpg" />
+    <Content Include="Content\img\Cat.png" />
     <Content Include="Content\img\cuidado.jpg" />
+    <Content Include="Content\img\Descuentos.png" />
     <Content Include="Content\img\entrega.jpg" />
     <Content Include="Content\img\facebook.jpg" />
     <Content Include="Content\img\farmaceutica-hispana.png" />
@@ -426,6 +429,7 @@
     <Content Include="Content\img\proveedor.png" />
     <Content Include="Content\img\recetas.jpg" />
     <Content Include="Content\img\recordatorio.jpg" />
+    <Content Include="Content\img\News-P.png" />
     <Content Include="Content\img\subscripcion.jpg" />
     <Content Include="Content\img\usuario.jpg" />
     <Content Include="Content\img\vitaminas.jpg" />
@@ -699,6 +703,10 @@
     <Content Include="Views\Clientes\Delete.cshtml" />
     <Content Include="Views\Clientes\ComprasCliente.cshtml" />
     <Content Include="Views\Shared\_SweetAlertPartial.cshtml" />
+    <Content Include="Views\Home\Tienda.cshtml" />
+    <Content Include="Views\Home\DetalleProducto.cshtml" />
+    <Content Include="Views\Home\Categorias.cshtml" />
+    <Content Include="Views\Home\Index2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

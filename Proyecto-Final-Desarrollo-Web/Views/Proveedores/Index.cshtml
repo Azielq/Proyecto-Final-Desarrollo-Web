@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Proyecto_Final_Desarrollo_Web.TableViewModels.ProveedorTableViewModel>
+﻿﻿@model IEnumerable<Proyecto_Final_Desarrollo_Web.TableViewModels.ProveedorTableViewModel>
 @using Proyecto_Final_Desarrollo_Web.Helpers
 @{
     ViewBag.Title = "Lista de Proveedores";
@@ -29,6 +29,7 @@
             </div>
         </div>
     </section>
+
 
     <!-- Sección de Lista de Proveedores -->
     <section class="providers-list" id="lista-proveedores">
@@ -62,6 +63,7 @@
                     </div>
                 </form>
             </div>
+
 
             <div class="actions mb-3">
                 <a href="@Url.Action("Create", "Proveedores")" class="btn btn-success">Agregar Proveedor</a>
@@ -248,9 +250,20 @@
 
         /* Animación al filtrar */
         keyframes filtering {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
+            0%
+
+        {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.7;
+        }
+
+        100% {
+            opacity: 1;
+        }
+
         }
 
         .filtering {

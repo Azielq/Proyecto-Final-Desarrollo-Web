@@ -10,12 +10,9 @@ using Proyecto_Final_Desarrollo_Web.Models;
 using Proyecto_Final_Desarrollo_Web.ViewModels;
 using Proyecto_Final_Desarrollo_Web.TableViewModels;
 using Proyecto_Final_Desarrollo_Web.Helpers;
-using Proyecto_Final_Desarrollo_Web.Filters;
 
 namespace Proyecto_Final_Desarrollo_Web.Controllers
 {
-    [AuthorizeRoles("Administrador", "Supervisor")]
-
     public class InventarioController : Controller
     {
         private FarmaUEntities db = new FarmaUEntities();
@@ -171,6 +168,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 var lote = db.Lotes
                     .Include(l => l.Productos)
                     .Include(l => l.Productos.Categorias)
+                    // Se elimina la inclusión de Laboratorios
                     .FirstOrDefault(l => l.id_Lote == loteId);
 
                 if (lote != null)
@@ -178,6 +176,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                     viewModel.ID_Lote = lote.id_Lote;
                     viewModel.NombreProducto = lote.Productos.Nombre;
                     viewModel.Categoria = lote.Productos.Categorias.Nombre;
+                    // Laboratorio se omite o se puede asignar un valor predeterminado
                     viewModel.Cantidad = lote.cantidad;
                     viewModel.FechaVencimiento = lote.fecha_vencimiento;
 
@@ -187,17 +186,19 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
             if (!loteId.HasValue)
             {
-                
+                // Materializa los datos primero con ToList()
                 var lotes = db.Lotes
                     .Include(l => l.Productos)
                     .Where(l => !db.Inventario.Any(i => i.ID_Lote == l.id_Lote))
-                    .ToList() // Materializar la consulta primero
-                    .Select(l => new {
-                        l.id_Lote,
-                        NombreCompleto = l.Productos.Nombre + " - Vence: " + l.fecha_vencimiento.ToString("dd/MM/yyyy")
-                    });
+                    .ToList();  // Materializa la consulta aquí
 
-                ViewBag.ID_Lote = new SelectList(lotes, "id_Lote", "NombreCompleto");
+                // Ahora aplica ToString en memoria
+                var lotesConFormato = lotes.Select(l => new {
+                    l.id_Lote,
+                    NombreCompleto = l.Productos.Nombre + " - Vence: " + l.fecha_vencimiento.ToString("dd/MM/yyyy")
+                });
+
+                ViewBag.ID_Lote = new SelectList(lotesConFormato, "id_Lote", "NombreCompleto");
             }
 
             return View(viewModel);
