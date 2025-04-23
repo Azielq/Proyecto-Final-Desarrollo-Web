@@ -266,54 +266,52 @@
 
         @RenderBody()
 
-        <footer id="contacto">
-            <div class="container">
-                <div class="footer-content">
-                    <div class="footer-column">
-                        <h3><i class="bi bi-capsule me-2"></i>FarmaU</h3>
-                        <p><i class="bi bi-clock me-2"></i>Tu farmacia digital de confianza, disponible las 24 horas del día, los 7 días de la semana.</p>
-                        <div class="social-links">
-                            <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook"><i class="bi bi-facebook"></i></a>
-                            <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Instagram"><i class="bi bi-instagram"></i></a>
-                            <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter"><i class="bi bi-twitter-x"></i></a>
-                            <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
-                        </div>
-                    </div>
-                    <div class="footer-column">
-                        <h3><i class="bi bi-list me-2"></i>Navegación</h3>
-                        <ul>
-                            <li><a href="#inicio"><i class="bi bi-house-door"></i> Inicio</a></li>
-                            <li><a href="#categorias"><i class="bi bi-grid"></i> Categorías</a></li>
-                            <li><a href="#servicios"><i class="bi bi-stars"></i> Servicios</a></li>
-                            <li><a href="#testimonios"><i class="bi bi-chat-quote"></i> Testimonios</a></li>
-                            <li><a href="#app"><i class="bi bi-phone"></i> App</a></li>
-                            <li><a href="@Url.Action("Index", "Facturacion")"><i class="bi bi-receipt"></i> Facturación</a></li>
-                        </ul>
-                    </div>
-                    <div class="footer-column">
-                        <h3><i class="bi bi-tags me-2"></i>Categorías</h3>
-                        <ul>
-                            <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 1, Nombre = "Analgésicos" } })"><i class="bi bi-prescription2"></i> Medicamentos</a></li>
-                            <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 2, Nombre = "Antibióticos" } })"><i class="bi bi-droplet"></i> Cuidado Personal</a></li>
-                            <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 3, Nombre = "Antiinflamatorios" } })"><i class="bi bi-capsule"></i> Vitaminas y Suplementos</a></li>
-                            <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 4, Nombre = "Antihistamínicos" } })"><i class="bi bi-balloon"></i> Bebés y Maternidad</a></li>
-                            <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 5, Nombre = "Equipo Médico" } })"><i class="bi bi-bandaid"></i> Equipo Médico</a></li>
-                        </ul>
-                    </div>
-                    </div>
-                    <div class="footer-column">
-                        <h3><i class="bi bi-chat-dots me-2"></i>Contacto</h3>
-                        <p><i class="bi bi-envelope"></i> Email: info@farmau.com</p>
-                        <p><i class="bi bi-telephone"></i> Teléfono: (800) 123-4567</p>
-                        <p><i class="bi bi-geo-alt"></i> Dirección: Av. Principal #123, Ciudad</p>
+
+    <footer id="contacto">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3><i class="bi bi-capsule me-2"></i>FarmaU</h3>
+                    <p><i class="bi bi-clock me-2"></i>Tu farmacia digital de confianza, disponible las 24 horas del día, los 7 días de la semana.</p>
+                    <div class="social-links">
+                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
                     </div>
                 </div>
-                <div class="footer-bottom">
-                    <p><i class="bi bi-c-circle me-1"></i> @DateTime.Now.Year FarmaU. Todos los derechos reservados.</p>
+                <div class="footer-column">
+                    <h3><i class="bi bi-list me-2"></i>Navegación</h3>
+                    <ul>
+                        <li><a href="#inicio"><i class="bi bi-house-door"></i> Inicio</a></li>
+                        <li><a href="#categorias"><i class="bi bi-grid"></i> Categorías</a></li>
+                        <li><a href="#servicios"><i class="bi bi-stars"></i> Servicios</a></li>
+                        <li><a href="#testimonios"><i class="bi bi-chat-quote"></i> Testimonios</a></li>
+                        <li><a href="#app"><i class="bi bi-phone"></i> App</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3><i class="bi bi-tags me-2"></i>Categorías</h3>
+                    <ul>
+                        <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 1, Nombre = "Analgésicos" } })"><i class="bi bi-prescription2"></i> Medicamentos</a></li>
+                        <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 2, Nombre = "Antibióticos" } })"><i class="bi bi-droplet"></i> Cuidado Personal</a></li>
+                        <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 3, Nombre = "Antiinflamatorios" } })"><i class="bi bi-capsule"></i> Vitaminas y Suplementos</a></li>
+                        <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 4, Nombre = "Antihistamínicos" } })"><i class="bi bi-balloon"></i> Bebés y Maternidad</a></li>
+                        <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 5, Nombre = "Equipo Médico" } })"><i class="bi bi-bandaid"></i> Equipo Médico</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3><i class="bi bi-chat-dots me-2"></i>Contacto</h3>
+                    <p><i class="bi bi-envelope"></i> Email: info@farmau.com</p>
+                    <p><i class="bi bi-telephone"></i> Teléfono: (800) 123-4567</p>
+                    <p><i class="bi bi-geo-alt"></i> Dirección: Av. Principal #123, Ciudad</p>
                 </div>
             </div>
-        </footer>
-    </div>
+            <div class="footer-bottom">
+                <p><i class="bi bi-c-circle me-1"></i> @DateTime.Now.Year FarmaU. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/libs")
