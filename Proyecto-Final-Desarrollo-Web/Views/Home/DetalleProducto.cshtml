@@ -127,21 +127,23 @@
                             </div>
                         </div>
 
+
                         <div class="product-actions d-flex gap-3 flex-wrap mb-4">
                             <div class="quantity-selector d-flex align-items-center">
-                                <button class="btn btn-outline-secondary" onclick="decreaseQuantity()">-</button>
+                                <button type="button" id="btnDecrease" class="btn btn-outline-secondary">−</button>
                                 <input type="number" id="quantity" class="form-control mx-2 text-center" value="1" min="1" max="@producto.Stock">
-                                <button class="btn btn-outline-secondary" onclick="increaseQuantity(@producto.Stock)">+</button>
+                                <button type="button" id="btnIncrease" class="btn btn-outline-secondary">+</button>
                             </div>
 
-                            <button class="btn btn-primary flex-grow-1" @(producto.Stock <= 0 ? "disabled" : "")>
+                            <button type="button" id="btnAddToCart" class="btn btn-primary flex-grow-1" @(producto.Stock <= 0 ? "disabled" : "")>
                                 <i class="bi bi-cart-plus me-2"></i>Agregar al Carrito
                             </button>
 
-                            <button class="btn btn-outline-danger">
+                            <button type="button" class="btn btn-outline-danger">
                                 <i class="bi bi-heart"></i>
                             </button>
                         </div>
+
 
                         <div class="product-shipping-info p-3 bg-light rounded">
                             <div class="d-flex align-items-center mb-2">
@@ -272,192 +274,89 @@
 
 @section scripts {
     <script>
-        // Función para cambiar la imagen principal
-        function changeMainImage(src) {
-            document.getElementById('mainProductImage').src = src;
+    $(function() {
+      var productId = @producto.ID_Producto;
+      var maxStock  = @producto.Stock;
 
-            // Actualiza la clase activa en las miniaturas
-            document.querySelectorAll('.thumbnail-item').forEach(item => {
-                if (item.querySelector('img').src === src) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
+      $('#btnDecrease').on('click', function() {
+        var $q = $('#quantity'), v = parseInt($q.val(),10);
+        if (v>1) $q.val(v-1);
+      });
+      $('#btnIncrease').on('click', function() {
+        var $q = $('#quantity'), v = parseInt($q.val(),10);
+        if (v<maxStock) $q.val(v+1);
+      });
+
+      function isUserLoggedIn() {
+        return @(Session["UserID"] != null ? "true" : "false");
+      }
+      function updateCartCounter(c) {
+        var $b = $('.nav-link .badge');
+        if ($b.length) {
+          $b.text(c).addClass('cart-badge-pulse');
+          setTimeout(() => $b.removeClass('cart-badge-pulse'), 500);
+        } else {
+          $('.icon-badge').append('<span class="badge bg-danger cart-badge-pulse">'+c+'</span>');
+          setTimeout(() => $('.badge').removeClass('cart-badge-pulse'), 500);
         }
+      }
 
-        // Funciones para el selector de cantidad
-        function decreaseQuantity() {
-            var input = document.getElementById('quantity');
-            var value = parseInt(input.value);
-            if (value > 1) {
-                input.value = value - 1;
+      $('#btnAddToCart').on('click', function(e) {
+        e.preventDefault();
+        var qty = parseInt($('#quantity').val(),10);
+        if (!qty||qty<1) {
+          return Swal.fire({ icon:'warning', title:'Cantidad inválida', text:'Ingresa una cantidad válida.' });
+        }
+        if (qty>maxStock) {
+          return Swal.fire({ icon:'warning', title:'Stock insuficiente', text:'Solo hay '+maxStock+' unidades.' });
+        }
+        if (!isUserLoggedIn()) {
+          return Swal.fire({
+            title:'Iniciar sesión',
+            text:'Debes iniciar sesión para añadir al carrito',
+            icon:'info',
+            showCancelButton:true,
+            confirmButtonText:'Iniciar sesión',
+            cancelButtonText:'Cancelar'
+          }).then(function(r) {
+            if (r.isConfirmed) {
+              window.location.href = '@Url.Action("Login","Usuarios")';
             }
+          });
         }
 
-        function increaseQuantity(maxStock) {
-            var input = document.getElementById('quantity');
-            var value = parseInt(input.value);
-            if (value < maxStock) {
-                input.value = value + 1;
-            }
-        }
+        Swal.fire({ title:'Añadiendo…', allowOutsideClick:false, didOpen:()=>Swal.showLoading() });
 
-        // Inicialización cuando se carga la página
-        $(document).ready(function() {
-            // Animación para las tarjetas de productos relacionados
-            $('.product-card').hover(
-                function() {
-                    $(this).addClass('shadow');
-                    $(this).find('.card-img-top').css('transform', 'scale(1.05)');
-                    $(this).find('.card-img-top').css('transition', 'transform 0.3s ease');
-                },
-                function() {
-                    $(this).removeClass('shadow');
-                    $(this).find('.card-img-top').css('transform', 'scale(1)');
-                }
-            );
-
-            // Zoom básico para la imagen principal
-            $('#mainProductImage').on('mousemove', function(e) {
-                var zoomer = e.currentTarget;
-                var offsetX = e.offsetX ? e.offsetX : e.touches[0].pageX;
-                var offsetY = e.offsetY ? e.offsetY : e.touches[0].pageY;
-                var x = offsetX / zoomer.offsetWidth * 100;
-                var y = offsetY / zoomer.offsetHeight * 100;
-                zoomer.style.backgroundPosition = x + '% ' + y + '%';
+        $.post('@Url.Action("AgregarAjax","Carrito")',
+          { idProducto: productId, cantidad: qty }
+        ).done(function(resp) {
+          if (resp.success) {
+            updateCartCounter(resp.totalItems);
+            Swal.fire({
+              icon:'success',
+              title:'¡Añadido!',
+              text:resp.message,
+              showCancelButton:true,
+              confirmButtonText:'Ver carrito',
+              cancelButtonText:'Seguir comprando'
+            }).then(function(r) {
+              if (r.isConfirmed) {
+                window.location.href = '@Url.Action("Index","Carrito")';
+              }
             });
+          } else {
+            Swal.fire({ icon:'error', title:'Error', text:resp.message||'Ha ocurrido un error.' });
+          }
+        }).fail(function() {
+          Swal.fire({ icon:'error', title:'Error de conexión', text:'Intenta de nuevo más tarde.' });
         });
-
-        // Conectar el botón de "Agregar al Carrito" 
-        $(document).ready(function() {
-            // Botón de agregar al carrito en la página de detalle
-            $('.product-actions .btn-primary').click(function(e) {
-                e.preventDefault();
-
-                var productId = @producto.ID_Producto;
-                var quantity = parseInt($('#quantity').val());
-
-                // Validar que la cantidad sea válida
-                if (isNaN(quantity) || quantity < 1) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Cantidad inválida',
-                        text: 'Por favor, ingresa una cantidad válida'
-                    });
-                    return;
-                }
-
-                // Verificar que haya stock disponible
-                var stockDisponible = @producto.Stock;
-                if (quantity > stockDisponible) {
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Stock insuficiente',
-                        text: 'Solo hay ' + stockDisponible + ' unidades disponibles'
-                    });
-                    return;
-                }
-
-                // Verificar que el usuario esté logueado
-                if (!isUserLoggedIn()) {
-                    Swal.fire({
-                        title: 'Iniciar sesión',
-                        text: 'Debes iniciar sesión para añadir productos al carrito',
-                        icon: 'info',
-                        showCancelButton: true,
-                        confirmButtonText: 'Iniciar sesión',
-                        cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = '@Url.Action("Login", "Usuarios")';
-                        }
-                    });
-                    return;
-                }
-
-                // Mostrar indicador de carga
-                Swal.fire({
-                    title: 'Añadiendo al carrito...',
-                    allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
-                });
-
-                // Realizar la petición AJAX
-                $.ajax({
-                    url: '@Url.Action("AgregarAjax", "Carrito")',
-                    type: 'POST',
-                    data: {
-                        idProducto: productId,
-                        cantidad: quantity
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            // Actualizar contador del carrito
-                            updateCartCounter(response.totalItems);
-
-                            Swal.fire({
-                                icon: 'success',
-                                title: '¡Producto añadido!',
-                                text: response.message,
-                                showCancelButton: true,
-                                confirmButtonText: 'Ver carrito',
-                                cancelButtonText: 'Seguir comprando'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    window.location.href = '@Url.Action("Index", "Carrito")';
-                                }
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: response.message || 'Error al añadir el producto al carrito'
-                            });
-                        }
-                    },
-                    error: function () {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Error de conexión. Por favor, intenta de nuevo.'
-                        });
-                    }
-                });
-            });
-
-            // Función para verificar si el usuario está logueado
-            function isUserLoggedIn() {
-                // Verificar si existe la sesión de usuario
-                return @(Session["UserID"] != null ? "true" : "false");
-            }
-
-            // Función para actualizar el contador del carrito
-            function updateCartCounter(count) {
-                // Actualizar badge en el icono del carrito
-                var $badge = $('.nav-link .badge');
-                if ($badge.length > 0) {
-                    $badge.text(count);
-
-                    // Animación para destacar el cambio
-                    $badge.addClass('cart-badge-pulse');
-                    setTimeout(function() {
-                        $badge.removeClass('cart-badge-pulse');
-                    }, 500);
-                } else {
-                    // Si no existe el badge, crearlo
-                    $('.icon-badge').append('<span class="badge bg-danger cart-badge-pulse">' + count + '</span>');
-
-                    setTimeout(function() {
-                        $('.badge').removeClass('cart-badge-pulse');
-                    }, 500);
-                }
-            }
-        });
+      });
+    });
     </script>
 }
+
+
+
 
 <style>
     /* Estilos para la galería de imágenes */

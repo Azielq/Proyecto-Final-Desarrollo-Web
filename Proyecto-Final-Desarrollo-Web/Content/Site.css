@@ -1479,3 +1479,85 @@ footer {
         transform: scale(1);
     }
 }
+
+/* Estos estilos son para asegurar que la impresión de la factura sea correcta */
+@media print {
+    /* Elementos base */
+    html, body {
+        width: 100%;
+        height: auto;
+        margin: 0 !important;
+        padding: 0 !important;
+        background-color: #fff !important;
+    }
+    
+    body {
+        padding-top: 0 !important;
+        font-size: 12pt;
+    }
+    
+    /* Ocultar elementos no necesarios */
+    header, footer, .navbar, .sidebar, .no-print, 
+    .breadcrumb, .btn, .alert, .nav, .aside {
+        display: none !important;
+    }
+    
+    /* Contenedor principal */
+    .print-friendly {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Ajustar el contenedor y las tarjetas */
+    .container, .container-fluid, .row {
+        width: 100% !important;
+        max-width: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+    }
+    
+    .card-header {
+        border-bottom: 1px solid #ddd !important;
+        color: #000 !important;
+        background-color: #fff !important;
+        padding: 0.5rem 0 !important;
+    }
+    
+    /* Tablas */
+    table, .table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+        font-size: 10pt !important;
+    }
+    
+    .table th, .table td {
+        border: 1px solid #ddd !important;
+        padding: 0.2rem 0.4rem !important;
+    }
+    
+    /* Específico para la vista de factura */
+    .table-striped tr:nth-child(even) {
+        background-color: #f2f2f2 !important;
+    }
+    
+    .badge {
+        border: 1px solid #000 !important;
+        background-color: transparent !important;
+        color: #000 !important;
+        font-weight: normal !important;
+    }
+    
+    /* Márgenes de página */
+    @page {
+        margin: 0.5cm !important;
+        size: auto !important;
+    }
+}

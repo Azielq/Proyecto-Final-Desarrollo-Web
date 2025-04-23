@@ -464,48 +464,48 @@
 
 @section scripts {
     <script>
-        // Completando la función updateFilterForm() y el resto del script
-
-        // Script mejorado para manejar los filtros de la tienda
         $(document).ready(function () {
-            // Toggle entre vista de cuadrícula y lista
-            $('#gridView').click(function () {
+            // ————————————————
+            // VISTA CUADRÍCULA / LISTA
+            // ————————————————
+            $('#gridView').off('click').on('click', function () {
                 $(this).addClass('active');
                 $('#listView').removeClass('active');
                 $('#gridContainer').removeClass('d-none');
                 $('#listContainer').addClass('d-none');
-                // Guarda preferencia en localStorage
                 localStorage.setItem('viewPreference', 'grid');
             });
-
-            $('#listView').click(function () {
+            $('#listView').off('click').on('click', function () {
                 $(this).addClass('active');
                 $('#gridView').removeClass('active');
                 $('#listContainer').removeClass('d-none');
                 $('#gridContainer').addClass('d-none');
-                // Guarda preferencia en localStorage
                 localStorage.setItem('viewPreference', 'list');
             });
-
-            // Carga preferencia de vista guardada
             var savedView = localStorage.getItem('viewPreference');
             if (savedView === 'list') {
-                $('#listView').click();
+                $('#listView').trigger('click');
             }
 
-            // Cambia ordenamiento - Corregido para garantizar que se actualice correctamente
-            $('#sortSelect').change(function () {
+            // ————————————————
+            // ORDENAMIENTO
+            // ————————————————
+            $('#sortSelect').off('change').on('change', function () {
                 var value = $(this).val();
                 $('select[name="Filtros.OrdenarPor"]').val(value);
                 $('#filtroForm').submit();
             });
 
-            // Efectos visuales para las tarjetas de productos
+            // ————————————————
+            // EFECTOS VISUALES PRODUCT-CARD
+            // ————————————————
             $('.product-card').hover(
                 function () {
                     $(this).addClass('shadow');
-                    $(this).find('.card-img-top').css('transform', 'scale(1.05)');
-                    $(this).find('.card-img-top').css('transition', 'transform 0.3s ease');
+                    $(this).find('.card-img-top').css({
+                        'transform': 'scale(1.05)',
+                        'transition': 'transform 0.3s ease'
+                    });
                 },
                 function () {
                     $(this).removeClass('shadow');
@@ -513,91 +513,92 @@
                 }
             );
 
-            // Función mejorada para actualizar los formularios de filtro
+            // ————————————————
+            // ACTUALIZACIÓN DE ENLACES DE PAGINACIÓN Y CATEGORÍAS
+            // ————————————————
             function updateFilterForm() {
-                // Recolecta todos los valores de filtros actuales
                 var formData = {};
-
-                // Obtener todos los datos del formulario y convertirlos a un objeto
                 $('#filtroForm').serializeArray().forEach(function (item) {
                     formData[item.name] = item.value;
                 });
-
-                // También capturar los checkboxes que podrían no estar incluidos en serializeArray
                 $('#filtroForm input[type="checkbox"]').each(function () {
-                    var name = $(this).attr('name');
-                    formData[name] = $(this).prop('checked');
+                    formData[$(this).attr('name')] = $(this).prop('checked');
                 });
-
-                // Actualiza los enlaces de paginación para incluir los filtros actuales
-                $('.pagination .page-link').each(function () {
+                $('.pagination .page-link, .list-group-item, .nav-pills .nav-link').each(function () {
                     var href = $(this).attr('href');
-                    if (href) {
-                        var url = new URL(href, window.location.origin);
-
-                        // Añade todos los parámetros de filtro a la URL
-                        Object.keys(formData).forEach(function (key) {
-                            if (formData[key] !== '' && formData[key] !== false) {
-                                url.searchParams.set(key, formData[key]);
-                            }
-                        });
-
-                        $(this).attr('href', url.toString());
-                    }
-                });
-
-                // Actualiza los enlaces de categoría para preservar otros filtros
-                $('.list-group-item, .nav-pills .nav-link').each(function () {
-                    var href = $(this).attr('href');
-                    if (href) {
-                        var url = new URL(href, window.location.origin);
-
-                        // No sobreescribe el filtro de categoría en los enlaces de categoría
-                        Object.keys(formData).forEach(function (key) {
-                            if (!key.includes('CategoriaId') && formData[key] !== '' && formData[key] !== false) {
-                                url.searchParams.set(key, formData[key]);
-                            }
-                        });
-
-                        $(this).attr('href', url.toString());
-                    }
+                    if (!href) return;
+                    var url = new URL(href, window.location.origin);
+                    Object.keys(formData).forEach(function (key) {
+                        if (formData[key] !== '' && formData[key] !== false) {
+                            // En enlaces de categoría no sobreescribimos CategoriaId
+                            if ($(this).is('.list-group-item, .nav-pills .nav-link') && key.includes('CategoriaId')) return;
+                            url.searchParams.set(key, formData[key]);
+                        }
+                    }, this);
+                    $(this).attr('href', url.toString());
                 });
             }
-
-            // Ejecuta la actualización de formularios cuando cambie cualquier filtro
-            $('#filtroForm input, #filtroForm select').change(function () {
+            // Auto-submit filtros
+            $('#filtroForm input, #filtroForm select').off('change').on('change', function () {
                 if (!$(this).hasClass('no-auto-submit')) {
                     $('#filtroForm').submit();
                 }
             });
-
-            // Asegura que los checkboxes también actualicen el formulario al cambiar
-            $('#filtroForm input[type="checkbox"]').change(function () {
+            $('#filtroForm input[type="checkbox"]').off('change').on('change', function () {
                 $('#filtroForm').submit();
             });
-
-            // Botón para limpiar todos los filtros
-            $('a[href*="Limpiar"]').click(function (e) {
+            // Limpiar filtros
+            $('.btn-reset-filters, a[href*="Limpiar"]').off('click').on('click', function (e) {
                 e.preventDefault();
-
-                // Resetea todos los campos del formulario
                 $('#filtroForm')[0].reset();
-
-                // Quita todos los parámetros de la URL y recargar
                 window.location.href = window.location.pathname;
             });
 
-            // Confirma añadir al carrito
-            $('#confirmAddToCart').click(function () {
-                var productId = $('#productId').val();
-                var quantity = parseInt($('#modalQuantity').val());
+            // ————————————————
+            // AÑADIR AL CARRITO: MOSTRAR MODAL
+            // ————————————————
+            $('.add-to-cart-btn').off('click').on('click', function (e) {
+                e.preventDefault();
+                var btn = $(this);
+                $('#productId').val(btn.data('product-id'));
+                $('#modalProductName').text(btn.data('product-name'));
+                $('#modalProductPrice').text('₡' + parseFloat(btn.data('product-price')).toFixed(2));
+                $('#modalProductImage').attr('src', btn.data('product-image'));
+                $('#modalQuantity').val(1);
+                $('#addToCartModal').modal('show');
+            });
 
-                // Verificar datos antes de enviar
-                console.log("Añadiendo producto ID:", productId, "Cantidad:", quantity);
+            // ————————————————
+            // AÑADIR AL CARRITO: INCREMENTAR / DECREMENTAR
+            // ————————————————
+            $('#increaseQuantity').off('click').on('click', function () {
+                var input = $('#modalQuantity'),
+                    val = parseInt(input.val(), 10);
+                if (val < 100) input.val(val + 1);
+            });
+            $('#decreaseQuantity').off('click').on('click', function () {
+                var input = $('#modalQuantity'),
+                    val = parseInt(input.val(), 10);
+                if (val > 1) input.val(val - 1);
+            });
 
-                // Verificar que el usuario esté logueado
+            // ————————————————
+            // AÑADIR AL CARRITO: CONFIRMAR Y AJAX
+            // ————————————————
+            $('#confirmAddToCart').off('click').on('click', function () {
+                var productId = parseInt($('#productId').val(), 10),
+                    quantity  = parseInt($('#modalQuantity').val(), 10);
+
+                if (isNaN(productId) || productId <= 0 || isNaN(quantity) || quantity <= 0) {
+                    return Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Datos inválidos. Por favor, inténtalo de nuevo.'
+                    });
+                }
+
                 if (!isUserLoggedIn()) {
-                    Swal.fire({
+                    return Swal.fire({
                         title: 'Iniciar sesión',
                         text: 'Debes iniciar sesión para añadir productos al carrito',
                         icon: 'info',
@@ -606,111 +607,74 @@
                         cancelButtonText: 'Cancelar'
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            window.location.href = '@Url.Action("Login", "Usuarios")';
+                            window.location.href = '@Url.Action("Login","Usuarios")';
                         }
                     });
-                    return;
                 }
 
-                // Mostrar indicador de carga
                 Swal.fire({
-                    title: 'Añadiendo al carrito...',
+                    title: 'Añadiendo al carrito…',
                     allowOutsideClick: false,
-                    didOpen: () => {
-                        Swal.showLoading();
-                    }
+                    didOpen: () => Swal.showLoading()
                 });
 
-                // Realizar la petición AJAX con manejo adecuado de errores
-                $.ajax({
-                    url: '@Url.Action("AgregarAjax", "Carrito")',
-                    type: 'POST',
-                    data: {
-                        idProducto: productId,
-                        cantidad: quantity
-                    },
-                    success: function (response) {
-                        console.log("Respuesta del servidor:", response);
-
-                        if (response.success) {
-                            // Actualizar contador del carrito
-                            updateCartCounter(response.totalItems);
-
-                            Swal.fire({
-                                icon: 'success',
-                                title: '¡Producto añadido!',
-                                text: response.message,
-                                timer: 2000,
-                                showConfirmButton: false
-                            });
-
-                            // Cerrar modal
-                            $('#addToCartModal').modal('hide');
-                        } else {
-                            var errorMsg = response.message || 'Error al añadir el producto al carrito';
-                            if (response.details) {
-                                errorMsg += '\nDetalles: ' + response.details;
-                            }
-
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: errorMsg
-                            });
-
-                            console.error("Error servidor:", errorMsg);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error en la petición AJAX:", error);
-                        console.error("Estado:", status);
-                        console.error("Respuesta:", xhr.responseText);
-
+                $.post('@Url.Action("AgregarAjax","Carrito")',
+                    { idProducto: productId, cantidad: quantity }
+                ).done(function (response) {
+                    if (response.success) {
+                        updateCartCounter(response.totalItems);
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Agregado!',
+                            text: response.message,
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        $('#addToCartModal').modal('hide');
+                    } else {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Error de conexión',
-                            text: 'No se pudo conectar con el servidor. Por favor, intenta de nuevo.'
+                            title: 'Error',
+                            text: response.message || 'Ocurrió un error al añadir el producto.'
                         });
                     }
+                }).fail(function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error de conexión',
+                        text: 'No se pudo conectar con el servidor.'
+                    });
                 });
             });
 
-            // Función para verificar si el usuario está logueado
+            // ————————————————
+            // AUXILIARES: LOGIN & CONTADOR
+            // ————————————————
             function isUserLoggedIn() {
-                // Verificar si existe la sesión de usuario
                 return @(Session["UserID"] != null ? "true" : "false");
             }
-
-            // Función para actualizar el contador del carrito
             function updateCartCounter(count) {
-                // Actualizar badge en el icono del carrito
                 var $badge = $('.nav-link .badge');
-                if ($badge.length > 0) {
-                    $badge.text(count);
-
-                    // Animación para destacar el cambio
-                    $badge.addClass('cart-badge-pulse');
-                    setTimeout(function() {
-                        $badge.removeClass('cart-badge-pulse');
-                    }, 500);
+                if ($badge.length) {
+                    $badge.text(count).addClass('cart-badge-pulse');
+                    setTimeout(() => $badge.removeClass('cart-badge-pulse'), 500);
                 } else {
-                    // Si no existe el badge, crearlo
                     $('.icon-badge').append('<span class="badge bg-danger cart-badge-pulse">' + count + '</span>');
-
-                    setTimeout(function() {
-                        $('.badge').removeClass('cart-badge-pulse');
-                    }, 500);
+                    setTimeout(() => $('.badge').removeClass('cart-badge-pulse'), 500);
                 }
             }
 
-            // Inicializa tooltips de Bootstrap
+            // ————————————————
+            // TOOLTIP BOOTSTRAP
+            // ————————————————
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
+            tooltipTriggerList.map(el => new bootstrap.Tooltip(el));
 
-            // Ejecuta funciones de inicialización
+            // ————————————————
+            // INICIALIZACIÓN FINAL
+            // ————————————————
             updateFilterForm();
         });
     </script>
 }
+

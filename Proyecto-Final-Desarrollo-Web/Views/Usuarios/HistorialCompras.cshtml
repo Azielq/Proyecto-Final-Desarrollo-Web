@@ -1,0 +1,122 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.HistorialComprasViewModel
+@using Proyecto_Final_Desarrollo_Web.Helpers
+
+@{
+    ViewBag.Title = "Mi Historial de Compras - FarmaU";
+}
+
+<div class="container pt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("MiCuenta", "Usuarios")">Mi Cuenta</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Historial de Compras</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-receipt me-2"></i>Mi Historial de Compras</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Total de Compras</h5>
+                                    <h3 class="text-primary">@Model.TotalFacturas</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Total Gastado</h5>
+                                    <h3 class="text-primary">@Model.TotalGastado.ToString("C")</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">Última Compra</h5>
+                                    <h3 class="text-primary">@(Model.Facturas.Any() ? Model.Facturas.First().Fecha.ToString("dd/MM/yyyy") : "N/A")</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (!Model.Facturas.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-receipt-cutoff text-muted" style="font-size: 5rem;"></i>
+                            <h3 class="mt-3">No tienes compras registradas</h3>
+                            <p class="text-muted">Realiza tu primera compra en nuestra tienda.</p>
+                            <a href="@Url.Action("Tienda", "Home")" class="btn btn-primary mt-3">
+                                <i class="bi bi-shop me-2"></i>Ir a la tienda
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Número</th>
+                                        <th>Fecha</th>
+                                        <th>Productos</th>
+                                        <th>Total</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var factura in Model.Facturas)
+                                    {
+                                        <tr>
+                                            <td class="align-middle">#@factura.Id_Factura</td>
+                                            <td class="align-middle">@factura.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                                            <td class="align-middle">@factura.CantidadProductos artículos</td>
+                                            <td class="align-middle fw-bold">@factura.Total.ToString("C")</td>
+                                            <td class="align-middle">
+                                                <span class="badge @factura.EstadoClaseBadge">@factura.Estado</span>
+                                            </td>
+                                            <td class="align-middle">
+                                                <a href="@Url.Action("DetalleFactura", "Usuarios", new { id = factura.Id_Factura })"
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="bi bi-eye me-1"></i>Ver Detalle
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Usando el PaginationHelper -->
+                        @Html.Raw(Html.RenderPagination(
+                            (int)ViewBag.CurrentPage,
+                            (int)ViewBag.TotalPages,
+                            (int)ViewBag.PageSize,
+                            "HistorialCompras",
+                            "Usuarios"
+                        ))
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // Función para cambiar el tamaño de página
+        function changePageSize(pageSize) {
+            var url = '@Url.Action("HistorialCompras", "Usuarios")';
+            window.location.href = url + '?pageSize=' + pageSize;
+        }
+    </script>
+}

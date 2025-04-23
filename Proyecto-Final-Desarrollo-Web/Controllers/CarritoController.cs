@@ -16,17 +16,6 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         // GET: Carrito
         public ActionResult Index()
         {
-
-
-
-
-            //CREO QUE TENEMOS QUE ELIMINAR ESTO PORQUE VAMOS A CAMBIAR EL ENFOQUE DE LA APLICACIÓN
-
-
-
-
-
-            // Si el usuario no está autenticado, redirigir al login con mensaje
             if (Session["UserID"] == null)
             {
                 TempData["Message"] = "Debes iniciar sesión para acceder a tu carrito";
@@ -35,7 +24,6 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             }
 
             int idUsuario = Convert.ToInt32(Session["UserID"]);
-
             var carritoItems = db.Carrito
                 .Include(c => c.Productos)
                 .Where(c => c.ID_Usuario == idUsuario)
@@ -48,10 +36,12 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 {
                     ID_Carrito = item.ID_Carrito,
                     ID_Producto = item.ID_Producto,
-                    ID_Usuario = item.ID_Usuario,
                     NombreProducto = item.Productos.Nombre,
-                    // No hay ImagenUrl en el modelo Productos, usamos ruta predeterminada
-                    ImagenUrl = "/Content/images/no-image.png",
+                    ImagenUrl = item.Productos.Imagenes_Producto
+                                        .Where(i => i.Estado && i.EsPrincipal)
+                                        .Select(i => i.URL)
+                                        .FirstOrDefault()
+                                    ?? "/Content/images/no-image.png",
                     PrecioUnitario = item.Productos.precio_venta,
                     Cantidad = item.Cantidad,
                     FechaAgregado = item.FechaAgregado
@@ -60,6 +50,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
             return View(viewModel);
         }
+
 
         // GET: Carrito/VerCarritoMini (Para mostrar un resumen del carrito en un widget de la barra de navegación)
         [ChildActionOnly]
@@ -155,22 +146,39 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
             try
             {
-                // Verificar si el producto existe
-                var producto = db.Productos.Find(idProducto);
+                // Verificar si el producto existe y está activo
+                var producto = db.Productos
+                    .FirstOrDefault(p => p.ID_Producto == idProducto && p.estado == "Activo");
+
                 if (producto == null)
                 {
-                    return Json(new { success = false, message = "Producto no encontrado" });
+                    return Json(new { success = false, message = "Producto no encontrado o no disponible" });
+                }
+
+                // Verificar si hay suficiente stock
+                int stockDisponible = db.Lotes
+                    .Where(l => l.ID_Producto == idProducto && l.cantidad > 0)
+                    .Sum(l => l.cantidad);
+
+                if (stockDisponible < cantidad)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"Stock insuficiente. Solo hay {stockDisponible} unidades disponibles."
+                    });
                 }
 
                 // Verificar si el producto ya está en el carrito
-                var itemCarrito = db.Carrito.FirstOrDefault(c =>
-                    c.ID_Usuario == idUsuario && c.ID_Producto == idProducto);
+                var itemCarrito = db.Carrito
+                    .FirstOrDefault(c => c.ID_Usuario == idUsuario && c.ID_Producto == idProducto);
 
                 if (itemCarrito != null)
                 {
                     // Si ya existe, actualizamos la cantidad
                     itemCarrito.Cantidad += cantidad;
                     itemCarrito.FechaAgregado = DateTime.Now; // Actualizamos la fecha
+                    db.Entry(itemCarrito).State = EntityState.Modified;
                 }
                 else
                 {
@@ -183,7 +191,6 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                         FechaAgregado = DateTime.Now
                     };
 
-                    // Agregamos el nuevo item al contexto
                     db.Carrito.Add(nuevoItem);
                 }
 
@@ -195,65 +202,26 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                     .Where(c => c.ID_Usuario == idUsuario)
                     .Sum(c => c.Cantidad);
 
+                // Obtenemos información adicional para la respuesta
+                string nombreProducto = producto.Nombre;
+                decimal precioProducto = producto.precio_venta;
+
                 return Json(new
                 {
                     success = true,
-                    message = $"{producto.Nombre} agregado al carrito",
-                    totalItems = totalItems
+                    message = $"{nombreProducto} agregado al carrito",
+                    totalItems = totalItems,
+                    productoNombre = nombreProducto,
+                    productoPrecio = precioProducto
                 });
             }
             catch (Exception ex)
             {
-                // Si hay una excepción durante el proceso, podemos detectar si es por la restricción UNIQUE
-                string mensajeError = ex.InnerException?.Message ?? ex.Message;
-
-                if (mensajeError.Contains("UQ_Carrito_Usuario_Producto") ||
-                    mensajeError.Contains("UNIQUE KEY constraint") ||
-                    mensajeError.Contains("duplicate key"))
-                {
-                    // Si es un error de duplicado, intentamos actualizar en lugar de insertar
-                    try
-                    {
-                        var itemExistente = db.Carrito.FirstOrDefault(c =>
-                            c.ID_Usuario == idUsuario && c.ID_Producto == idProducto);
-
-                        if (itemExistente != null)
-                        {
-                            // Actualizamos directamente con una nueva consulta para evitar problemas de contexto
-                            itemExistente.Cantidad += cantidad;
-                            itemExistente.FechaAgregado = DateTime.Now;
-                            db.SaveChanges();
-
-                            // Calculamos el total de items
-                            int totalItems = db.Carrito
-                                .Where(c => c.ID_Usuario == idUsuario)
-                                .Sum(c => c.Cantidad);
-
-                            return Json(new
-                            {
-                                success = true,
-                                message = $"Cantidad actualizada en el carrito",
-                                totalItems = totalItems
-                            });
-                        }
-                    }
-                    catch (Exception ex2)
-                    {
-                        return Json(new
-                        {
-                            success = false,
-                            message = "Error al actualizar el carrito",
-                            error = ex2.Message
-                        });
-                    }
-                }
-
-                // Devolvemos el error original si no pudimos manejarlo
                 return Json(new
                 {
                     success = false,
                     message = "Error al agregar al carrito",
-                    error = mensajeError
+                    error = ex.Message
                 });
             }
         }
@@ -299,62 +267,35 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
         // POST: Carrito/ActualizarAjax
         [HttpPost]
-        [Authorize]
         public JsonResult ActualizarAjax(int idCarrito, int cantidad)
         {
             if (Session["UserID"] == null)
-            {
-                return Json(new { success = false, message = "Debe iniciar sesión para actualizar el carrito" });
-            }
+                return Json(new { success = false, message = "Debe iniciar sesión" });
 
             int idUsuario = Convert.ToInt32(Session["UserID"]);
+            var item = db.Carrito.Find(idCarrito);
+            if (item == null || item.ID_Usuario != idUsuario)
+                return Json(new { success = false, message = "Item no encontrado o sin permiso" });
 
-            try
+            item.Cantidad = cantidad;
+            db.SaveChanges();
+
+            decimal subtotal = item.Productos.precio_venta * cantidad;
+            decimal totalCarrito = db.Carrito
+                .Where(c => c.ID_Usuario == idUsuario)
+                .Sum(c => c.Cantidad * c.Productos.precio_venta);
+            int totalItems = db.Carrito
+                .Where(c => c.ID_Usuario == idUsuario)
+                .Sum(c => c.Cantidad);
+
+            return Json(new
             {
-                var itemCarrito = db.Carrito.Find(idCarrito);
-
-                if (itemCarrito == null)
-                {
-                    return Json(new { success = false, message = "Producto no encontrado en el carrito" });
-                }
-
-                // Verificar que el ítem pertenezca al usuario actual
-                if (itemCarrito.ID_Usuario != idUsuario)
-                {
-                    return Json(new { success = false, message = "No tienes permiso para modificar este item" });
-                }
-
-                itemCarrito.Cantidad = cantidad;
-                db.SaveChanges();
-
-                // Recalcular totales
-                var producto = db.Productos.Find(itemCarrito.ID_Producto);
-                decimal subtotal = producto.precio_venta * cantidad;
-
-                // Calcular el nuevo total del carrito
-                decimal totalCarrito = db.Carrito
-                    .Where(c => c.ID_Usuario == idUsuario)
-                    .Join(db.Productos, c => c.ID_Producto, p => p.ID_Producto, (c, p) => new { c.Cantidad, p.precio_venta })
-                    .Sum(x => x.Cantidad * x.precio_venta);
-
-                // Calcular total de items
-                int totalItems = db.Carrito
-                    .Where(c => c.ID_Usuario == idUsuario)
-                    .Sum(c => c.Cantidad);
-
-                return Json(new
-                {
-                    success = true,
-                    message = "Carrito actualizado",
-                    subtotal = subtotal,
-                    totalCarrito = totalCarrito,
-                    totalItems = totalItems
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Error al actualizar el carrito: " + ex.Message });
-            }
+                success = true,
+                message = "Carrito actualizado",
+                subtotal,
+                totalCarrito,
+                totalItems
+            });
         }
 
         // POST: Carrito/Eliminar
@@ -391,58 +332,41 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
         // POST: Carrito/EliminarAjax
         [HttpPost]
-        [Authorize]
         public JsonResult EliminarAjax(int idCarrito)
         {
             if (Session["UserID"] == null)
-            {
-                return Json(new { success = false, message = "Debe iniciar sesión para eliminar productos del carrito" });
-            }
+                return Json(new { success = false, message = "Debe iniciar sesión" });
 
             int idUsuario = Convert.ToInt32(Session["UserID"]);
+            var item = db.Carrito.Find(idCarrito);
+            if (item == null || item.ID_Usuario != idUsuario)
+                return Json(new { success = false, message = "Item no encontrado o sin permiso" });
 
-            try
+            db.Carrito.Remove(item);
+            db.SaveChanges();
+
+            decimal totalCarrito = db.Carrito
+                .Where(c => c.ID_Usuario == idUsuario)
+                .Select(c => c.Cantidad * c.Productos.precio_venta)
+                .DefaultIfEmpty(0m)
+                .Sum();
+
+            int totalItems = db.Carrito
+                .Where(c => c.ID_Usuario == idUsuario)
+                .Select(c => c.Cantidad)
+                .DefaultIfEmpty(0)
+                .Sum();
+
+
+            return Json(new
             {
-                var itemCarrito = db.Carrito.Find(idCarrito);
-
-                if (itemCarrito == null)
-                {
-                    return Json(new { success = false, message = "Producto no encontrado en el carrito" });
-                }
-
-                // Verificar que el ítem pertenezca al usuario actual
-                if (itemCarrito.ID_Usuario != idUsuario)
-                {
-                    return Json(new { success = false, message = "No tienes permiso para eliminar este item" });
-                }
-
-                db.Carrito.Remove(itemCarrito);
-                db.SaveChanges();
-
-                // Calcular el nuevo total del carrito
-                decimal totalCarrito = db.Carrito
-                    .Where(c => c.ID_Usuario == idUsuario)
-                    .Join(db.Productos, c => c.ID_Producto, p => p.ID_Producto, (c, p) => new { c.Cantidad, p.precio_venta })
-                    .Sum(x => x.Cantidad * x.precio_venta);
-
-                // Calcular total de items
-                int totalItems = db.Carrito
-                    .Where(c => c.ID_Usuario == idUsuario)
-                    .Sum(c => c.Cantidad);
-
-                return Json(new
-                {
-                    success = true,
-                    message = "Producto eliminado del carrito",
-                    totalCarrito = totalCarrito,
-                    totalItems = totalItems
-                });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = "Error al eliminar del carrito: " + ex.Message });
-            }
+                success = true,
+                message = "Producto eliminado",
+                totalCarrito,
+                totalItems
+            });
         }
+
 
         // POST: Carrito/VaciarCarrito
         [HttpPost]
@@ -712,5 +636,266 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
             return RedirectToAction("Index");
         }
+
+
+        // Método para procesar el pago y generar factura
+        [HttpPost]
+        [Authorize] // Solo usuarios autenticados
+        [ValidateAntiForgeryToken]
+        public ActionResult ProcesarPago(PagoViewModel infoPago)
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Message"] = "Error en los datos de pago.";
+                TempData["MessageType"] = "error";
+                return RedirectToAction("ProcederPago");
+            }
+
+            int idUsuario = Convert.ToInt32(Session["UserID"]);
+
+            // Obtener los ítems del carrito
+            var carritoItems = db.Carrito
+                .Include(c => c.Productos)
+                .Where(c => c.ID_Usuario == idUsuario)
+                .ToList();
+
+            if (!carritoItems.Any())
+            {
+                TempData["Message"] = "El carrito está vacío.";
+                TempData["MessageType"] = "warning";
+                return RedirectToAction("Index");
+            }
+
+            using (var dbTransaction = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    // 1. Crear la factura
+                    var factura = new Facturas
+                    {
+                        ID_Cliente = ObtenerClienteIdPorUsuario(idUsuario), // Implementar este método
+                        fecha = DateTime.Now,
+                        total = carritoItems.Sum(item => item.Productos.precio_venta * item.Cantidad),
+                        estado = "pagado" // Estado inicial
+                    };
+
+                    db.Facturas.Add(factura);
+                    db.SaveChanges();
+
+                    // 2. Crear los detalles de la factura
+                    foreach (var item in carritoItems)
+                    {
+                        var detalle = new Detalles_Factura
+                        {
+                            id_Factura = factura.id_Factura,
+                            ID_Producto = item.ID_Producto,
+                            cantidad = item.Cantidad,
+                            subtotal = item.Productos.precio_venta * item.Cantidad
+                        };
+
+                        db.Detalles_Factura.Add(detalle);
+                    }
+                    db.SaveChanges();
+
+                    // 3. Actualizar el inventario (restar de lotes)
+                    foreach (var item in carritoItems)
+                    {
+                        bool stockReducido = ReducirStockDeLotes(item.ID_Producto, item.Cantidad, factura.id_Factura);
+
+                        if (!stockReducido)
+                        {
+                            // Si no hay suficiente stock, revertir transacción
+                            dbTransaction.Rollback();
+                            TempData["Message"] = "No hay suficiente stock para el producto: " + item.Productos.Nombre;
+                            TempData["MessageType"] = "error";
+                            return RedirectToAction("ProcederPago");
+                        }
+                    }
+
+                    // 4. Vaciar el carrito
+                    var itemsCarrito = db.Carrito.Where(c => c.ID_Usuario == idUsuario);
+                    db.Carrito.RemoveRange(itemsCarrito);
+                    db.SaveChanges();
+
+                    // Confirmar toda la transacción
+                    dbTransaction.Commit();
+
+                    TempData["Message"] = "¡Compra realizada con éxito! Su factura ha sido generada.";
+                    TempData["MessageType"] = "success";
+                    TempData["FacturaId"] = factura.id_Factura;
+
+                    return RedirectToAction("DetalleFactura", "Usuarios", new { id = factura.id_Factura });
+                }
+                catch (Exception ex)
+                {
+                    dbTransaction.Rollback();
+                    TempData["Message"] = "Error al procesar el pago: " + ex.Message;
+                    TempData["MessageType"] = "error";
+                    return RedirectToAction("ProcederPago");
+                }
+            }
+        }
+
+        // Método para obtener el ID del cliente asociado al usuario
+        // Método corregido para obtener el ID del cliente asociado al usuario
+        // Método para obtener el ID del cliente asociado al usuario
+        // Método para obtener el ID del cliente asociado al usuario
+        private int ObtenerClienteIdPorUsuario(int idUsuario)
+        {
+            // Obtenemos el usuario
+            var usuario = db.Usuarios.Find(idUsuario);
+
+            if (usuario == null)
+            {
+                throw new Exception("Usuario no encontrado.");
+            }
+
+            // Obtenemos el ID_Persona del usuario
+            int idPersona = usuario.ID_Persona;
+
+            // Buscamos el cliente que corresponde a esa persona
+            var cliente = db.Clientes.FirstOrDefault(c => c.ID_Persona == idPersona);
+
+            if (cliente == null)
+            {
+                // Si no existe un cliente para esta persona, creamos uno
+                cliente = new Clientes
+                {
+                    ID_Persona = idPersona
+                };
+
+                db.Clientes.Add(cliente);
+                db.SaveChanges();
+            }
+
+            return cliente.id_cliente;
+        }
+
+
+        // Método para reducir el stock de los lotes y registrar movimientos
+        private bool ReducirStockDeLotes(int idProducto, int cantidad, int idFactura)
+        {
+            // Obtener lotes disponibles ordenados por fecha de vencimiento (FIFO)
+            var lotes = db.Lotes
+                .Where(l => l.ID_Producto == idProducto && l.cantidad > 0)
+                .OrderBy(l => l.fecha_vencimiento)
+                .ToList();
+
+            int cantidadPendiente = cantidad;
+
+            foreach (var lote in lotes)
+            {
+                if (cantidadPendiente <= 0) break;
+
+                // Determinar cuánto tomar de este lote
+                int cantidadARestar = Math.Min(lote.cantidad, cantidadPendiente);
+
+                // Actualizar el lote
+                lote.cantidad -= cantidadARestar;
+                db.Entry(lote).State = EntityState.Modified;
+
+                // Registrar movimiento de inventario
+                var movimiento = new Movimientos_Inventario
+                {
+                    id_Producto = idProducto,
+                    id_Lote = lote.id_Lote,
+                    tipo = "Venta",
+                    cantidad = cantidadARestar, // Cantidad positiva aunque sea salida
+                    fecha = DateTime.Now,
+                    ID_Factura = idFactura
+                };
+
+                db.Movimientos_Inventario.Add(movimiento);
+
+                cantidadPendiente -= cantidadARestar;
+            }
+
+            // Si aún quedan unidades pendientes, no hay suficiente stock
+            return cantidadPendiente <= 0;
+        }
+
+        // POST: Carrito/ConfirmarPedido (AJAX)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult ConfirmarPedido(ConfirmarPedidoViewModel vm)
+        {
+            if (!ModelState.IsValid)
+                return Json(new { success = false, message = "Formulario inválido" });
+
+            if (Session["UserID"] == null)
+                return Json(new { success = false, message = "Debe iniciar sesión" });
+
+            int idUsuario = Convert.ToInt32(Session["UserID"]);
+            var items = db.Carrito
+                .Include(c => c.Productos)
+                .Where(c => c.ID_Usuario == idUsuario)
+                .ToList();
+            if (!items.Any())
+                return Json(new { success = false, message = "Carrito vacío" });
+
+            using (var tx = db.Database.BeginTransaction())
+            {
+                try
+                {
+                    var factura = new Facturas
+                    {
+                        ID_Cliente = ObtenerClienteIdPorUsuario(idUsuario),
+                        fecha      = DateTime.Now,
+                        total      = items.Sum(i => i.Productos.precio_venta * i.Cantidad),
+                        estado     = "pagado"
+                    };
+                    db.Facturas.Add(factura);
+                    db.SaveChanges();
+
+                    foreach (var it in items)
+                    {
+                        db.Detalles_Factura.Add(new Detalles_Factura {
+                            id_Factura  = factura.id_Factura,
+                            ID_Producto = it.ID_Producto,
+                            cantidad    = it.Cantidad,
+                            subtotal    = it.Productos.precio_venta * it.Cantidad
+                        });
+
+                        int pendiente = it.Cantidad;
+                        var lotes = db.Lotes
+                            .Where(l => l.ID_Producto == it.ID_Producto && l.cantidad > 0)
+                            .OrderBy(l => l.fecha_vencimiento)
+                            .ToList();
+
+                        foreach (var lote in lotes)
+                        {
+                            if (pendiente <= 0) break;
+                            int resta = Math.Min(lote.cantidad, pendiente);
+                            lote.cantidad -= resta;
+                            db.Movimientos_Inventario.Add(new Movimientos_Inventario {
+                                id_Producto = it.ID_Producto,
+                                id_Lote      = lote.id_Lote,
+                                tipo         = "Venta",
+                                cantidad     = resta * -1,
+                                fecha        = DateTime.Now,
+                                ID_Factura   = factura.id_Factura
+                            });
+                            pendiente -= resta;
+                        }
+                        if (pendiente > 0)
+                            throw new Exception("Stock insuficiente para " + it.Productos.Nombre);
+                    }
+
+                    db.Carrito.RemoveRange(items);
+                    db.SaveChanges();
+                    tx.Commit();
+
+                    return Json(new { success = true, facturaId = factura.id_Factura });
+                }
+                catch (Exception ex)
+                {
+                    tx.Rollback();
+                    return Json(new { success = false, message = ex.Message });
+                }
+            }
+        }
+
+        
+
     }
 }
