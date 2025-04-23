@@ -37,19 +37,8 @@
             {
                 <div class="alert alert-@TempData["MessageType"]">
                     @TempData["Message"]
-        <!-- Filtro -->
-        <div class="mb-3">
-            <form method="get" action="@Url.Action("Index", "Proveedores")" class="form-inline d-flex justify-content-between align-items-center" id="filtroForm">
-                <div class="form-group">
-                    <div class="input-group">
-                        <span class="input-group-text" style="background-color: #007bff; color: white;">
-                            <span class="glyphicon glyphicon-search"></span>
-                        </span>
-                        <input type="text" id="searchTerm" name="searchTerm" class="form-control" value="@ViewBag.SearchTerm" placeholder="Buscar proveedor..." />
-                    </div>
                 </div>
             }
-
 
             <!-- Filtro -->
             <div class="mb-3">
@@ -73,16 +62,6 @@
                     </div>
                 </form>
             </div>
-                <div class="form-group form-check me-3">
-                    <div class="form-check">
-                        <input type="checkbox" id="soloActivos" name="soloActivos" class="form-check-input"
-                               value="true" @(ViewBag.SoloActivos != null && (bool)ViewBag.SoloActivos ? "checked" : "")
-                               onchange="this.form.submit();" style="height: 1.5em; width: 1.5em; cursor: pointer;" />
-                        <label class="form-check-label ms-2" for="soloActivos" style="cursor: pointer;">Solo Activos</label>
-                    </div>
-                </div>
-            </form>
-        </div>
 
             <div class="actions mb-3">
                 <a href="@Url.Action("Create", "Proveedores")" class="btn btn-success">Agregar Proveedor</a>
@@ -96,29 +75,6 @@
                         <th>Teléfono</th>
                         <th>Estado</th>
                         <th>Acciones</th>
-                        <td>@proveedor.Nombre</td>
-                        <td>@proveedor.Correo</td>
-                        <td>@proveedor.Telefono</td>
-                        <td>
-                            <span class="@proveedor.EstadoClass">
-                                @proveedor.EstadoTexto
-                            </span>
-                        </td>
-                        <td>
-                            <a href="@Url.Action("Details", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-info">Ver Detalles</a>
-                            <a href="@Url.Action("Edit", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-warning">Editar</a>
-                            <div class="form-check form-switch d-inline-block ms-2">
-                                <input type="checkbox" class="form-check-input toggle-estado"
-                                       id="activoSwitch_@proveedor.Pk_Proveedor"
-                                       data-id="@proveedor.Pk_Proveedor"
-                                       @(proveedor.activo ? "checked" : "")
-                                       role="switch"
-                                       style="height: 1.4em; width: 2.8em; cursor: pointer;">
-                                <label class="form-check-label" for="activoSwitch_@proveedor.Pk_Proveedor" style="cursor: pointer;">
-                                    <span class="estado-texto">@(proveedor.activo ? "Activo" : "Inactivo")</span>
-                                </label>
-                            </div>
-                        </td>
                     </tr>
                 </thead>
                 <tbody>
@@ -326,185 +282,3 @@
         }
     </style>
 }
-            </tbody>
-        </table>
-
-        @Html.RenderPagination(
-            currentPage: (int)ViewData["CurrentPage"],
-            totalPages: (int)ViewData["TotalPages"],
-            pageSize: (int)ViewData["PageSize"],
-            actionName: "Index",
-            controllerName: "Proveedores",
-            routeValues: new
-            {
-                searchTerm = ViewBag.SearchTerm,
-                soloActivos = ViewBag.SoloActivos
-            }
-        )
-    </div>
-
-    @section Scripts {
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-        <script>
-            function changePageSize(size) {
-                const url = new URL(window.location.href);
-                url.searchParams.set("pageSize", size);
-                url.searchParams.set("page", 1); // Reinicia a la primera página
-                window.location.href = url.toString();
-            }
-
-            document.addEventListener('DOMContentLoaded', function() {
-                const searchInput = document.getElementById('searchTerm');
-
-                // Agregar evento para enviar el formulario al presionar Enter en el campo de búsqueda
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        document.getElementById('filtroForm').submit();
-                    }
-                });
-
-                // Añadir una pequeña animación al cambiar el checkbox
-                const checkbox = document.getElementById('soloActivos');
-                checkbox.addEventListener('change', function() {
-                    // Añadir clase de animación antes de enviar el formulario
-                    const formElement = document.getElementById('filtroForm');
-                    formElement.classList.add('filtering');
-
-                    // Pequeño retraso para que se vea la animación antes de recargar
-                    setTimeout(() => {
-                        formElement.submit();
-                    }, 150);
-                });
-
-                // Manejar cambios en los switches de estado de proveedores
-                document.querySelectorAll('.toggle-estado').forEach(function(toggle) {
-                    toggle.addEventListener('change', function() {
-                        const proveedorId = this.getAttribute('data-id');
-                        const nuevoEstado = this.checked ? true : false;
-                        const estadoTexto = this.parentElement.querySelector('.estado-texto');
-                        const currentSwitch = this;
-
-                        // Encontrar también el span de estado en la columna de estado
-                        const tableRow = this.closest('tr');
-                        const estadoColumn = tableRow.querySelector('td:nth-child(4) span');
-
-                        // Mostrar indicador de carga
-                        estadoTexto.textContent = "Actualizando...";
-
-                        // Obtener el token anti-falsificación (si existe en la página)
-                        const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
-                        let formData = new FormData();
-                        formData.append('id', proveedorId);
-                        formData.append('activo', nuevoEstado);
-
-                        if (tokenElement) {
-                            formData.append('__RequestVerificationToken', tokenElement.value);
-                        }
-
-                        // Llamada AJAX para actualizar el estado usando el método ToggleActivo
-                        fetch('@Url.Action("ToggleActivo", "Proveedores")', {
-                            method: 'POST',
-                            body: formData,
-                            credentials: 'same-origin'
-                        })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Error al actualizar. Código: ' + response.status);
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if(data && data.success) {
-                                // Actualizar el texto del estado en el switch
-                                estadoTexto.textContent = data.activo ? "Activo" : "Inactivo";
-
-                                // Actualizar también el texto y clase en la columna de estado
-                                if (estadoColumn) {
-                                    estadoColumn.textContent = data.activo ? "Activo" : "Inactivo";
-
-                                    // Actualizar la clase del estado
-                                    if (data.activo) {
-                                        estadoColumn.className = '';
-                                        estadoColumn.classList.add('badge', 'bg-success', 'text-white');
-                                    } else {
-                                        estadoColumn.className = '';
-                                        estadoColumn.classList.add('badge', 'bg-danger', 'text-white');
-                                    }
-                                }
-
-                                // Notificación de éxito
-                                Swal.fire({
-                                    position: 'top-end',
-                                    icon: 'success',
-                                    title: data.message || 'Estado actualizado con éxito',
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
-                            } else {
-                                throw new Error(data && data.message ? data.message : 'Error al actualizar');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            // Revertir el switch a su estado anterior
-                            currentSwitch.checked = !nuevoEstado;
-                            estadoTexto.textContent = !nuevoEstado ? "Activo" : "Inactivo";
-
-                            // Mostrar error
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: error.message || 'No se pudo actualizar el estado'
-                            });
-                        });
-                    });
-                });
-            });
-        </script>
-
-        <style>
-            /* Estilos para el checkbox y filtros */
-            .form-check-input:checked {
-                background-color: #28a745;
-                border-color: #28a745;
-            }
-
-            /* Animación al filtrar */
-            keyframes filtering {
-                0% { opacity: 1; }
-                50% { opacity: 0.7; }
-                100% { opacity: 1; }
-            }
-
-            .filtering {
-                animation: filtering 0.3s ease-in-out;
-            }
-
-            /* Mejoras visuales al formulario */
-            #filtroForm {
-                background-color: #f8f9fa;
-                padding: 15px;
-                border-radius: 8px;
-                box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            }
-
-            /* Estilos para el switch de activación */
-            .form-switch .form-check-input {
-                margin-top: 0.3em;
-                transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
-            }
-
-            .toggle-estado:checked {
-                background-color: #28a745;
-                border-color: #28a745;
-            }
-
-            .toggle-estado:not(:checked) {
-                background-color: #dc3545;
-                border-color: #dc3545;
-            }
-        </style>
-    }
-</section>
