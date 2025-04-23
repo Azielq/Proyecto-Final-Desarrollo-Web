@@ -259,6 +259,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\CarritoController.cs" />
     <Compile Include="Controllers\CategoriasController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -266,6 +267,7 @@
     <Compile Include="Controllers\ImgBBController.cs" />
     <Compile Include="Controllers\InventarioController.cs" />
     <Compile Include="Controllers\LotesController.cs" />
+    <Compile Include="Controllers\PedidosController.cs" />
     <Compile Include="Controllers\ProductosController.cs" />
     <Compile Include="Controllers\ProveedoresController.cs" />
     <Compile Include="Controllers\ReportesController.cs" />
@@ -332,6 +334,7 @@
     <Compile Include="Models\Inventario.cs">
       <DependentUpon>FarmaU.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\FacturaViewModel.cs" />
     <Compile Include="Models\ViewModels\ImagenProductoViewModel.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
     <Compile Include="Models\Lotes.cs">
@@ -366,6 +369,16 @@
       <DependentUpon>FarmaU.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\TiendaViewModel.cs" />
+    <Compile Include="Models\ViewModels\CarritoItemViewModel.cs" />
+    <Compile Include="Models\ViewModels\ClienteViewModel.cs" />
+    <Compile Include="Models\ViewModels\CompraViewModel.cs" />
+    <Compile Include="Models\ViewModels\DashboardViewModel.cs" />
+    <Compile Include="Models\ViewModels\LoginViewModel.cs" />
+    <Compile Include="Models\ViewModels\LoteViewModel.cs" />
+    <Compile Include="Models\ViewModels\PedidoViewModel.cs" />
+    <Compile Include="Models\ViewModels\ProductoViewModel.cs" />
+    <Compile Include="Models\ViewModels\ProveedorViewModel.cs" />
+    <Compile Include="Models\ViewModels\ReporteInventarioViewModel.cs" />
     <Compile Include="Models\ViewModels\VentaViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\AuthorizeRolesAttribute.cs" />
@@ -643,6 +656,32 @@
     <Content Include="Views\Shared\AccesoDenegado.cshtml" />
     <Content Include="Views\Proveedores\Details.cshtml" />
     <Content Include="Views\Proveedores\Index.cshtml" />
+    <Content Include="Views\Lotes\Index.cshtml" />
+    <Content Include="Views\Lotes\Create.cshtml" />
+    <Content Include="Views\Inventario\Index.cshtml" />
+    <Content Include="Views\Inventario\Create.cshtml" />
+    <Content Include="Views\Proveedores\Create.cshtml" />
+    <Content Include="Views\Proveedores\Edit.cshtml" />
+    <Content Include="Views\Carrito\Index.cshtml" />
+    <Content Include="Views\Carrito\_CarritoMini.cshtml" />
+    <Content Include="Views\Carrito\_CarritoItems.cshtml" />
+    <Content Include="Views\Carrito\_ResumenCarrito.cshtml" />
+    <Content Include="Views\Carrito\ConfirmacionPedido.cshtml" />
+    <Content Include="Views\Inventario\Details.cshtml" />
+    <Content Include="Views\Inventario\Edit.cshtml" />
+    <Content Include="Views\Inventario\Delete.cshtml" />
+    <Content Include="Views\Inventario\Reporte.cshtml" />
+    <Content Include="Views\Inventario\MovimientosInventario.cshtml" />
+    <Content Include="Views\Lotes\Details.cshtml" />
+    <Content Include="Views\Lotes\Delete.cshtml" />
+    <Content Include="Views\Lotes\Edit.cshtml" />
+    <Content Include="Views\Lotes\LotesVencidos.cshtml" />
+    <Content Include="Views\Lotes\PocoStock.cshtml" />
+    <Content Include="Views\Reportes\ReportesVentas.cshtml" />
+    <Content Include="Views\Reportes\ReportesInventario.cshtml" />
+    <Content Include="Views\Reportes\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Views\Shared\_ImagenesProducto.cshtml" />
     <Content Include="Views\Productos\GestionarImagenes.cshtml" />
     <Content Include="Views\Productos\Create.cshtml" />
@@ -672,6 +711,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Scripts\tinymce\js\" />
+    <Folder Include="Views\Pedidos\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
