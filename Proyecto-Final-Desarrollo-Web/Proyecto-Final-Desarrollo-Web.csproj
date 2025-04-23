@@ -697,6 +697,8 @@
     <Content Include="Views\Carrito\ProcederPago.cshtml" />
     <Content Include="Views\Usuarios\HistorialCompras.cshtml" />
     <Content Include="Views\Usuarios\DetalleFactura.cshtml" />
+    <Content Include="Views\Home\Tienda.cshtml" />
+    <Content Include="Views\Home\DetalleProducto.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_ImagenesProducto.cshtml" />
@@ -720,8 +722,6 @@
     <Content Include="Views\Clientes\Delete.cshtml" />
     <Content Include="Views\Clientes\ComprasCliente.cshtml" />
     <Content Include="Views\Shared\_SweetAlertPartial.cshtml" />
-    <Content Include="Views\Home\Tienda.cshtml" />
-    <Content Include="Views\Home\DetalleProducto.cshtml" />
     <Content Include="Views\Home\Categorias.cshtml" />
     <Content Include="Views\Home\Index2.cshtml" />
   </ItemGroup>
