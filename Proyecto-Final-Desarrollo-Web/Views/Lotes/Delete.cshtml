@@ -152,8 +152,7 @@
                     </div>
                 </div>
 
-                using (Html.BeginForm("Delete", "Lotes", new { id = Model.id_Lote }, FormMethod.Post, htmlAttributes: new { @class = "delete-form" }))
-                {
+                <form action="@Url.Action("Delete", "Lotes", new { id = Model.id_Lote })" method="post" class="delete-form">
                     @Html.AntiForgeryToken()
                     @Html.ValidationSummary(true)
                     @Html.HiddenFor(model => model.id_Lote)
