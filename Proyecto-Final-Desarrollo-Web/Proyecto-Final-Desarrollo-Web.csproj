@@ -410,9 +410,13 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\dropzone.min.css" />
+    <Content Include="Content\img\Help.png" />
+    <Content Include="Scripts\dropzone.min.js" />
     <Content Include="Content\img\appstore.jpg" />
     <Content Include="Content\img\asesoria.jpg" />
     <Content Include="Content\img\Cat.png" />
+    <Content Include="Content\img\CUIDADO-PERSONAL-COLON.jpg" />
     <Content Include="Content\img\cuidado.jpg" />
     <Content Include="Content\img\Descuentos.png" />
     <Content Include="Content\img\entrega.jpg" />
@@ -429,6 +433,7 @@
     <Content Include="Content\img\marcas-de-calidad-costa-rica.jpg" />
     <Content Include="Content\img\maternidad.jpg" />
     <Content Include="Content\img\medicamentos.jpg" />
+    <Content Include="Content\img\OIP %281%29.jpeg" />
     <Content Include="Content\img\proveedor.png" />
     <Content Include="Content\img\recetas.jpg" />
     <Content Include="Content\img\recordatorio.jpg" />

@@ -28,6 +28,14 @@
     {
       "library": "notyf@3.10.0",
       "destination": "Content/notyf/"
+    },
+    {
+      "library": "dropzone@5.9.3",
+      "destination": "Content/dropzone/",
+      "files": [
+        "dropzone.min.js",
+        "dropzone.min.css"
+      ]
     }
   ]
 }
