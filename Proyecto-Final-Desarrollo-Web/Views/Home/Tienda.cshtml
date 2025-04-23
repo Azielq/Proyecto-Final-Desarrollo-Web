@@ -1,10 +1,10 @@
-﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.TiendaViewModel
+@model Proyecto_Final_Desarrollo_Web.ViewModels.TiendaViewModel
 
 @{
     ViewBag.Title = Model.TituloPagina;
 }
 
-<!-- Encabezado de la página -->
+<!-- Encabezado -->
 <div class="bg-light py-4 mb-4">
     <div class="container">
         <div class="row align-items-center">
@@ -12,14 +12,15 @@
                 <h1 class="h2 mb-0">@Model.TituloPagina</h1>
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Inicio</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Tienda</li>
                     </ol>
                 </nav>
             </div>
             <div class="col-md-4 text-md-end">
                 <p class="mb-0 text-muted fw-bold">
-                    <i class="bi bi-boxes me-1"></i>Mostrando <span class="text-primary">@Model.Productos.Count</span>
+                    <i class="bi bi-boxes me-1"></i>
+                    Mostrando <span class="text-primary">@Model.Productos.Count</span>
                     de <span class="text-primary">@Model.TotalProductos</span> productos
                 </p>
             </div>
@@ -29,256 +30,185 @@
 
 <div class="container mb-5">
     <div class="row">
-        <!-- Filtros laterales -->
+        <!-- FILTROS LATERALES -->
         <div class="col-lg-3 mb-4">
             <div class="card border-0 shadow-sm mb-4">
                 <div class="card-header bg-primary text-white">
                     <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filtrar por</h5>
                 </div>
                 <div class="card-body">
-                    @using (Html.BeginForm("Tienda", "Home", FormMethod.Get, new { id = "filtroForm" }))
+                    @using (Html.BeginForm("Tienda","Home",FormMethod.Get,new { id="filtroForm" }))
                     {
                         <!-- Búsqueda -->
                         <div class="mb-3">
-                            <label for="Busqueda" class="form-label fw-bold">Buscar productos:</label>
+                            <label class="form-label fw-bold">Buscar:</label>
                             <div class="input-group">
-                                @Html.TextBoxFor(m => m.Filtros.Busqueda, new { @class = "form-control", placeholder = "Nombre, descripción..." })
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-search"></i>
-                                </button>
+                                @Html.TextBoxFor(m=>m.Filtros.Busqueda,new{ @class="form-control", placeholder="Nombre, descripción…" })
+                                <button class="btn btn-primary"><i class="bi bi-search"></i></button>
                             </div>
                         </div>
-
-                        <!-- Categorías -->
+                        <!-- Categoría -->
                         <div class="mb-3">
-                            <label for="Filtros_CategoriaId" class="form-label fw-bold">Categoría:</label>
-                            <select name="Filtros.CategoriaId" id="Filtros_CategoriaId" class="form-select">
-                                <option value="">Todas las categorías</option>
-                                @foreach (var categoria in Model.Categorias)
-                                {
-                                    <option value="@categoria.ID_Categoria" @(Model.Filtros.CategoriaId == categoria.ID_Categoria ? "selected" : "")>
-                                        @categoria.Nombre (@categoria.CantidadProductos)
+                            <label class="form-label fw-bold">Categoría:</label>
+                            <select name="Filtros.CategoriaId" class="form-select">
+                                <option value="">Todas</option>
+                                @foreach(var cat in Model.Categorias){
+                                    <option value="@cat.ID_Categoria" @(Model.Filtros.CategoriaId==cat.ID_Categoria?"selected":"")>
+                                        @cat.Nombre (@cat.CantidadProductos)
                                     </option>
                                 }
                             </select>
                         </div>
-
-                        <!-- Rango de precio -->
+                        <!-- Precio -->
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Rango de precio:</label>
+                            <label class="form-label fw-bold">Precio:</label>
                             <div class="row g-2">
                                 <div class="col-6">
-                                    @Html.TextBoxFor(m => m.Filtros.PrecioMinimo, new { @class = "form-control", placeholder = "Mín", type = "number", min = "0" })
+                                    @Html.TextBoxFor(m=>m.Filtros.PrecioMinimo,new{ type="number", min="0", @class="form-control", placeholder="Mín" })
                                 </div>
                                 <div class="col-6">
-                                    @Html.TextBoxFor(m => m.Filtros.PrecioMaximo, new { @class = "form-control", placeholder = "Máx", type = "number", min = "0" })
+                                    @Html.TextBoxFor(m=>m.Filtros.PrecioMaximo,new{ type="number", min="0", @class="form-control", placeholder="Máx" })
                                 </div>
                             </div>
                         </div>
-
+                        <!-- Opciones -->
                         <div class="mb-3">
                             <label class="form-label fw-bold">Opciones:</label>
                             <div class="form-check">
-                                @Html.CheckBoxFor(m => m.Filtros.SoloOfertas, new { @class = "form-check-input", id = "chkOfertas" })
+                                @Html.CheckBoxFor(m=>m.Filtros.SoloOfertas,new{ @class="form-check-input", id="chkOfertas" })
                                 <label class="form-check-label" for="chkOfertas">Solo ofertas</label>
                             </div>
                             <div class="form-check">
-                                @Html.CheckBoxFor(m => m.Filtros.SoloNuevos, new { @class = "form-check-input", id = "chkNuevos" })
-                                <label class="form-check-label" for="chkNuevos">Solo productos nuevos</label>
+                                @Html.CheckBoxFor(m=>m.Filtros.SoloNuevos,new{ @class="form-check-input", id="chkNuevos" })
+                                <label class="form-check-label" for="chkNuevos">Solo nuevos</label>
                             </div>
                             <div class="form-check">
-                                @Html.CheckBoxFor(m => m.Filtros.SoloEnStock, new { @class = "form-check-input", id = "chkEnStock" })
-                                <label class="form-check-label" for="chkEnStock">Solo productos en stock</label>
+                                @Html.CheckBoxFor(m=>m.Filtros.SoloEnStock,new{ @class="form-check-input", id="chkEnStock" })
+                                <label class="form-check-label" for="chkEnStock">Solo en stock</label>
                             </div>
                         </div>
-
-                        <!-- Filtros de farmacia adicionales -->
+                        <!-- Condiciones especiales -->
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Condiciones especiales:</label>
+                            <label class="form-label fw-bold">Condiciones:</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Filtros.RequiereReceta" value="true" id="chkReceta" @(ViewBag.RequiereReceta == "true" ? "checked" : "")>
+                                <input class="form-check-input" type="checkbox" name="Filtros.RequiereReceta" id="chkReceta"
+                                       @(Model.Filtros.RequiereReceta?"checked":"") />
                                 <label class="form-check-label" for="chkReceta">No requiere receta</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Filtros.GenericoDisponible" value="true" id="chkGenerico" @(ViewBag.GenericoDisponible == "true" ? "checked" : "")>
+                                <input class="form-check-input" type="checkbox" name="Filtros.GenericoDisponible" id="chkGenerico"
+                                       @(Model.Filtros.GenericoDisponible?"checked":"") />
                                 <label class="form-check-label" for="chkGenerico">Genérico disponible</label>
                             </div>
                         </div>
-
-                        <!-- Ordenamiento -->
+                        <!-- Orden -->
                         <div class="mb-3">
-                            <label for="Filtros_OrdenarPor" class="form-label fw-bold">Ordenar por:</label>
-                            <select name="Filtros.OrdenarPor" id="Filtros_OrdenarPor" class="form-select">
-                                <option value="populares" @(Model.Filtros.OrdenarPor == "populares" ? "selected" : "")>Más populares</option>
-                                <option value="precio_asc" @(Model.Filtros.OrdenarPor == "precio_asc" ? "selected" : "")>Precio: de menor a mayor</option>
-                                <option value="precio_desc" @(Model.Filtros.OrdenarPor == "precio_desc" ? "selected" : "")>Precio: de mayor a menor</option>
-                                <option value="nombre_asc" @(Model.Filtros.OrdenarPor == "nombre_asc" ? "selected" : "")>Nombre: A-Z</option>
-                                <option value="nombre_desc" @(Model.Filtros.OrdenarPor == "nombre_desc" ? "selected" : "")>Nombre: Z-A</option>
-                                <option value="nuevos" @(Model.Filtros.OrdenarPor == "nuevos" ? "selected" : "")>Más recientes</option>
+                            <label class="form-label fw-bold">Ordenar por:</label>
+                            <select name="Filtros.OrdenarPor" class="form-select">
+                                <option value="populares" @(Model.Filtros.OrdenarPor=="populares"?"selected":"")>Más populares</option>
+                                <option value="precio_asc" @(Model.Filtros.OrdenarPor=="precio_asc"?"selected":"")>Precio ↑</option>
+                                <option value="precio_desc" @(Model.Filtros.OrdenarPor=="precio_desc"?"selected":"")>Precio ↓</option>
+                                <option value="nombre_asc" @(Model.Filtros.OrdenarPor=="nombre_asc"?"selected":"")>A-Z</option>
+                                <option value="nombre_desc" @(Model.Filtros.OrdenarPor=="nombre_desc"?"selected":"")>Z-A</option>
+                                <option value="nuevos" @(Model.Filtros.OrdenarPor=="nuevos"?"selected":"")>Más recientes</option>
                             </select>
                         </div>
-
                         <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-filter me-2"></i>Aplicar Filtros
-                            </button>
-                            <a href="@Url.Action("Tienda", "Home")" class="btn btn-outline-secondary btn-reset-filters">
-                                <i class="bi bi-x-circle me-2"></i>Limpiar Filtros
-                            </a>
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-filter me-2"></i>Aplicar</button>
+                            <a href="@Url.Action("Tienda","Home")" class="btn btn-outline-secondary">Limpiar</a>
                         </div>
                     }
                 </div>
             </div>
-
-
-            <!-- Banner lateral -->
+            <!-- Banner ayuda -->
             <div class="card border-0 shadow-sm mt-4 bg-success text-white">
                 <div class="card-body p-4 text-center">
                     <h5 class="fw-bold">¿Necesitas ayuda?</h5>
-                    <p class="mb-0">Contáctanos para recibir asesoría farmacéutica.</p>
-                    <hr class="my-3">
-                    <p class="mb-2"><i class="bi bi-telephone me-2"></i>(800) 123-4567</p>
-                    <a href="@Url.Action("Contact", "Home")" class="btn btn-light mt-2">
-                        <i class="bi bi-chat-dots me-2"></i>Contáctanos
-                    </a>
+                    <p>Contáctanos para asesoría</p>
+                    <hr>
+                    <p><i class="bi bi-telephone me-2"></i>(800) 123-4567</p>
+                    <a href="@Url.Action("Contact","Home")" class="btn btn-light">Contáctanos</a>
                 </div>
             </div>
         </div>
 
-        <!-- Lista de productos -->
+        <!-- LISTADO DE PRODUCTOS -->
         <div class="col-lg-9">
-            <!-- Opciones de visualización -->
+            <!-- Vista / Orden -->
             <div class="d-flex justify-content-between align-items-center bg-light p-3 rounded mb-4">
                 <div>
                     <span class="me-2">Vista:</span>
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-outline-primary active" id="gridView">
-                            <i class="bi bi-grid-3x3-gap"></i>
-                        </button>
-                        <button type="button" class="btn btn-outline-primary" id="listView">
-                            <i class="bi bi-list"></i>
-                        </button>
+                    <div class="btn-group">
+                        <button id="gridView" class="btn btn-outline-primary active"><i class="bi bi-grid-3x3-gap"></i></button>
+                        <button id="listView" class="btn btn-outline-primary"><i class="bi bi-list"></i></button>
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <label class="me-2">Ordenar por:</label>
-                    <select class="form-select form-select-sm" id="sortSelect" style="width: auto;">
-                        <option value="populares" @(Model.Filtros.OrdenarPor == "populares" ? "selected" : "")>Más populares</option>
-                        <option value="precio_asc" @(Model.Filtros.OrdenarPor == "precio_asc" ? "selected" : "")>Precio: menor a mayor</option>
-                        <option value="precio_desc" @(Model.Filtros.OrdenarPor == "precio_desc" ? "selected" : "")>Precio: mayor a menor</option>
-                        <option value="nombre_asc" @(Model.Filtros.OrdenarPor == "nombre_asc" ? "selected" : "")>Nombre: A-Z</option>
-                        <option value="nombre_desc" @(Model.Filtros.OrdenarPor == "nombre_desc" ? "selected" : "")>Nombre: Z-A</option>
+                    <label class="me-2">Ordenar:</label>
+                    <select id="sortSelect" class="form-select form-select-sm" style="width:auto;">
+                        @* Mantiene las mismas opciones que arriba *@
+                        <option value="populares" @(Model.Filtros.OrdenarPor=="populares"?"selected":"")>Más populares</option>
+                        <option value="precio_asc" @(Model.Filtros.OrdenarPor=="precio_asc"?"selected":"")>Precio ↑</option>
+                        <option value="precio_desc" @(Model.Filtros.OrdenarPor=="precio_desc"?"selected":"")>Precio ↓</option>
+                        <option value="nombre_asc" @(Model.Filtros.OrdenarPor=="nombre_asc"?"selected":"")>A-Z</option>
+                        <option value="nombre_desc" @(Model.Filtros.OrdenarPor=="nombre_desc"?"selected":"")>Z-A</option>
+                        <option value="nuevos" @(Model.Filtros.OrdenarPor=="nuevos"?"selected":"")>Más recientes</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Pills de navegación rápida -->
-            <div class="mb-4">
-                <ul class="nav nav-pills">
-                    <li class="nav-item">
-                        <a class="nav-link @(string.IsNullOrEmpty(Model.Filtros.Busqueda) && !Model.Filtros.CategoriaId.HasValue ? "active" : "")"
-                           href="@Url.Action("Tienda", "Home")">
-                            <i class="bi bi-grid me-1"></i>Todos
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(Model.Filtros.SoloOfertas ? "active" : "")"
-                           href="@Url.Action("Tienda", "Home", new { filtro = new { SoloOfertas = true } })">
-                            <i class="bi bi-tags me-1"></i>Ofertas
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link @(Model.Filtros.SoloNuevos ? "active" : "")"
-                           href="@Url.Action("Tienda", "Home", new { filtro = new { SoloNuevos = true } })">
-                            <i class="bi bi-stars me-1"></i>Nuevos
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-expanded="false">
-                            <i class="bi bi-grid-3x3-gap me-1"></i>Categorías
-                        </a>
-                        <ul class="dropdown-menu">
-                            @foreach (var categoria in Model.Categorias.Take(6))
-                            {
-                                <li>
-                                    <a class="dropdown-item" href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = categoria.ID_Categoria } })">
-                                        @categoria.Nombre
-                                    </a>
-                                </li>
-                            }
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <a class="dropdown-item" href="@Url.Action("Categorias", "Home")">
-                                    <i class="bi bi-list me-1"></i>Ver todas
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Mensaje si no hay productos -->
-            @if (!Model.Productos.Any())
-            {
+            @if(!Model.Productos.Any()){
                 <div class="alert alert-info">
-                    <i class="bi bi-info-circle me-2"></i>No se encontraron productos que coincidan con los criterios de búsqueda.
+                    <i class="bi bi-info-circle me-2"></i>No se encontraron productos.
                 </div>
-            }
-            else
-            {
-                <!-- Vista de cuadrícula actualizada con botón "Ver Detalles" -->
+            } else {
+                <!-- GRID -->
                 <div id="gridContainer" class="row g-4">
-                    @foreach (var producto in Model.Productos)
-                    {
+                    @foreach(var prod in Model.Productos){
                         <div class="col-sm-6 col-md-4">
                             <div class="card h-100 border-0 shadow-sm product-card">
                                 <div class="position-relative">
-                                    <a href="@Url.Action("DetalleProducto", "Home", new { id = producto.ID_Producto })">
-                                        <div class="card-img-container bg-light d-flex align-items-center justify-content-center p-2" style="height: 200px;">
-                                            <img src="@(string.IsNullOrEmpty(producto.UrlImagen) ? "/Content/images/product-placeholder.jpg" : producto.UrlImagen)"
-                                                 class="card-img-top product-image" alt="@producto.Nombre"
-                                                 style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                    <a href="@Url.Action("DetalleProducto","Home",new{ id=prod.ID_Producto })">
+                                        <div class="bg-light d-flex align-items-center justify-content-center p-2" style="height:200px;">
+                                            <img src="@(prod.UrlImagen??"/Content/images/product-placeholder.jpg")"
+                                                 class="img-fluid" style="object-fit:contain;max-height:100%;max-width:100%;" />
                                         </div>
                                     </a>
-
-                                    @if (producto.EsNuevo)
-                                    {
-                                        <span class="position-absolute top-0 start-0 badge bg-success m-2">Nuevo</span>
-                                    }
-
-                                    @if (producto.EsOferta)
-                                    {
-                                        <span class="position-absolute top-0 end-0 badge bg-danger m-2">-@(producto.PorcentajeDescuento * 100)%</span>
-                                    }
+                                    @if(prod.EsNuevo)   <span class="badge bg-success pos-absolute m-2">Nuevo</span>  @endif
+                                    @if(prod.EsOferta) <span class="badge bg-danger pos-absolute top-0 end-0 m-2">-@(prod.PorcentajeDescuento*100)%</span> @endif
                                 </div>
                                 <div class="card-body p-3">
-                                    <h5 class="card-title product-title fw-bold mb-1">
-                                        <a href="@Url.Action("DetalleProducto", "Home", new { id = producto.ID_Producto })" class="text-decoration-none text-dark">
-                                            @producto.Nombre
-                                        </a>
+                                    <h5 class="fw-bold mb-1">
+                                        <a href="@Url.Action("DetalleProducto","Home",new{ id=prod.ID_Producto })"
+                                           class="text-decoration-none text-dark">@prod.Nombre</a>
                                     </h5>
-                                    <p class="card-text mb-1 small text-muted">@producto.Categoria</p>
-                                    <div class="d-flex justify-content-between align-items-center mt-2">
-                                        <div class="price-section">
-                                            @if (producto.EsOferta)
+                                    <p class="small text-muted mb-1">@prod.Categoria</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            @if(prod.EsOferta)
                                             {
-                                                <span class="text-decoration-line-through text-muted me-2">@producto.PrecioOriginal.ToString("C0")</span>
+                                                <span class="text-decoration-line-through text-muted me-2">@prod.PrecioOriginal.ToString("C0")</span>
                                             }
-                                            <span class="fw-bold text-primary">@producto.Precio.ToString("C0")</span>
+                                            <span class="fw-bold text-primary">@prod.Precio.ToString("C0")</span>
                                         </div>
-                                        <div class="rating">
+                                        <div>
                                             <i class="bi bi-star-fill text-warning"></i>
-                                            <span class="ms-1">@producto.Valoracion</span>
+                                            <span>@prod.Valoracion</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card-footer bg-white border-0 p-3">
                                     <div class="d-grid gap-2">
-                                        <a href="@Url.Action("DetalleProducto", "Home", new { id = producto.ID_Producto })" class="btn btn-outline-primary btn-sm mb-2">
+                                        <a href="@Url.Action("DetalleProducto","Home",new{ id=prod.ID_Producto })"
+                                           class="btn btn-outline-primary btn-sm">
                                             <i class="bi bi-eye me-1"></i>Ver Detalles
                                         </a>
-                                        <button class="btn btn-primary add-to-cart-btn" data-product-id="@producto.ID_Producto" data-product-name="@producto.Nombre" data-product-price="@producto.Precio" data-product-image="@producto.UrlImagen">
-                                            <i class="bi bi-cart-plus me-2"></i>Añadir al carrito
+                                        <button class="btn btn-primary add-to-cart-btn btn-sm"
+                                                data-product-id="@prod.ID_Producto"
+                                                data-product-name="@prod.Nombre"
+                                                data-product-price="@prod.Precio"
+                                                data-product-image="@(prod.UrlImagen??"/Content/images/product-placeholder.jpg")">
+                                            <i class="bi bi-cart-plus me-1"></i>Añadir
                                         </button>
                                     </div>
                                 </div>
@@ -287,77 +217,54 @@
                     }
                 </div>
 
-                <!-- Vista de lista actualizada con botón "Ver Detalles" -->
+                <!-- LIST -->
                 <div id="listContainer" class="d-none">
-                    @foreach (var producto in Model.Productos)
-                    {
+                    @foreach(var prod in Model.Productos){
                         <div class="card mb-3 border-0 shadow-sm">
                             <div class="row g-0">
                                 <div class="col-md-3">
-                                    <div class="position-relative h-100">
-                                        <a href="@Url.Action("DetalleProducto", "Home", new { id = producto.ID_Producto })">
-                                            <div class="d-flex align-items-center justify-content-center bg-light h-100 p-2">
-                                                <img src="@(string.IsNullOrEmpty(producto.UrlImagen) ? "/Content/images/product-placeholder.jpg" : producto.UrlImagen)"
-                                                     class="img-fluid product-image-list" alt="@producto.Nombre"
-                                                     style="max-height: 180px; max-width: 100%; object-fit: contain;">
-                                            </div>
-                                        </a>
-
-                                        @if (producto.EsNuevo)
-                                        {
-                                            <span class="position-absolute top-0 start-0 badge bg-success m-2">Nuevo</span>
-                                        }
-
-                                        @if (producto.EsOferta)
-                                        {
-                                            <span class="position-absolute top-0 end-0 badge bg-danger m-2">-@(producto.PorcentajeDescuento * 100)%</span>
-                                        }
-                                    </div>
+                                    <a href="@Url.Action("DetalleProducto","Home",new{ id=prod.ID_Producto })">
+                                        <div class="bg-light d-flex align-items-center justify-content-center p-2" style="height:180px;">
+                                            <img src="@(prod.UrlImagen??"/Content/images/product-placeholder.jpg")"
+                                                 class="img-fluid" style="object-fit:contain;max-height:100%;max-width:100%;" />
+                                        </div>
+                                    </a>
                                 </div>
                                 <div class="col-md-9">
-                                    <div class="card-body">
+                                    <div class="card-body d-flex flex-column justify-content-between">
                                         <div class="d-flex justify-content-between">
-                                            <div>
-                                                <h5 class="card-title fw-bold">
-                                                    <a href="@Url.Action("DetalleProducto", "Home", new { id = producto.ID_Producto })" class="text-decoration-none text-dark">
-                                                        @producto.Nombre
-                                                    </a>
-                                                </h5>
-                                                <p class="card-text text-muted">@producto.Categoria</p>
-                                            </div>
+                                            <h5 class="fw-bold">
+                                                <a href="@Url.Action("DetalleProducto","Home",new{ id=prod.ID_Producto })"
+                                                   class="text-decoration-none text-dark">@prod.Nombre</a>
+                                            </h5>
                                             <div class="text-end">
-                                                @if (producto.EsOferta)
+                                                @if(prod.EsOferta)
                                                 {
-                                                    <p class="text-decoration-line-through text-muted mb-0">@producto.PrecioOriginal.ToString("C0")</p>
+                                                    <p class="text-decoration-line-through text-muted mb-0">@prod.PrecioOriginal.ToString("C0")</p>
                                                 }
-                                                <p class="fw-bold text-primary fs-4 mb-0">@producto.Precio.ToString("C0")</p>
-                                                <div class="rating">
-                                                    <i class="bi bi-star-fill text-warning"></i>
-                                                    <span class="ms-1">@producto.Valoracion</span>
-                                                </div>
+                                                <p class="fw-bold text-primary mb-0">@prod.Precio.ToString("C0")</p>
                                             </div>
                                         </div>
-                                        <p class="card-text mt-2">
-                                            @(string.IsNullOrEmpty(producto.Descripcion)
-                                ? $"Producto de {producto.Categoria.ToLower()} de alta calidad."
-                                : (producto.Descripcion.Length > 150 ? producto.Descripcion.Substring(0, 150) + "..." : producto.Descripcion))
-                                        </p>
-                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <p class="small text-muted mb-2">@prod.Categoria</p>
+                                        <div class="d-flex justify-content-between align-items-center">
                                             <div>
-                                                <span class="badge bg-@(producto.Stock > 0 ? "success" : "danger")">
-                                                    @(producto.Stock > 0 ? "En stock" : "Agotado")
+                                                <span class="badge bg-@(prod.Stock>0?"success":"danger")">
+                                                    @(prod.Stock>0?"En stock":"Agotado")
                                                 </span>
-                                                @if (!string.IsNullOrEmpty(producto.Marca))
+                                                @if(!string.IsNullOrEmpty(prod.Marca))
                                                 {
-                                                    <span class="badge bg-light text-dark ms-2">@producto.Marca</span>
+                                                    <span class="badge bg-light text-dark ms-2">@prod.Marca</span>
                                                 }
                                             </div>
                                             <div class="btn-group">
-                                                <a href="@Url.Action("DetalleProducto", "Home", new { id = producto.ID_Producto })" class="btn btn-outline-primary">
-                                                    <i class="bi bi-eye me-1"></i>Ver Detalles
-                                                </a>
-                                                <button class="btn btn-primary add-to-cart-btn" data-product-id="@producto.ID_Producto" data-product-name="@producto.Nombre" data-product-price="@producto.Precio" data-product-image="@producto.UrlImagen">
-                                                    <i class="bi bi-cart-plus me-1"></i>Añadir al carrito
+                                                <a href="@Url.Action("DetalleProducto","Home",new{ id=prod.ID_Producto })"
+                                                   class="btn btn-outline-primary btn-sm"><i class="bi bi-eye me-1"></i>Ver</a>
+                                                <button class="btn btn-primary btn-sm add-to-cart-btn"
+                                                        data-product-id="@prod.ID_Producto"
+                                                        data-product-name="@prod.Nombre"
+                                                        data-product-price="@prod.Precio"
+                                                        data-product-image="@(prod.UrlImagen??"/Content/images/product-placeholder.jpg")">
+                                                    <i class="bi bi-cart-plus me-1"></i>Añadir
                                                 </button>
                                             </div>
                                         </div>
@@ -368,26 +275,22 @@
                     }
                 </div>
 
-                <!-- Paginación -->
-                if (Model.TotalPaginas > 1)
-                {
+                <!-- PAGINACIÓN -->
+                @if(Model.TotalPaginas>1){
                     <nav class="mt-4">
                         <ul class="pagination justify-content-center">
-                            <li class="page-item @(Model.PaginaActual == 1 ? "disabled" : "")">
-                                <a class="page-link" href="@Url.Action("Tienda", "Home", new { pagina = Model.PaginaActual - 1, filtro = Model.Filtros })">
+                            <li class="page-item @(Model.PaginaActual==1?"disabled":"")">
+                                <a class="page-link" href="@Url.Action("Tienda","Home",new{ pagina=Model.PaginaActual-1, filtro=Model.Filtros })">
                                     <i class="bi bi-chevron-left"></i>
                                 </a>
                             </li>
-
-                            @for (int i = Math.Max(1, Model.PaginaActual - 2); i <= Math.Min(Model.TotalPaginas, Model.PaginaActual + 2); i++)
-                            {
-                                <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
-                                    <a class="page-link" href="@Url.Action("Tienda", "Home", new { pagina = i, filtro = Model.Filtros })">@i</a>
+                            @for(int i=Math.Max(1,Model.PaginaActual-2); i<=Math.Min(Model.TotalPaginas,Model.PaginaActual+2); i++){
+                                <li class="page-item @(i==Model.PaginaActual?"active":"")">
+                                    <a class="page-link" href="@Url.Action("Tienda","Home",new{ pagina=i, filtro=Model.Filtros })">@i</a>
                                 </li>
                             }
-
-                            <li class="page-item @(Model.PaginaActual == Model.TotalPaginas ? "disabled" : "")">
-                                <a class="page-link" href="@Url.Action("Tienda", "Home", new { pagina = Model.PaginaActual + 1, filtro = Model.Filtros })">
+                            <li class="page-item @(Model.PaginaActual==Model.TotalPaginas?"disabled":"")">
+                                <a class="page-link" href="@Url.Action("Tienda","Home",new{ pagina=Model.PaginaActual+1, filtro=Model.Filtros })">
                                     <i class="bi bi-chevron-right"></i>
                                 </a>
                             </li>
@@ -399,283 +302,118 @@
     </div>
 </div>
 
-<!-- Modal para añadir al carrito -->
-<div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title" id="addToCartModalLabel">Añadir al carrito</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="d-flex align-items-center">
-                    <img id="modalProductImage" src="" alt="Producto" class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
-                    <div>
-                        <h6 id="modalProductName" class="mb-1"></h6>
-                        <p class="mb-0">Precio: <span id="modalProductPrice" class="fw-bold"></span></p>
-                    </div>
-                </div>
-                <div class="mt-3">
-                    <label for="modalQuantity" class="form-label">Cantidad:</label>
-                    <div class="input-group">
-                        <button class="btn btn-outline-secondary" type="button" id="decreaseQuantity">-</button>
-                        <input type="number" class="form-control text-center" id="modalQuantity" value="1" min="1">
-                        <button class="btn btn-outline-secondary" type="button" id="increaseQuantity">+</button>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" id="confirmAddToCart">
-                    <i class="bi bi-cart-check me-2"></i>Añadir al carrito
-                </button>
-            </div>
+<!-- MODAL Añadir al carrito -->
+<div class="modal fade" id="addToCartModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Añadir al carrito</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="modalProductImage" src="" class="img-thumbnail mb-2" style="width:80px;height:80px;object-fit:cover" />
+        <h6 id="modalProductName"></h6>
+        <p>Precio: <span id="modalProductPrice" class="fw-bold"></span></p>
+        <div class="input-group justify-content-center">
+          <button id="decreaseQuantity" class="btn btn-outline-secondary">−</button>
+          <input type="number" id="modalQuantity" class="form-control text-center" value="1" min="1" />
+          <button id="increaseQuantity" class="btn btn-outline-secondary">+</button>
         </div>
+        <input type="hidden" id="productId" />
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <button class="btn btn-primary" id="confirmAddToCart">
+          <i class="bi bi-cart-check me-2"></i>Añadir
+        </button>
+      </div>
     </div>
+  </div>
 </div>
 
 @section scripts {
-    <script>
+<script>
+$(function(){
+  // Grid / List toggle
+  $('#gridView').click(function(){
+    $(this).addClass('active');
+    $('#listView').removeClass('active');
+    $('#gridContainer').removeClass('d-none');
+    $('#listContainer').addClass('d-none');
+    localStorage.setItem('view','grid');
+  });
+  $('#listView').click(function(){
+    $(this).addClass('active');
+    $('#gridView').removeClass('active');
+    $('#listContainer').removeClass('d-none');
+    $('#gridContainer').addClass('d-none');
+    localStorage.setItem('view','list');
+  });
+  if(localStorage.getItem('view')==='list') $('#listView').trigger('click');
 
-        // Script mejorado para manejar los filtros de la tienda
-        $(document).ready(function () {
-            // Toggle entre vista de cuadrícula y lista
-            $('#gridView').click(function () {
-                $(this).addClass('active');
-                $('#listView').removeClass('active');
-                $('#gridContainer').removeClass('d-none');
-                $('#listContainer').addClass('d-none');
-                // Guarda preferencia en localStorage
-                localStorage.setItem('viewPreference', 'grid');
-            });
+  // Sort select
+  $('#sortSelect').change(function(){
+    $('select[name="Filtros.OrdenarPor"]').val(this.value);
+    $('#filtroForm').submit();
+  });
 
-            $('#listView').click(function () {
-                $(this).addClass('active');
-                $('#gridView').removeClass('active');
-                $('#listContainer').removeClass('d-none');
-                $('#gridContainer').addClass('d-none');
-                // Guarda preferencia en localStorage
-                localStorage.setItem('viewPreference', 'list');
-            });
+  // Add to cart modal
+  $('.add-to-cart-btn').click(function(){
+    var btn=$(this);
+    $('#productId').val(btn.data('product-id'));
+    $('#modalProductName').text(btn.data('product-name'));
+    $('#modalProductPrice').text('₡'+parseFloat(btn.data('product-price')).toFixed(2));
+    $('#modalProductImage').attr('src',btn.data('product-image'));
+    $('#modalQuantity').val(1);
+    $('#addToCartModal').modal('show');
+  });
 
-            // Carga preferencia de vista guardada
-            var savedView = localStorage.getItem('viewPreference');
-            if (savedView === 'list') {
-                $('#listView').click();
-            }
+  // Qty in modal
+  $('#increaseQuantity').click(function(){
+    var v=+$('#modalQuantity').val(); $('#modalQuantity').val(v+1);
+  });
+  $('#decreaseQuantity').click(function(){
+    var v=+$('#modalQuantity').val(); if(v>1) $('#modalQuantity').val(v-1);
+  });
 
-            // Cambia ordenamiento - Corregido para garantizar que se actualice correctamente
-            $('#sortSelect').change(function () {
-                var value = $(this).val();
-                $('select[name="Filtros.OrdenarPor"]').val(value);
-                $('#filtroForm').submit();
-            });
+  // AJAX add to cart
+  var token=$('input[name="__RequestVerificationToken"]').val();
+  $.ajaxSetup({ headers:{ 'RequestVerificationToken': token }});
 
-            // Efectos visuales para las tarjetas de productos
-            $('.product-card').hover(
-                function () {
-                    $(this).addClass('shadow');
-                    $(this).find('.card-img-top').css('transform', 'scale(1.05)');
-                    $(this).find('.card-img-top').css('transition', 'transform 0.3s ease');
-                },
-                function () {
-                    $(this).removeClass('shadow');
-                    $(this).find('.card-img-top').css('transform', 'scale(1)');
-                }
-            );
+  $('#confirmAddToCart').click(function(){
+    var id=+$('#productId').val(), qty=+$('#modalQuantity').val();
+    if(id<=0||qty<=1) return Swal.fire('Error','Cantidad inválida','error');
+    if(@(Session["UserID"]==null?"true":"false")) {
+      return Swal.fire({
+        title:'Debes iniciar sesión',
+        icon:'info',
+        showCancelButton:true,
+        confirmButtonText:'Entrar'
+      }).then(r=>r.isConfirmed?location.href='@Url.Action("Login","Usuarios")':null);
+    }
+    Swal.fire({ title:'Añadiendo…', allowOutsideClick:false, didOpen:()=>Swal.showLoading() });
+    $.post('@Url.Action("AgregarAjax","Carrito")',{ idProducto:id, cantidad:qty })
+    .done(resp=>{
+      Swal.close();
+      if(resp.success){
+        var $b=$('.nav-link .badge');
+        if($b.length) $b.text(resp.totalItems);
+        else $('.nav-link.position-relative').append('<span class="badge bg-danger">'+resp.totalItems+'</span>');
+        Swal.fire('¡Agregado!','Producto en tu carrito','success');
+        $('#addToCartModal').modal('hide');
+      } else Swal.fire('Error',resp.message,'error');
+    }).fail(()=> Swal.fire('Error','No se pudo conectar','error'));
+  });
 
-            // Función mejorada para actualizar los formularios de filtro
-            function updateFilterForm() {
-                // Recolecta todos los valores de filtros actuales
-                var formData = {};
+  // Auto-submit filtros
+  $('#filtroForm input,#filtroForm select').change(function(){
+    $('#filtroForm').submit();
+  });
 
-                // Obtener todos los datos del formulario y convertirlos a un objeto
-                $('#filtroForm').serializeArray().forEach(function (item) {
-                    formData[item.name] = item.value;
-                });
-
-                // También capturar los checkboxes que podrían no estar incluidos en serializeArray
-                $('#filtroForm input[type="checkbox"]').each(function () {
-                    var name = $(this).attr('name');
-                    formData[name] = $(this).prop('checked');
-                });
-
-                // Actualiza los enlaces de paginación para incluir los filtros actuales
-                $('.pagination .page-link').each(function () {
-                    var href = $(this).attr('href');
-                    if (href) {
-                        var url = new URL(href, window.location.origin);
-
-                        // Añade todos los parámetros de filtro a la URL
-                        Object.keys(formData).forEach(function (key) {
-                            if (formData[key] !== '' && formData[key] !== false) {
-                                url.searchParams.set(key, formData[key]);
-                            }
-                        });
-
-                        $(this).attr('href', url.toString());
-                    }
-                });
-
-                // Actualiza los enlaces de categoría para preservar otros filtros
-                $('.list-group-item, .nav-pills .nav-link').each(function () {
-                    var href = $(this).attr('href');
-                    if (href) {
-                        var url = new URL(href, window.location.origin);
-
-                        // No sobreescribe el filtro de categoría en los enlaces de categoría
-                        Object.keys(formData).forEach(function (key) {
-                            if (!key.includes('CategoriaId') && formData[key] !== '' && formData[key] !== false) {
-                                url.searchParams.set(key, formData[key]);
-                            }
-                        });
-
-                        $(this).attr('href', url.toString());
-                    }
-                });
-            }
-
-            // Ejecuta la actualización de formularios cuando cambie cualquier filtro
-            $('#filtroForm input, #filtroForm select').change(function () {
-                if (!$(this).hasClass('no-auto-submit')) {
-                    $('#filtroForm').submit();
-                }
-            });
-
-            // Asegura que los checkboxes también actualicen el formulario al cambiar
-            $('#filtroForm input[type="checkbox"]').change(function () {
-                $('#filtroForm').submit();
-            });
-
-            // Botón para limpiar todos los filtros
-            $('a[href*="Limpiar"]').click(function (e) {
-                e.preventDefault();
-
-                // Resetea todos los campos del formulario
-                $('#filtroForm')[0].reset();
-
-                // Quita todos los parámetros de la URL y recargar
-                window.location.href = window.location.pathname;
-            });
-
-            // Modal para añadir al carrito
-            $('.add-to-cart-btn').click(function () {
-                var productId = $(this).data('product-id');
-                var productName = $(this).data('product-name');
-                var productPrice = $(this).data('product-price');
-                var productImage = $(this).data('product-image');
-
-                if (!productImage || productImage === '') {
-                    productImage = '/Content/images/product-placeholder.jpg';
-                }
-
-                $('#modalProductName').text(productName);
-                $('#modalProductPrice').text(new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'COP' }).format(productPrice));
-                $('#modalProductImage').attr('src', productImage);
-                $('#modalQuantity').val(1);
-                $('#addToCartModal').modal('show');
-            });
-
-            // Incrementa y decrementar cantidad en el modal
-            $('#increaseQuantity').click(function () {
-                var currentVal = parseInt($('#modalQuantity').val());
-                $('#modalQuantity').val(currentVal + 1);
-            });
-
-            $('#decreaseQuantity').click(function () {
-                var currentVal = parseInt($('#modalQuantity').val());
-                if (currentVal > 1) {
-                    $('#modalQuantity').val(currentVal - 1);
-                }
-            });
-
-            // Solo permite números en el campo de cantidad
-            $('#modalQuantity').on('input', function () {
-                var value = $(this).val();
-                value = value.replace(/[^0-9]/g, '');
-                if (value === '' || parseInt(value) < 1) {
-                    value = 1;
-                }
-                $(this).val(value);
-            });
-
-            // Confirma añadir al carrito
-            $('#confirmAddToCart').click(function () {
-                var productId = $('.add-to-cart-btn:first').data('product-id');
-                var quantity = parseInt($('#modalQuantity').val());
-
-                // Aquí iría el código para añadir al carrito mediante AJAX
-                $.ajax({
-                    url: '/Carrito/Agregar',
-                    type: 'POST',
-                    data: {
-                        id: productId,
-                        cantidad: quantity
-                    },
-                    success: function (response) {
-                        if (response.success) {
-                            // Actualiza contador del carrito
-                            updateCartCounter(response.totalItems);
-
-                            // Muestra mensaje de éxito
-                            showNotification('Producto añadido al carrito', 'success');
-
-                            // Cierra modal
-                            $('#addToCartModal').modal('hide');
-                        } else {
-                            showNotification(response.message || 'Error al añadir el producto', 'danger');
-                        }
-                    },
-                    error: function () {
-                        showNotification('Error de conexión. Inténtalo de nuevo.', 'danger');
-                    }
-                });
-            });
-
-            // Función para mostrar notificaciones
-            function showNotification(message, type) {
-                var notificationHtml = '<div class="toast align-items-center text-white bg-' + type + ' border-0" role="alert" aria-live="assertive" aria-atomic="true">' +
-                    '<div class="d-flex">' +
-                    '<div class="toast-body">' + message + '</div>' +
-                    '<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>' +
-                    '</div></div>';
-
-                var notificationContainer = $('.toast-container');
-                if (notificationContainer.length === 0) {
-                    $('body').append('<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>');
-                    notificationContainer = $('.toast-container');
-                }
-
-                notificationContainer.append(notificationHtml);
-                var toast = new bootstrap.Toast(notificationContainer.find('.toast:last-child')[0], {
-                    autohide: true,
-                    delay: 3000
-                });
-                toast.show();
-            }
-
-            // Función para actualizar el contador del carrito
-            function updateCartCounter(count) {
-                var cartCounter = $('#cartCounter');
-                if (cartCounter.length > 0) {
-                    cartCounter.text(count);
-
-                    // Efecto de animación
-                    cartCounter.addClass('cart-counter-animation');
-                    setTimeout(function () {
-                        cartCounter.removeClass('cart-counter-animation');
-                    }, 500);
-                }
-            }
-
-            // Inicializa tooltips de Bootstrap
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-
-            // Ejecuta funciones de inicialización
-            updateFilterForm();
-        });
-    </script>
+  // Reset filtros
+  $('.btn-outline-secondary').filter('[href]').click(function(e){
+    e.preventDefault(); window.location.href=window.location.pathname;
+  });
+});
+</script>
 }

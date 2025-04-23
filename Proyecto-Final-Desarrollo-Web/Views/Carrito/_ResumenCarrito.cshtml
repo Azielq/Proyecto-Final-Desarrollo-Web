@@ -8,14 +8,14 @@
         <ul class="list-group list-group-flush mb-3">
             <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                 <span>Subtotal (@Model.TotalItems artículos)</span>
-                <span class="fw-bold subtotal-value">@Model.Subtotal.ToString("C")</span>
+                <span class="fw-bold subtotal-value">₡@Model.Subtotal.ToString("N2")</span>
             </li>
 
             @if (ViewBag.ShowDetails ?? true)
             {
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
-                    <span>IVA (16%)</span>
-                    <span class="iva-value">@Model.InformacionPago.Impuesto.ToString("C")</span>
+                    <span>IVA (13%)</span>
+                    <span class="iva-value">₡@Model.InformacionPago.Impuesto.ToString("N2")</span>
                 </li>
                 <li class="list-group-item d-flex justify-content-between align-items-center p-3">
                     <span>Gastos de envío</span>
@@ -25,14 +25,14 @@
                     }
                     else
                     {
-                        <span class="envio-value">@Model.InformacionPago.GastosEnvio.ToString("C")</span>
+                        <span class="envio-value">₡@Model.InformacionPago.GastosEnvio.ToString("N2")</span>
                     }
                 </li>
                 if (Model.InformacionPago.Descuento > 0)
                 {
                     <li class="list-group-item d-flex justify-content-between align-items-center p-3 text-success">
                         <span>Descuento aplicado</span>
-                        <span class="descuento-value">-@Model.InformacionPago.Descuento.ToString("C")</span>
+                        <span class="descuento-value">-₡@Model.InformacionPago.Descuento.ToString("N2")</span>
                     </li>
                 }
             }
@@ -41,8 +41,8 @@
                 <span class="fw-bold">Total a pagar</span>
                 <span class="fs-5 fw-bold text-primary total-value">
                     @(ViewBag.ShowDetails != null && ViewBag.ShowDetails ?
-                      Model.InformacionPago.Total.ToString("C") :
-                      Model.Subtotal.ToString("C"))
+                      "₡" + Model.InformacionPago.Total.ToString("N2") :
+                      "₡" + Model.Subtotal.ToString("N2"))
                 </span>
             </li>
         </ul>
@@ -116,21 +116,21 @@
                 });
 
                 // Simulación de petición ajax (en producción, esto sería una llamada real al servidor)
-                setTimeout(function() {
+                setTimeout(function () {
                     // Simulamos que solo funciona el cupón "DESCUENTO10"
                     if (cupon.toUpperCase() === "DESCUENTO10") {
                         // Actualizar valores visualmente
                         const subtotal = parseFloat($(".subtotal-value").text().replace(/[^\d.-]/g, ''));
                         const descuento = subtotal * 0.1; // 10% de descuento
 
-                        $(".descuento-value").text('-$' + descuento.toFixed(2));
+                        $(".descuento-value").text('-₡' + descuento.toFixed(2));
 
                         // Recalcular total
                         const iva = parseFloat($(".iva-value").text().replace(/[^\d.-]/g, ''));
                         const envio = $(".envio-value").text().includes("Gratis") ? 0 : parseFloat($(".envio-value").text().replace(/[^\d.-]/g, ''));
                         const total = subtotal + iva + envio - descuento;
 
-                        $(".total-value").text('$' + total.toFixed(2));
+                        $(".total-value").text('₡' + total.toFixed(2));
 
                         Swal.fire({
                             icon: 'success',

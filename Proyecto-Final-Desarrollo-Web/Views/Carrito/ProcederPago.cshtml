@@ -1,0 +1,342 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.CarritoViewModel
+@{
+    ViewBag.Title = "Proceder al Pago - FarmaU";
+}
+
+<div class="container pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index","Home")">Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index","Carrito")">Mi Carrito</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Proceder al Pago</li>
+                </ol>
+            </nav>
+
+            <div class="row">
+                <!-- Resumen de productos -->
+                <div class="col-lg-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0"><i class="bi bi-cart-check me-2"></i>Resumen de Productos</h4>
+                        </div>
+                        <div class="card-body">
+                            @if (!Model.Items.Any())
+                            {
+                                <div class="text-center py-4">
+                                    <i class="bi bi-cart-x text-muted" style="font-size:3rem;"></i>
+                                    <h4 class="mt-3">Tu carrito está vacío</h4>
+                                    <p class="text-muted">Agrega productos antes de proceder.</p>
+                                    <a href="@Url.Action("Index","Productos")" class="btn btn-primary mt-2">
+                                        <i class="bi bi-shop me-2"></i>Ir a la tienda
+                                    </a>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="table-responsive">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th style="width:50px;"></th>
+                                                <th>Producto</th>
+                                                <th class="text-center">Cantidad</th>
+                                                <th class="text-end">Precio</th>
+                                                <th class="text-end">Subtotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.Items)
+                                            {
+                                                <tr>
+                                                    <td class="align-middle">
+                                                        <img src="@(item.ImagenUrl ?? "/Content/images/no-image.png")"
+                                                             alt="@item.NombreProducto" class="img-thumbnail"
+                                                             style="width:40px;height:40px;object-fit:cover;">
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        <h6 class="mb-0 small">@item.NombreProducto</h6>
+                                                    </td>
+                                                    <td class="text-center align-middle">@item.Cantidad</td>
+                                                    <td class="text-end align-middle">
+                                                        ₡@item.PrecioUnitario.ToString("N2")
+                                                    </td>
+                                                    <td class="text-end align-middle">
+                                                        ₡@((item.PrecioUnitario * item.Cantidad).ToString("N2"))
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Formulario de envío y pago -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0"><i class="bi bi-person-badge me-2"></i>Información de Envío y Pago</h4>
+                        </div>
+                        <div class="card-body">
+                            <form id="checkoutForm" novalidate>
+                                @Html.AntiForgeryToken()
+
+                                <!-- Datos personales -->
+                                <div class="mb-4">
+                                    <h5 class="mb-3">Datos Personales</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="Nombre" class="form-label">Nombre</label>
+                                            <input type="text" class="form-control" id="Nombre" name="Nombre" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="Apellidos" class="form-label">Apellidos</label>
+                                            <input type="text" class="form-control" id="Apellidos" name="Apellidos" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="Email" class="form-label">Email</label>
+                                            <input type="email" class="form-control" id="Email" name="Email" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="Telefono" class="form-label">Teléfono</label>
+                                            <input type="tel" class="form-control" id="Telefono" name="Telefono" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Dirección -->
+                                <div class="mb-4">
+                                    <h5 class="mb-3">Dirección de Envío</h5>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <label for="Direccion" class="form-label">Dirección</label>
+                                            <input type="text" class="form-control" id="Direccion" name="Direccion" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="Ciudad" class="form-label">Ciudad</label>
+                                            <input type="text" class="form-control" id="Ciudad" name="Ciudad" required>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="Provincia" class="form-label">Provincia</label>
+                                            <select class="form-select" id="Provincia" name="Provincia" required>
+                                                <option value="">Seleccionar…</option>
+                                                <option>San José</option>
+                                                <option>Alajuela</option>
+                                                <option>Cartago</option>
+                                                <option>Heredia</option>
+                                                <option>Guanacaste</option>
+                                                <option>Puntarenas</option>
+                                                <option>Limón</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label for="CodigoPostal" class="form-label">Código Postal</label>
+                                            <input type="text" class="form-control" id="CodigoPostal" name="CodigoPostal" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Método de pago -->
+                                <div class="mb-4">
+                                    <h5 class="mb-3">Método de Pago</h5>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio"
+                                               name="MetodoPago" id="tarjetaCredito"
+                                               value="tarjetaCredito" checked>
+                                        <label class="form-check-label" for="tarjetaCredito">
+                                            <i class="bi bi-credit-card me-2"></i>Tarjeta de Crédito/Débito
+                                        </label>
+                                    </div>
+                                    <div id="tarjetaCreditoForm" class="mt-3">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="NumeroTarjeta" class="form-label">Número de Tarjeta</label>
+                                                <input type="text" class="form-control" id="NumeroTarjeta"
+                                                       name="NumeroTarjeta" placeholder="1234 5678 9012 3456" required>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="FechaVencimiento" class="form-label">Fecha de Vencimiento</label>
+                                                <input type="text" class="form-control" id="FechaVencimiento"
+                                                       name="FechaVencimiento" placeholder="MM/AA" required>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label for="CVV" class="form-label">CVV</label>
+                                                <input type="text" class="form-control" id="CVV"
+                                                       name="CVV" placeholder="123" required>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="NombreTarjeta" class="form-label">Nombre en la Tarjeta</label>
+                                                <input type="text" class="form-control" id="NombreTarjeta"
+                                                       name="NombreTarjeta" required>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-check mt-3 mb-2">
+                                        <input class="form-check-input" type="radio"
+                                               name="MetodoPago" id="paypal" value="paypal">
+                                        <label class="form-check-label" for="paypal">
+                                            <i class="bi bi-paypal me-2"></i>PayPal
+                                        </label>
+                                    </div>
+                                    <div class="form-check mt-2">
+                                        <input class="form-check-input" type="radio"
+                                               name="MetodoPago" id="contraentrega" value="contraentrega">
+                                        <label class="form-check-label" for="contraentrega">
+                                            <i class="bi bi-cash me-2"></i>Pago contra entrega
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Notas -->
+                                <div class="mb-3">
+                                    <label for="Notas" class="form-label">Notas adicionales (opcional)</label>
+                                    <textarea class="form-control" id="Notas" name="Notas" rows="3"></textarea>
+                                </div>
+
+                                <!-- Términos -->
+                                <div class="form-check mb-4">
+                                    <input class="form-check-input" type="checkbox"
+                                           id="terminos" name="terminos" required>
+                                    <label class="form-check-label" for="terminos">
+                                        Acepto los <a href="#" data-bs-toggle="modal" data-bs-target="#terminosModal">
+                                            Términos y Condiciones
+                                        </a>
+                                    </label>
+                                    <div class="invalid-feedback">
+                                        Debes aceptar los términos para continuar.
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resumen del pedido -->
+                <div class="col-lg-4">
+                    <div class="card shadow-sm mb-4 sticky-top" style="top:20px;z-index:99;">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="bi bi-receipt me-2"></i>Resumen del Pedido</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush mb-3">
+                                <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                    <span>Subtotal (@Model.TotalItems artículos)</span>
+                                    <span class="fw-bold">₡@Model.Subtotal.ToString("N2")</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                    <span>IVA (16%)</span>
+                                    <span>₡@Model.InformacionPago.Impuesto.ToString("N2")</span>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center p-3">
+                                    <span>Gastos de envío</span>
+                                    @if (Model.InformacionPago.GastosEnvio == 0)
+                                    {
+                                        <span class="text-success">¡Gratis!</span>
+                                    }
+                                    else
+                                    {
+                                        <span>₡@Model.InformacionPago.GastosEnvio.ToString("N2")</span>
+                                    }
+                                </li>
+                                @if (Model.InformacionPago.Descuento > 0)
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center p-3 text-success">
+                                        <span>Descuento</span>
+                                        <span>-₡@Model.InformacionPago.Descuento.ToString("N2")</span>
+                                    </li>
+                                }
+                                <li class="list-group-item d-flex justify-content-between align-items-center p-3 bg-light">
+                                    <span class="fw-bold">Total a pagar</span>
+                                    <span class="fs-5 fw-bold text-primary">
+                                        ₡@Model.InformacionPago.Total.ToString("N2")
+                                    </span>
+                                </li>
+                            </ul>
+
+                            <div class="d-grid gap-2">
+                                <button type="button" id="btnConfirmarPedido" class="btn btn-success">
+                                    <i class="bi bi-check2-circle me-2"></i>Confirmar Pedido
+                                </button>
+                                <a href="@Url.Action("Index","Carrito")" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-2"></i>Volver al Carrito
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Términos y Condiciones (igual que antes) -->
+<div class="modal fade" id="terminosModal" tabindex="-1" aria-labelledby="terminosModalLabel" aria-hidden="true">
+    <!-- ... contenido idéntico ... -->
+</div>
+
+@section scripts {
+    <script>
+    $(function () {
+        // token antiforgery
+        var token = $('input[name="__RequestVerificationToken"]').val();
+        $.ajaxSetup({
+            headers: { 'RequestVerificationToken': token }
+        });
+
+        // Confirmar pedido por AJAX
+        $('#btnConfirmarPedido').click(function (e) {
+            e.preventDefault();
+            var $form = $('#checkoutForm');
+            if (!$form[0].checkValidity()) {
+                $form.addClass('was-validated');
+                $('input:invalid,select:invalid,textarea:invalid').first().focus();
+                Swal.fire('Formulario incompleto','Completa todos los campos.','warning');
+                return;
+            }
+            Swal.fire({ title:'Procesando...',allowOutsideClick:false,showConfirmButton:false,didOpen:()=>Swal.showLoading() });
+            $.post('@Url.Action("ConfirmarPedido","Carrito")', $form.serialize(), function (resp) {
+                Swal.close();
+                if (resp.success) {
+                    window.location.href = '@Url.Action("DetalleFactura","Usuarios")/' + resp.facturaId;
+                } else {
+                    Swal.fire('Error', resp.message, 'error');
+                }
+            }).fail(function () {
+                Swal.close();
+                Swal.fire('Error','Ocurrió un error al procesar tu pedido.','error');
+            });
+        });
+
+        // Máscaras de input
+        $('#NumeroTarjeta').on('input', function(){
+            this.value = this.value
+                .replace(/\D/g,'')
+                .replace(/(.{4})/g,'$1 ')
+                .trim()
+                .substring(0,19);
+        });
+        $('#FechaVencimiento').on('input', function(){
+            var v = this.value.replace(/\D/g,'').slice(0,4);
+            if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+            this.value = v;
+        });
+        $('#CVV').on('input', function(){
+            this.value = this.value.replace(/\D/g,'').slice(0,3);
+        });
+        $('#Telefono').on('input', function(){
+            this.value = this.value.replace(/\D/g,'').slice(0,8);
+        });
+        $('#CodigoPostal').on('input', function(){
+            this.value = this.value.replace(/\D/g,'').slice(0,5);
+        });
+
+        // Mostrar/ocultar campos de tarjeta
+        $('input[name="MetodoPago"]').change(function(){
+            $('#tarjetaCreditoForm').toggle($(this).val()==='tarjetaCredito');
+        }).first().change();
+    });
+    </script>
+}

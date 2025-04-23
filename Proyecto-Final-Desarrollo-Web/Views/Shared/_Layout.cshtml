@@ -29,30 +29,32 @@
                                 <i class="bi bi-house-door nav-icon"></i>Home
                             </a>
                         </li>
-                        <!-- NUEVO: Enlace a Facturación -->
-                        <li class="nav-item">
-                            <a class="nav-link" href="@Url.Action("Index", "Facturacion")">
-                                <i class="bi bi-receipt nav-icon"></i>Facturación
-                            </a>
-                        </li>
-                        <!-- NUEVO: Dropdown para sistema POS y reportes -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="posDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-cash-register nav-icon"></i>Ventas
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="posDropdown">
-                                <li>
-                                    <a class="dropdown-item" href="@Url.Action("POS", "Facturacion")">
-                                        <i class="bi bi-cart-plus me-2"></i>Punto de Venta (POS)
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="@Url.Action("Reports", "Facturacion")">
-                                        <i class="bi bi-bar-chart me-2"></i>Reportes de Ventas
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
+                        @if (Session["UserRoleID"] != null
+                        && new[] { 1, 4, 7 }.Contains(Convert.ToInt32(Session["UserRoleID"])))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Facturacion")">
+                                    <i class="bi bi-receipt nav-icon"></i>Facturación
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="posDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-cash-register nav-icon"></i>Ventas
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="posDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("POS", "Facturacion")">
+                                            <i class="bi bi-cart-plus me-2"></i>Punto de Venta (POS)
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("Reports", "Facturacion")">
+                                            <i class="bi bi-bar-chart me-2"></i>Reportes de Ventas
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link" href="@Url.Action("Index2", "Home")">
                                 <i class="bi bi bi-prescription2 nav-icon"></i>Farmacia
@@ -73,22 +75,9 @@
                                 <i class="bi bi-envelope nav-icon"></i>Contact
                             </a>
                         </li>
-                        <!-- Categories Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-tags nav-icon"></i>Categorías
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                                <li>@Html.ActionLink("Medicamentos", "Medicamentos", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Productos", "Index", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Cuidado Personal", "CuidadoPersonal", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Vitaminas y Suplementos", "Vitaminas", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Bebés y Maternidad", "Bebes", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                            </ul>
-                        </li>
 
 
-                        <!-- Opción 1: Botón en formato de ítem de navegación -->
+
                         <li class="nav-item">
                             <a class="nav-link position-relative" href="@Url.Action("Index", "Carrito")">
                                 <i class="bi bi-cart-fill nav-icon"></i>Carrito
@@ -129,17 +118,11 @@
                                 }
                             </a>
                         </li>
+
+
                     </ul>
 
-                    <!-- Barra de búsqueda -->
-                    <form class="d-flex me-2" action="/Search" method="get">
-                        <div class="input-group">
-                            <input class="form-control" type="search" placeholder="Buscar productos..." aria-label="Search" name="query">
-                            <button class="btn btn-outline-light" type="submit" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Buscar">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </form>
+                    
 
                     <!-- Menú de usuario -->
                     <div class="dropdown">
@@ -178,6 +161,11 @@
                                 <li>
                                     <a class="dropdown-item" href="@Url.Action("Details", "Usuarios", new { id = Session["UserID"] })">
                                         <i class="bi bi-person me-2"></i>Mi Perfil
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("HistorialCompras", "Usuarios", new { id = Session["UserID"] })">
+                                        <i class="bi bi-bag me-2"></i>Mis Compras
                                     </a>
                                 </li>
                                 <li>

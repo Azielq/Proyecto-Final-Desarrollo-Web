@@ -899,5 +899,167 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             }
             base.Dispose(disposing);
         }
+
+        // Método HistorialCompras corregido
+        //[Authorize]
+        public ActionResult HistorialCompras(int page = 1, int pageSize = 10)
+        {
+            int idUsuario = Convert.ToInt32(Session["UserID"]);
+
+            // Obtener el usuario
+            var usuario = db.Usuarios.Find(idUsuario);
+
+            // Agregar logging para depuración
+            System.Diagnostics.Debug.WriteLine("User.Identity.IsAuthenticated: " + User.Identity.IsAuthenticated);
+            System.Diagnostics.Debug.WriteLine("Session[UserID]: " + (Session["UserID"] != null ? Session["UserID"].ToString() : "null"));
+
+            if (Session["UserID"] == null)
+            {
+                TempData["Message"] = "Su sesión ha expirado. Por favor inicie sesión nuevamente.";
+                TempData["MessageType"] = "warning";
+                return RedirectToAction("Login", "Usuarios");
+            }
+
+            // Buscar la persona asociada al usuario
+            var persona = db.Personas.Find(usuario.ID_Persona);
+
+            if (persona == null)
+            {
+                TempData["Message"] = "No se encontró información personal del usuario.";
+                TempData["MessageType"] = "warning";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Buscar el cliente asociado a esa persona
+            var cliente = db.Clientes.FirstOrDefault(c => c.ID_Persona == persona.ID_Persona);
+
+            if (cliente == null)
+            {
+                TempData["Message"] = "No se encontró información de cliente asociada a su cuenta.";
+                TempData["MessageType"] = "warning";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Obtener facturas del cliente
+            var facturas = db.Facturas
+                .Include(f => f.Detalles_Factura)
+                .Where(f => f.ID_Cliente == cliente.id_cliente)
+                .OrderByDescending(f => f.fecha)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            // Contar total de facturas para paginación
+            var totalFacturas = db.Facturas
+                .Count(f => f.ID_Cliente == cliente.id_cliente);
+
+            // Calcular el total gastado por el cliente
+            var totalGastado = db.Facturas
+                .Where(f => f.ID_Cliente == cliente.id_cliente && f.estado == "pagado")
+                .Sum(f => f.total);
+
+            if (totalGastado == null)
+            {
+                totalGastado = 0;
+            }
+
+            // Crear el ViewModel
+            var viewModel = new HistorialComprasViewModel
+            {
+                TotalFacturas = totalFacturas,
+                TotalGastado = totalGastado
+            };
+
+            // Convertir facturas a ViewModels
+            foreach (var factura in facturas)
+            {
+                var facturaVM = new FacturaUsuarioViewModel
+                {
+                    Id_Factura = factura.id_Factura,
+                    // Usar valor por defecto para DateTime? en caso de ser nulo
+                    Fecha = factura.fecha ?? DateTime.Now,
+                    Total = factura.total,
+                    Estado = factura.estado,
+                    CantidadProductos = factura.Detalles_Factura.Count
+                };
+
+                viewModel.Facturas.Add(facturaVM);
+            }
+
+            // Configurar paginación
+            PaginationHelper.ConfigurePagination(ViewData, totalFacturas, page, pageSize);
+
+            return View(viewModel);
+        }
+
+        // Método DetalleFactura corregido
+        //[Authorize]
+        public ActionResult DetalleFactura(int id)
+        {
+            int idUsuario = Convert.ToInt32(Session["UserID"]);
+
+            // Obtener el usuario
+            var usuario = db.Usuarios.Find(idUsuario);
+
+            if (usuario == null)
+            {
+                TempData["Message"] = "Usuario no encontrado.";
+                TempData["MessageType"] = "warning";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Buscar la persona y el cliente asociado al usuario
+            var persona = db.Personas.Find(usuario.ID_Persona);
+            var cliente = db.Clientes.FirstOrDefault(c => c.ID_Persona == persona.ID_Persona);
+
+            if (cliente == null)
+            {
+                TempData["Message"] = "No se encontró información de cliente asociada a su cuenta.";
+                TempData["MessageType"] = "warning";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Obtener la factura y verificar que pertenezca al cliente
+            var factura = db.Facturas
+                .Include(f => f.Clientes)
+                .Include(f => f.Detalles_Factura.Select(d => d.Productos))
+                .FirstOrDefault(f => f.id_Factura == id && f.ID_Cliente == cliente.id_cliente);
+
+            if (factura == null)
+            {
+                TempData["Message"] = "La factura solicitada no existe o no tiene acceso a ella.";
+                TempData["MessageType"] = "warning";
+                return RedirectToAction("HistorialCompras");
+            }
+
+            // Crear ViewModel de factura
+            var viewModel = new FacturaUsuarioViewModel
+            {
+                Id_Factura = factura.id_Factura,
+                // Usar valor por defecto para DateTime? en caso de ser nulo
+                Fecha = factura.fecha ?? DateTime.Now,
+                Total = factura.total,
+                Estado = factura.estado,
+                CantidadProductos = factura.Detalles_Factura.Count
+            };
+
+            // Agregar detalles
+            foreach (var detalle in factura.Detalles_Factura)
+            {
+                decimal precioUnitario = detalle.cantidad > 0 ? (detalle.subtotal / detalle.cantidad) : 0;
+
+                viewModel.Detalles.Add(new DetalleFacturaSimpleViewModel
+                {
+                    ID_Producto = detalle.ID_Producto,
+                    NombreProducto = detalle.Productos.Nombre,
+                    Cantidad = detalle.cantidad,
+                    PrecioUnitario = precioUnitario,
+                    Subtotal = detalle.subtotal
+                });
+            }
+
+            return View(viewModel);
+        }
+
     }
 }
