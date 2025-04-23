@@ -302,8 +302,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         // GET: Productos/Create
         public ActionResult Create()
         {
-            ViewBag.ID_Categoría = new SelectList(db.Categorias, "ID_Categoría", "Nombre");
-
+            ViewBag.ID_Categoría = new SelectList(db.Categorias.OrderBy(c => c.Nombre), "ID_Categoría", "Nombre");
             // Inicializa un nuevo producto con propiedades vacías para TinyMCE
             var viewModel = new ProductoViewModel
             {
@@ -311,7 +310,6 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 Detalles = "",
                 Ingredientes = ""
             };
-
             return View(viewModel);
         }
 
@@ -327,7 +325,6 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 {
                     // Convierte ViewModel a Entidad
                     var producto = viewModel.ToEntity();
-
                     // Agrega el producto a la base de datos
                     db.Productos.Add(producto);
                     await db.SaveChangesAsync();
@@ -346,7 +343,6 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
                     TempData["Message"] = "Producto creado correctamente";
                     TempData["MessageType"] = "success";
-
                     return RedirectToAction("Index");
                 }
                 catch (Exception ex)
@@ -354,8 +350,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                     ModelState.AddModelError("", "Error al crear el producto: " + ex.Message);
                 }
             }
-
-            ViewBag.ID_Categoría = new SelectList(db.Categorias, "ID_Categoría", "Nombre", viewModel.ID_Categoría);
+            ViewBag.ID_Categoría = new SelectList(db.Categorias.OrderBy(c => c.Nombre), "ID_Categoría", "Nombre", viewModel.ID_Categoría);
             return View(viewModel);
         }
 
@@ -367,26 +362,20 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
             Productos producto = db.Productos
                 .Include(p => p.Imagenes_Producto)
                 .FirstOrDefault(p => p.ID_Producto == id);
-
             if (producto == null)
             {
                 return HttpNotFound();
             }
-
             var viewModel = ProductoViewModel.FromEntity(producto);
-
             // Carga las imágenes del producto
             viewModel.Imagenes = producto.Imagenes_Producto
                 .Where(i => i.Estado)
                 .Select(i => ImagenProductoViewModel.FromEntity(i))
                 .ToList();
-
-            ViewBag.ID_Categoría = new SelectList(db.Categorias, "ID_Categoría", "Nombre", producto.ID_Categoría);
-
+            ViewBag.ID_Categoría = new SelectList(db.Categorias.OrderBy(c => c.Nombre), "ID_Categoría", "Nombre", producto.ID_Categoría);
             return View(viewModel);
         }
 
@@ -402,12 +391,10 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 {
                     // Obtiene el producto existente para mantener las referencias
                     var productoExistente = db.Productos.Find(viewModel.ID_Producto);
-
                     if (productoExistente == null)
                     {
                         return HttpNotFound();
                     }
-
                     // Actualiza propiedades
                     productoExistente.ID_Categoría = viewModel.ID_Categoría;
                     productoExistente.Nombre = viewModel.Nombre;
@@ -420,27 +407,22 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                     productoExistente.UnidadDeVenta = viewModel.UnidadDeVenta;
                     productoExistente.ContenidoNeto = viewModel.ContenidoNeto;
                     productoExistente.Marca = viewModel.Marca;
-
                     // Actualiza en la base de datos
                     db.Entry(productoExistente).State = EntityState.Modified;
                     await db.SaveChangesAsync();
-
                     // Procesa imágenes nuevas si existen
                     if (imagenes != null && imagenes.Length > 0)
                     {
                         // El segundo parámetro "false" indica que no queremos hacer estas imágenes principales automáticamente
                         await ProcesarImagenesProducto(viewModel.ID_Producto, imagenes, false);
                     }
-
                     // Procesa las URLs de imágenes si se han proporcionado
                     if (imagenesUrl != null && imagenesUrl.Length > 0)
                     {
                         await ProcesarUrlsImagenesProducto(viewModel.ID_Producto, imagenesUrl, false);
                     }
-
                     TempData["Message"] = "Producto actualizado correctamente";
                     TempData["MessageType"] = "success";
-
                     return RedirectToAction("Index");
                 }
                 catch (Exception ex)
@@ -448,12 +430,10 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                     ModelState.AddModelError("", "Error al actualizar el producto: " + ex.Message);
                 }
             }
-
             // Si hay errores, recarga las imágenes existentes
             var producto = db.Productos
                 .Include(p => p.Imagenes_Producto)
                 .FirstOrDefault(p => p.ID_Producto == viewModel.ID_Producto);
-
             if (producto != null)
             {
                 viewModel.Imagenes = producto.Imagenes_Producto
@@ -461,8 +441,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                     .Select(i => ImagenProductoViewModel.FromEntity(i))
                     .ToList();
             }
-
-            ViewBag.ID_Categoría = new SelectList(db.Categorias, "ID_Categoría", "Nombre", viewModel.ID_Categoría);
+            ViewBag.ID_Categoría = new SelectList(db.Categorias.OrderBy(c => c.Nombre), "ID_Categoría", "Nombre", viewModel.ID_Categoría);
             return View(viewModel);
         }
 
