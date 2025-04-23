@@ -6,6 +6,10 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
 {
     public class ReporteInventarioViewModel
     {
+
+        public int PaginaActual { get; set; }
+        public int TotalPaginas { get; set; }
+
         public List<ReporteInventarioDetalleViewModel> DetallesInventario { get; set; }
         public DateTime FechaReporte { get; set; }
         public decimal ValorTotalInventario { get; set; }
@@ -82,6 +86,10 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
 
     public class ReporteVentasViewModel
     {
+
+        public int PaginaActual { get; set; }
+        public int TotalPaginas { get; set; }
+
         // Datos para los filtros
         [Display(Name = "Fecha Inicio")]
         [DataType(DataType.Date)]

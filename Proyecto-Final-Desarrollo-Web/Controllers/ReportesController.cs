@@ -5,12 +5,15 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Proyecto_Final_Desarrollo_Web.Filters;
 using Proyecto_Final_Desarrollo_Web.Models;
 using Proyecto_Final_Desarrollo_Web.ViewModels;
 
 namespace Proyecto_Final_Desarrollo_Web.Controllers
 {
+    [AuthorizeRoles("Administrador", "Supervisor")]
     public class ReportesController : Controller
+       
     {
         private FarmaUEntities db = new FarmaUEntities();
 
@@ -20,7 +23,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         }
 
         // GET: Reportes/Inventario
-        public ActionResult ReportesInventario()
+        public ActionResult ReportesInventario(int pagina = 1, int itemsPorPagina = 10)
         {
             var viewModel = new ReporteInventarioViewModel
             {
@@ -28,34 +31,41 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             };
 
             // Obtiene todos los productos con stock
-            var productos = db.Productos
+            var todosLosProductos = db.Productos
                 .Include(p => p.Categorias)
                 .Include(p => p.Lotes)
                 .Where(p => p.estado == "Activo" && p.Lotes.Any(l => l.cantidad > 0))
                 .ToList();
 
-            // Estadísticas
-            viewModel.TotalProductos = productos.Count;
-            viewModel.TotalUnidades = productos.Sum(p => p.Lotes.Sum(l => l.cantidad));
-            viewModel.ValorTotalInventario = productos.Sum(p => p.Lotes.Sum(l => l.cantidad * p.precio_compra));
+            // Estadísticas generales
+            viewModel.TotalProductos = todosLosProductos.Count;
+            viewModel.TotalUnidades = todosLosProductos.Sum(p => p.Lotes.Sum(l => l.cantidad));
+            viewModel.ValorTotalInventario = todosLosProductos.Sum(p => p.Lotes.Sum(l => l.cantidad * p.precio_compra));
 
             var fechaActual = DateTime.Now;
 
-            viewModel.ProductosVencidos = productos
+            viewModel.ProductosVencidos = todosLosProductos
                 .Count(p => p.Lotes.Any(l => l.fecha_vencimiento < fechaActual && l.cantidad > 0));
 
-            viewModel.ProductosPorVencer = productos
+            viewModel.ProductosPorVencer = todosLosProductos
                 .Count(p => p.Lotes.Any(l => l.fecha_vencimiento > fechaActual &&
                                           l.fecha_vencimiento <= fechaActual.AddDays(30) &&
                                           l.cantidad > 0));
 
+            // PAGINACIÓN
+            var productosPaginados = todosLosProductos
+                .Skip((pagina - 1) * itemsPorPagina)
+                .Take(itemsPorPagina)
+                .ToList();
+
+            viewModel.PaginaActual = pagina;
+            viewModel.TotalPaginas = (int)Math.Ceiling((double)todosLosProductos.Count / itemsPorPagina);
+
             // Detalles por producto
-            foreach (var producto in productos)
+            foreach (var producto in productosPaginados)
             {
                 var detalle = new ReporteInventarioDetalleViewModel
                 {
-                    // Se asume que en el view model de inventario se renombraron las propiedades:
-                    // ID_Medicamento -> ID_Producto, NombreMedicamento -> NombreProducto
                     ID_Producto = producto.ID_Producto,
                     NombreProducto = producto.Nombre,
                     Categoria = producto.Categorias?.Nombre,
@@ -64,7 +74,6 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                     ValorTotal = producto.Lotes.Sum(l => l.cantidad * producto.precio_compra)
                 };
 
-                // Detalles por lote
                 foreach (var lote in producto.Lotes.Where(l => l.cantidad > 0))
                 {
                     var ubicacion = db.Inventario
@@ -87,92 +96,95 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         }
 
         // GET: Reportes/Ventas
-        public ActionResult ReportesVentas()
-        {
-            var viewModel = new ReporteVentasViewModel();
-            return View(viewModel);
-        }
+      [HttpPost]
+public ActionResult ReportesVentas(ReporteVentasViewModel viewModel, int pagina = 1)
+{
+    const int itemsPorPagina = 10;
 
-        // POST: Reportes/Ventas
-        [HttpPost]
-        public ActionResult ReportesVentas(ReporteVentasViewModel viewModel)
-        {
-            if (ModelState.IsValid)
+    if (ModelState.IsValid)
+    {
+        viewModel.FechaReporte = DateTime.Now;
+
+        var fechaFin = viewModel.FechaFin.AddDays(1).AddSeconds(-1);
+
+        var ventas = db.Facturas
+            .Include(f => f.Clientes.Personas)
+            .Include(f => f.Detalles_Factura)
+            .Where(f => f.fecha >= viewModel.FechaInicio && f.fecha <= fechaFin)
+            .ToList();
+
+        // Estadísticas
+        viewModel.TotalVentas = ventas.Count(f => f.estado == "Completada");
+        viewModel.MontoTotalVentas = ventas.Where(f => f.estado == "Completada").Sum(f => f.total);
+        viewModel.PromedioVenta = viewModel.TotalVentas > 0 ? viewModel.MontoTotalVentas / viewModel.TotalVentas : 0;
+
+        // Total de ventas para paginación
+        var ventasOrdenadas = ventas
+            .OrderByDescending(f => f.fecha)
+            .Select(f => new VentaReporteViewModel
             {
-                viewModel.FechaReporte = DateTime.Now;
+                id_Factura = f.id_Factura,
+                Fecha = f.fecha,
+                Cliente = $"{f.Clientes.Personas.Nombre} {f.Clientes.Personas.Apellido_1}",
+                Total = f.total,
+                CantidadProductos = f.Detalles_Factura.Count,
+                Estado = f.estado
+            }).ToList();
 
-                // Asegura que la fecha fin sea el final del día
-                var fechaFin = viewModel.FechaFin.AddDays(1).AddSeconds(-1);
+        viewModel.TotalPaginas = (int)Math.Ceiling((double)ventasOrdenadas.Count / itemsPorPagina);
+        viewModel.PaginaActual = pagina;
 
-                // Obtiene las ventas en el rango de fechas
-                var ventas = db.Facturas
-                    .Include(f => f.Clientes.Personas)
-                    .Include(f => f.Detalles_Factura)
-                    .Where(f => f.fecha >= viewModel.FechaInicio && f.fecha <= fechaFin)
-                    .ToList();
+        // Aplicar paginación
+        viewModel.Ventas = ventasOrdenadas
+            .Skip((pagina - 1) * itemsPorPagina)
+            .Take(itemsPorPagina)
+            .ToList();
 
-                // Estadísticas
-                viewModel.TotalVentas = ventas.Count(f => f.estado == "Completada");
-                viewModel.MontoTotalVentas = ventas.Where(f => f.estado == "Completada").Sum(f => f.total);
-                viewModel.PromedioVenta = viewModel.TotalVentas > 0 ? viewModel.MontoTotalVentas / viewModel.TotalVentas : 0;
+        // Ventas por día
+        viewModel.VentasPorDia = ventas
+            .Where(f => f.estado == "Completada")
+            .GroupBy(f => f.fecha.Value.Date)
+            .Select(g => new VentaPorDiaViewModel
+            {
+                Fecha = g.Key,
+                Cantidad = g.Count(),
+                Total = g.Sum(f => f.total)
+            })
+            .OrderBy(v => v.Fecha)
+            .ToList();
 
-                // Detalle de ventas
-                viewModel.Ventas = ventas
-                    .OrderByDescending(f => f.fecha)
-                    .Select(f => new VentaReporteViewModel
-                    {
-                        id_Factura = f.id_Factura,
-                        Fecha = f.fecha,
-                        Cliente = $"{f.Clientes.Personas.Nombre} {f.Clientes.Personas.Apellido_1}",
-                        Total = f.total,
-                        CantidadProductos = f.Detalles_Factura.Count,
-                        Estado = f.estado
-                    })
-                    .ToList();
+        // Top productos vendidos
+        var detalles = ventas
+            .Where(f => f.estado == "Completada")
+            .SelectMany(f => f.Detalles_Factura)
+            .ToList();
 
-                // Ventas por día
-                viewModel.VentasPorDia = ventas
-                    .Where(f => f.estado == "Completada")
-                    .GroupBy(f => f.fecha.Value.Date)
-                    .Select(g => new VentaPorDiaViewModel
-                    {
-                        Fecha = g.Key,
-                        Cantidad = g.Count(),
-                        Total = g.Sum(f => f.total)
-                    })
-                    .OrderBy(v => v.Fecha)
-                    .ToList();
+        decimal totalVentas = detalles.Sum(d => d.subtotal);
 
-                // Top productos vendidos
-                var detalles = ventas
-    .Where(f => f.estado == "Completada")
-    .SelectMany(f => f.Detalles_Factura)
-    .ToList();
+        viewModel.TopProductos = detalles
+            .GroupBy(d => new
+            {
+                ID_Producto = d.ID_Producto,
+                Nombre = d.Productos.Nombre,
+                Categoria = d.Productos.Categorias.Nombre
+            })
+            .Select(g => new TopProductoVentaViewModel
+            {
+                ID_Producto = g.Key.ID_Producto,
+                Nombre = g.Key.Nombre,
+                Categoria = g.Key.Categoria,
+                Cantidad = g.Sum(d => d.cantidad),
+                TotalVentas = g.Sum(d => d.subtotal),
+                Porcentaje = totalVentas > 0 ? g.Sum(d => d.subtotal) / totalVentas : 0
+            })
+            .OrderByDescending(m => m.TotalVentas)
+            .Take(10)
+            .ToList();
+    }
 
-                decimal totalVentas = detalles.Sum(d => d.subtotal);
+    return View(viewModel);
+}
 
-                viewModel.TopProductos = detalles
-                    .GroupBy(d => new {
-                        ID_Producto = d.ID_Producto, // Reemplaza ID_Medicamento por ID_Producto
-                        Nombre = d.Productos.Nombre, // Reemplaza d.Medicamentos por d.Productos
-                        Categoria = d.Productos.Categorias.Nombre
-                    })
-                    .Select(g => new TopProductoVentaViewModel
-                    {
-                        ID_Producto = g.Key.ID_Producto,
-                        Nombre = g.Key.Nombre,
-                        Categoria = g.Key.Categoria,
-                        Cantidad = g.Sum(d => d.cantidad),
-                        TotalVentas = g.Sum(d => d.subtotal),
-                        Porcentaje = totalVentas > 0 ? g.Sum(d => d.subtotal) / totalVentas : 0
-                    })
-                    .OrderByDescending(m => m.TotalVentas)
-                    .Take(10)
-                    .ToList();
-            }
-
-            return View(viewModel);
-        }
 
         // GET: Reportes/LotesVencidos
         public ActionResult LotesVencidos()

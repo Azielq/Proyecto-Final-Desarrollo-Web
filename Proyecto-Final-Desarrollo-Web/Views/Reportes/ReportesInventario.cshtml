@@ -100,4 +100,18 @@
             }
         </tbody>
     </table>
+
+    <!-- ? Paginación al final de la tabla -->
+    <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Paginación de Inventario">
+            <ul class="pagination">
+                @for (int i = 1; i <= Model.TotalPaginas; i++)
+                {
+                    <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("ReportesInventario", new { pagina = i })">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
 </div>
