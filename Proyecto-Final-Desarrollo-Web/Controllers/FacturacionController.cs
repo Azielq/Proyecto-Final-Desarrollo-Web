@@ -787,7 +787,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             return View();
         }
 
-        // POST: Facturacion/SalesReport
+        // Método corregido SalesReport en el controlador FacturacionController
         [HttpPost]
         public ActionResult SalesReport(DateTime fechaInicio, DateTime fechaFin, string tipoReporte = "diario")
         {
@@ -798,8 +798,22 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
                 // Consulta base de ventas en el período
                 var query = db.Facturas
-                    .Where(f => f.estado == "Completada" && f.fecha >= fechaInicio && f.fecha <= fechaFin)
+                    .Where(f => (f.estado == "Completada" || f.estado == "pagado") && f.fecha >= fechaInicio && f.fecha <= fechaFin)
                     .AsQueryable();
+
+                // Si no hay facturas, devolver un objeto con datos vacíos pero estructura válida
+                if (!query.Any())
+                {
+                    return Json(new
+                    {
+                        PeriodoInicio = fechaInicio.ToString("dd/MM/yyyy"),
+                        PeriodoFin = fechaFin.ToString("dd/MM/yyyy"),
+                        TotalFacturas = 0,
+                        MontoTotal = 0.0m, // Usar 0 decimal en lugar de null
+                        TipoReporte = tipoReporte,
+                        Datos = new object[] { } // Array vacío pero no null
+                    }, JsonRequestBehavior.AllowGet);
+                }
 
                 // Resultados según el tipo de reporte
                 object result = null;
@@ -825,11 +839,11 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                         result = db.Detalles_Factura
                             .Where(d => d.Facturas.fecha >= fechaInicio &&
                                      d.Facturas.fecha <= fechaFin &&
-                                     d.Facturas.estado == "Completada")
+                                     (d.Facturas.estado == "Completada" || d.Facturas.estado == "pagado"))
                             .GroupBy(d => d.Productos.Categorias.Nombre)
                             .Select(g => new
                             {
-                                Categoria = g.Key,
+                                Categoria = g.Key ?? "Sin categoría", // Evitar nulls
                                 TotalProductos = g.Sum(d => d.cantidad),
                                 MontoTotal = g.Sum(d => d.subtotal)
                             })
@@ -842,12 +856,12 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                         result = db.Detalles_Factura
                             .Where(d => d.Facturas.fecha >= fechaInicio &&
                                      d.Facturas.fecha <= fechaFin &&
-                                     d.Facturas.estado == "Completada")
+                                     (d.Facturas.estado == "Completada" || d.Facturas.estado == "pagado"))
                             .GroupBy(d => new { d.ID_Producto, d.Productos.Nombre })
                             .Select(g => new
                             {
                                 ProductoId = g.Key.ID_Producto,
-                                ProductoNombre = g.Key.Nombre,
+                                ProductoNombre = g.Key.Nombre ?? "Producto sin nombre", // Evitar nulls
                                 TotalVendido = g.Sum(d => d.cantidad),
                                 MontoTotal = g.Sum(d => d.subtotal)
                             })
@@ -857,13 +871,30 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                         break;
                 }
 
+                // Si el resultado es null, devolver un array vacío
+                if (result == null)
+                {
+                    result = new object[] { };
+                }
+
+                // Calcular monto total con verificación
+                decimal montoTotal = 0;
+                try
+                {
+                    montoTotal = query.Sum(f => f.total);
+                }
+                catch
+                {
+                    // Si hay error al calcular el total, dejarlo en 0
+                }
+
                 // Información de resumen
                 var resumen = new
                 {
                     PeriodoInicio = fechaInicio.ToString("dd/MM/yyyy"),
                     PeriodoFin = fechaFin.ToString("dd/MM/yyyy"),
                     TotalFacturas = query.Count(),
-                    MontoTotal = query.Sum(f => f.total),
+                    MontoTotal = montoTotal, // Garantizar que sea numérico
                     TipoReporte = tipoReporte,
                     Datos = result
                 };
@@ -872,7 +903,23 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { error = ex.Message, success = false }, JsonRequestBehavior.AllowGet);
+                // Registrar el error para diagnóstico
+                System.Diagnostics.Debug.WriteLine($"Error en SalesReport: {ex.Message}");
+                if (ex.InnerException != null)
+                    System.Diagnostics.Debug.WriteLine($"InnerException: {ex.InnerException.Message}");
+
+                // Devolver un objeto de error con estructura válida
+                return Json(new
+                {
+                    error = ex.Message,
+                    success = false,
+                    PeriodoInicio = fechaInicio.ToString("dd/MM/yyyy"),
+                    PeriodoFin = fechaFin.ToString("dd/MM/yyyy"),
+                    TotalFacturas = 0,
+                    MontoTotal = 0.0m,
+                    TipoReporte = tipoReporte,
+                    Datos = new object[] { }
+                }, JsonRequestBehavior.AllowGet);
             }
         }
 
