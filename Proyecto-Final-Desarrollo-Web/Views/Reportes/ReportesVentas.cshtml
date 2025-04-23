@@ -57,7 +57,7 @@
     </div>
 
     <h3 class="mt-5">Detalle de Ventas</h3>
-    
+
     @if (Model.Ventas != null && Model.Ventas.Any())
     {
         <table class="table table-bordered table-hover">
@@ -105,4 +105,16 @@
             return true;
         }
     </script>
+    <div class="d-flex justify-content-center mt-4">
+        <nav>
+            <ul class="pagination">
+                @for (int i = 1; i <= Model.TotalPaginas; i++)
+                {
+                    <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
+                        <button type="submit" name="pagina" value="@i" class="page-link">@i</button>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
 }
