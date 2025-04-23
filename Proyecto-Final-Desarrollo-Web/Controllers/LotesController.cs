@@ -1,4 +1,7 @@
-﻿using System;
+﻿
+
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -10,9 +13,12 @@ using Proyecto_Final_Desarrollo_Web.Models;
 using Proyecto_Final_Desarrollo_Web.ViewModels;
 using Proyecto_Final_Desarrollo_Web.TableViewModels;
 using Proyecto_Final_Desarrollo_Web.Helpers;
+using Proyecto_Final_Desarrollo_Web.Filters;
 
 namespace Proyecto_Final_Desarrollo_Web.Controllers
 {
+    [AuthorizeRoles("Administrador", "Supervisor")]
+
     public class LotesController : Controller
     {
         private FarmaUEntities db = new FarmaUEntities();
