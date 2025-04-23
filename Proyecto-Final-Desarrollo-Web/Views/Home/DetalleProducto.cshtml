@@ -1,199 +1,534 @@
 @model Proyecto_Final_Desarrollo_Web.ViewModels.TiendaViewModel
-@{
-    ViewBag.Title = Model.Productos[0].Nombre;
-    var producto = Model.Productos[0];
-}
-<!-- estilos omitidos por brevedad (idénticos a los tuyos) -->
 
+@{
+    var producto = Model.Productos[0];
+    ViewBag.Title = producto.Nombre;
+}
+
+<!-- Estilos para la galería y TinyMCE -->
+<style>
+    .product-gallery .main-image {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 350px;
+        margin-bottom: 15px;
+    }
+
+        .product-gallery .main-image img {
+            max-height: 300px;
+            max-width: 100%;
+            object-fit: contain;
+            transition: opacity 0.3s ease;
+        }
+
+    .thumbnail-item {
+        cursor: pointer;
+        width: 70px;
+        height: 70px;
+        overflow: hidden;
+        border-radius: 8px;
+        padding: 3px;
+        background-color: #f8f9fa;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+
+        .thumbnail-item.active {
+            border-color: #4CAF50;
+        }
+
+        .thumbnail-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .related-products .image-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 180px;
+        background-color: #f8f9fa;
+        padding: 10px;
+        overflow: hidden;
+    }
+
+        .related-products .image-container img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+    .product-card:hover .image-container img {
+        transform: scale(1.05);
+    }
+
+    .quantity-selector input {
+        width: 60px;
+    }
+
+    .tinymce-content img {
+        max-width: 100%;
+        height: auto;
+        margin: 10px 0;
+    }
+
+    .tinymce-content h1, .tinymce-content h2, .tinymce-content h3,
+    .tinymce-content h4, .tinymce-content h5, .tinymce-content h6 {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .tinymce-content p {
+        margin-bottom: 1rem;
+    }
+
+    .tinymce-content ul, .tinymce-content ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+
+    .tinymce-content table {
+        width: 100%;
+        margin-bottom: 1rem;
+        border-collapse: collapse;
+    }
+
+        .tinymce-content table th, .tinymce-content table td {
+            padding: 0.5rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .tinymce-content table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+    .tinymce-content blockquote {
+        padding: 0.5rem 1rem;
+        margin-bottom: 1rem;
+        border-left: 5px solid #4CAF50;
+        background-color: #f8f9fa;
+    }
+
+    .tinymce-content iframe {
+        max-width: 100%;
+        margin: 1rem 0;
+    }
+</style>
+
+<!-- Breadcrumb -->
 <nav aria-label="breadcrumb" class="bg-light py-3 mb-4">
-    <!-- migas de pan idénticas -->
+    <div class="container">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Tienda", "Home")">Tienda</a></li>
+            <li class="breadcrumb-item">
+                <a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = producto.ID_Categoria } })">
+                    @producto.Categoria
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">@producto.Nombre</li>
+        </ol>
+    </div>
 </nav>
 
 <div class="container mb-5">
-  <div class="card border-0 shadow-sm mb-4">
-    <div class="row g-0">
-      <!-- GALERÍA -->
-      <div class="col-md-5 p-4 product-gallery">
-        <div class="main-image mb-3">
-          <img id="mainProductImage"
-               src="@(producto.UrlImagen ?? "/Content/images/product-placeholder.jpg")"
-               class="img-fluid rounded" style="max-height:300px;object-fit:contain;cursor:zoom-in" />
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-0">
+            <div class="row g-0">
+
+                <!-- Galería de imágenes -->
+                <div class="col-md-5">
+                    <div class="product-gallery p-4">
+                        <div class="main-image mb-3">
+                            <img id="mainProductImage"
+                                 src="@(string.IsNullOrEmpty(producto.UrlImagen) ? "/Content/images/product-placeholder.jpg" : producto.UrlImagen)"
+                                 alt="@producto.Nombre" class="img-fluid rounded">
+                        </div>
+                        <div class="thumbnails d-flex flex-wrap gap-2 justify-content-center">
+                            <div class="thumbnail-item active">
+                                <img src="@(string.IsNullOrEmpty(producto.UrlImagen) ? "/Content/images/product-placeholder.jpg" : producto.UrlImagen)"
+                                     alt="@producto.Nombre" onclick="changeMainImage(this.src)">
+                            </div>
+                            @if (ViewBag.Imagenes != null)
+                            {
+                                foreach (var img in ViewBag.Imagenes)
+                                {
+                                    if (img.URL != producto.UrlImagen)
+                                    {
+                                        <div class="thumbnail-item">
+                                            <img src="@img.URL"
+                                                 alt="@(!string.IsNullOrEmpty(img.Descripcion) ? img.Descripcion : producto.Nombre)"
+                                                 onclick="changeMainImage(this.src)">
+                                        </div>
+                                    }
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información principal -->
+                <div class="col-md-7">
+                    <div class="product-info p-4">
+                        <h1 class="h2 mb-1">@producto.Nombre</h1>
+
+                        <div class="mb-3">
+                            <span class="badge bg-light text-dark me-2">@producto.Categoria</span>
+                            @if (producto.EsNuevo)
+                            {<span class="badge bg-success me-2">Nuevo</span>}
+                            @if (producto.EsOferta)
+                            {<span class="badge bg-danger me-2">Oferta</span>}
+                            <span class="badge bg-primary">SKU: PROD-@producto.ID_Producto</span>
+                        </div>
+
+                        <div class="product-rating mb-3">
+                            <span class="text-warning">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    var ico = i <= Math.Floor(producto.Valoracion)
+                                        ? "bi-star-fill"
+                                        : (i <= producto.Valoracion ? "bi-star-half" : "bi-star");
+                                    <i class="bi @ico"></i>
+                                }
+                            </span>
+                            <span class="ms-2 text-muted">
+                                @producto.Valoracion de 5 (@producto.NumeroVentas ventas)
+                            </span>
+                        </div>
+
+                        <div class="product-price mb-3">
+                            @if (producto.EsOferta)
+                            {
+                                <span class="text-decoration-line-through text-muted fs-5 me-2">
+                                    @producto.PrecioOriginal.ToString("C0")
+                                </span>
+                                <span class="fs-3 fw-bold text-danger">@producto.Precio.ToString("C0")</span>
+                                <span class="ms-2 badge bg-danger">
+                                    -@(producto.PorcentajeDescuento * 100)%
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="fs-3 fw-bold text-primary">@producto.Precio.ToString("C0")</span>
+                            }
+                        </div>
+
+                        <hr>
+
+                        <div class="product-details mb-3 tinymce-content">
+                            @Html.Raw(!string.IsNullOrEmpty(producto.Descripcion)
+                                ? producto.Descripcion
+                                : "<p class=\"text-muted\">Sin descripción disponible.</p>")
+                        </div>
+
+                        <div class="product-meta mb-4">
+                            <div class="row">
+                                <div class="col-6 mb-2">
+                                    <strong>Marca:</strong> @(string.IsNullOrEmpty(producto.Marca) ? "No especificada" : producto.Marca)
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <strong>Contenido:</strong> @(string.IsNullOrEmpty(producto.ContenidoNeto) ? "No especificado" : producto.ContenidoNeto)
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <strong>Disponibilidad:</strong>
+                                    @if (producto.Stock > 0)
+                                    {
+                                        <span class="text-success">En stock (@producto.Stock unidades)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-danger">Agotado</span>
+                                    }
+                                </div>
+                                <div class="col-6 mb-2">
+                                    <strong>Categoría:</strong> @producto.Categoria
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="product-actions d-flex gap-3 flex-wrap mb-4">
+                            <div class="quantity-selector d-flex align-items-center">
+                                <button type="button" id="btnDecrease" class="btn btn-outline-secondary">−</button>
+                                <input type="number" id="quantity" class="form-control mx-2 text-center"
+                                       value="1" min="1" max="@producto.Stock">
+                                <button type="button" id="btnIncrease" class="btn btn-outline-secondary">+</button>
+                            </div>
+
+                            <button class="btn btn-primary flex-grow-1 add-to-cart-btn"
+                                    @(producto.Stock <= 0 ? "disabled" : "")
+                                    data-product-id="@producto.ID_Producto"
+                                    data-product-name="@producto.Nombre"
+                                    data-product-price="@producto.Precio"
+                                    data-product-image="@producto.UrlImagen">
+                                <i class="bi bi-cart-plus me-2"></i>Agregar al Carrito
+                            </button>
+
+                            <button type="button" class="btn btn-outline-danger">
+                                <i class="bi bi-heart"></i>
+                            </button>
+                        </div>
+
+                        <div class="product-shipping-info p-3 bg-light rounded">
+                            <div class="d-flex align-items-center mb-2">
+                                <i class="bi bi-truck fs-4 me-3 text-primary"></i>
+                                <div>
+                                    <strong>Envío gratis</strong>
+                                    <p class="mb-0 small">Para compras superiores a ₡20.000</p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-shield-check fs-4 me-3 text-primary"></i>
+                                <div>
+                                    <strong>Garantía de calidad</strong>
+                                    <p class="mb-0 small">Productos originales con garantía</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </div>
-        <div class="thumbnails d-flex flex-wrap gap-2 justify-content-center">
-          <div class="thumbnail-item active">
-            <img src="@(producto.UrlImagen ?? "/Content/images/product-placeholder.jpg")" />
-          </div>
-          @foreach(var img in ViewBag.Imagenes ?? new List<dynamic>()) {
-            @if (img.URL != producto.UrlImagen) {
-              <div class="thumbnail-item">
-                <img src="@img.URL" />
-              </div>
-            }
-          }
-        </div>
-      </div>
-      <!-- INFO PRODUCTO -->
-      <div class="col-md-7 p-4">
-        <h1 class="h2 mb-1">@producto.Nombre</h1>
-        <!-- precio, badges, rating… idénticos -->
-        <div class="product-actions d-flex gap-3 flex-wrap mb-4">
-          <div class="quantity-selector d-flex align-items-center">
-            <button id="btnDecrease" class="btn btn-outline-secondary">−</button>
-            <input type="number" id="quantity"
-                   class="form-control mx-2 text-center"
-                   value="1" min="1" max="@producto.Stock" />
-            <button id="btnIncrease" class="btn btn-outline-secondary">+</button>
-          </div>
-          <button id="btnAddToCart"
-                  class="btn btn-primary flex-grow-1"
-                  @(producto.Stock<=0?"disabled":"")>
-            <i class="bi bi-cart-plus me-2"></i>Agregar al Carrito
-          </button>
-          <button class="btn btn-outline-danger">
-            <i class="bi bi-heart"></i>
-          </button>
-        </div>
-        <!-- shipping info… -->
-      </div>
     </div>
-  </div>
 
-  <!-- TABS DETALLES… -->
-  <!-- PRODUCTOS RELACIONADOS… -->
+    <!-- Tabs de detalles -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+            <ul class="nav nav-tabs" id="productTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="description-tab" data-bs-toggle="tab"
+                            data-bs-target="#description-pane" type="button" role="tab"
+                            aria-controls="description-pane" aria-selected="true">
+                        <i class="bi bi-info-circle me-2"></i>Detalles
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="indications-tab" data-bs-toggle="tab"
+                            data-bs-target="#indications-pane" type="button" role="tab"
+                            aria-controls="indications-pane" aria-selected="false">
+                        <i class="bi bi-list-check me-2"></i>Indicaciones
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="ingredients-tab" data-bs-toggle="tab"
+                            data-bs-target="#ingredients-pane" type="button" role="tab"
+                            aria-controls="ingredients-pane" aria-selected="false">
+                        <i class="bi bi-layers me-2"></i>Ingredientes
+                    </button>
+                </li>
+            </ul>
+            <div class="tab-content p-4">
+                <div class="tab-pane fade show active tinymce-content" id="description-pane" role="tabpanel">
+                    @Html.Raw(!string.IsNullOrEmpty(producto.Descripcion)
+                        ? producto.Descripcion
+                        : "<p class=\"text-muted\">No hay detalles disponibles.</p>")
+                </div>
+                <div class="tab-pane fade tinymce-content" id="indications-pane" role="tabpanel">
+                    @Html.Raw(!string.IsNullOrEmpty(producto.Indicaciones)
+                        ? producto.Indicaciones
+                        : "<p class=\"text-muted\">No hay indicaciones disponibles.</p>")
+                </div>
+                <div class="tab-pane fade tinymce-content" id="ingredients-pane" role="tabpanel">
+                    @Html.Raw(!string.IsNullOrEmpty(producto.Ingredientes)
+                        ? producto.Ingredientes
+                        : "<p class=\"text-muted\">No hay ingredientes disponibles.</p>")
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <!-- Productos relacionados -->
+    @if (Model.ProductosDestacados.Any())
+    {
+        <section class="related-products mb-4">
+            <h3 class="mb-4"><i class="bi bi-link-45deg me-2"></i>Productos Relacionados</h3>
+            <div class="row g-4">
+                @foreach (var rel in Model.ProductosDestacados)
+                {
+                    <div class="col-6 col-md-3">
+                        <div class="card h-100 border-0 shadow-sm product-card">
+                            <div class="image-container position-relative">
+                                <img src="@(string.IsNullOrEmpty(rel.UrlImagen) ? "/Content/images/product-placeholder.jpg" : rel.UrlImagen)"
+                                     class="img-fluid" alt="@rel.Nombre">
+                                @if (rel.EsNuevo)
+                                {
+                                    <span class="badge bg-success position-absolute top-0 start-0 m-2">Nuevo</span>
+                                }
+                                @if (rel.EsOferta)
+                                {
+                                    <span class="badge bg-danger position-absolute top-0 end-0 m-2">
+                                        -@(rel.PorcentajeDescuento * 100)%
+                                    </span>
+                                }
+                            </div>
+                            <div class="card-body p-3">
+                                <h5 class="card-title product-title fw-bold mb-1" style="font-size:0.9rem;">
+                                    @rel.Nombre
+                                </h5>
+                                <small class="text-muted">@rel.Categoria</small>
+                                <div class="mt-2">
+                                    @if (rel.EsOferta)
+                                    {
+                                        <span class="text-decoration-line-through text-muted small me-1">
+                                            @rel.PrecioOriginal.ToString("C0")
+                                        </span>
+                                    }
+                                    <span class="fw-bold text-primary">@rel.Precio.ToString("C0")</span>
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white border-0 p-3">
+                                <a href="@Url.Action("DetalleProducto","Home", new { id = rel.ID_Producto })"
+                                   class="btn btn-outline-primary btn-sm d-block">
+                                    <i class="bi bi-eye me-1"></i>Ver Detalles
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </section>
+    }
 </div>
 
-<!-- MODAL Añadir al carrito -->
+<!-- Modal de Añadir al Carrito -->
 <div class="modal fade" id="addToCartModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-sm">
-    <div class="modal-content">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Añadir al carrito</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body text-center">
-        <img id="modalProductImage" src="" class="img-thumbnail mb-2" style="width:80px;height:80px;object-fit:cover" />
-        <h6 id="modalProductName"></h6>
-        <p>Precio: <span id="modalProductPrice" class="fw-bold"></span></p>
-        <div class="input-group justify-content-center">
-          <button id="decreaseModalQty" class="btn btn-outline-secondary">−</button>
-          <input type="number" id="modalQuantity" class="form-control text-center" value="1" min="1" />
-          <button id="increaseModalQty" class="btn btn-outline-secondary">+</button>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Añadir al carrito</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center">
+                    <img id="modalProductImage" src="" alt="" class="img-thumbnail me-3" style="width:80px;height:80px;object-fit:cover;">
+                    <div>
+                        <h6 id="modalProductName" class="mb-1"></h6>
+                        <p class="mb-0">Precio: <span id="modalProductPrice" class="fw-bold"></span></p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label for="modalQuantity" class="form-label">Cantidad:</label>
+                    <div class="input-group">
+                        <button class="btn btn-outline-secondary" type="button" id="decreaseModalQuantity">-</button>
+                        <input type="number" id="modalQuantity" class="form-control text-center" value="1" min="1">
+                        <button class="btn btn-outline-secondary" type="button" id="increaseModalQuantity">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmAddToCart">
+                    <i class="bi bi-cart-check me-2"></i>Añadir al carrito
+                </button>
+            </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button class="btn btn-primary" id="confirmAddToCart">
-          <i class="bi bi-cart-check me-2"></i>Añadir
-        </button>
-      </div>
     </div>
-  </div>
 </div>
 
 @section scripts {
-<script>
-$(function(){
+    <script>
+        $(function () {
+            var productId = @producto.ID_Producto;
+            var maxStock = @producto.Stock;
 
-  // --- GALERÍA: cambio de miniatura + zoom on click ---
-  $('.thumbnail-item').click(function(){
-    $('.thumbnail-item').removeClass('active');
-    $(this).addClass('active');
-    let src = $(this).find('img').attr('src');
-    $('#mainProductImage').fadeTo(200,0.5,()=> {
-      $('#mainProductImage').attr('src', src).fadeTo(200,1);
-    });
-  });
-  $('#mainProductImage').click(function(){
-    // zoom modal
-    let src = this.src;
-    $('body').append(`
-      <div class="modal fade" id="zoomModal"><div class="modal-dialog modal-dialog-centered"><div class="modal-content p-0">
-        <img src="${src}" class="img-fluid"/>
-      </div></div></div>`);
-    new bootstrap.Modal($('#zoomModal')).show()
-      ._element.addEventListener('hidden.bs.modal', ()=>$('#zoomModal').remove());
-  });
+            // Galería
+            window.changeMainImage = function (src) {
+                var main = $('#mainProductImage');
+                if (main.attr('src') === src) return;
+                $('.thumbnail-item').removeClass('active');
+                $('.thumbnail-item img[src="' + src + '"]').parent().addClass('active');
+                main.css('opacity', 0.5);
+                setTimeout(function () {
+                    main.attr('src', src).on('load', function () { main.css('opacity', 1); });
+                    setTimeout(function () { main.css('opacity', 1); }, 50);
+                }, 200);
+            };
 
-  // --- SELECTOR DE CANTIDAD ---
-  const maxStock = @producto.Stock;
-  $('#btnDecrease').click(()=> {
-    let v = +$('#quantity').val();
-    if(v>1) $('#quantity').val(v-1);
-  });
-  $('#btnIncrease').click(()=> {
-    let v = +$('#quantity').val();
-    if(v<maxStock) $('#quantity').val(v+1);
-  });
-  $('#quantity').on('input',function(){
-    let v = parseInt(this.value)||1;
-    v = Math.max(1, Math.min(v, maxStock));
-    $(this).val(v);
-  });
+            // Cantidad
+            $('#btnDecrease').click(function () {
+                var $q = $('#quantity'), v = +$q.val();
+                if (v > 1) $q.val(v - 1);
+            });
+            $('#btnIncrease').click(function () {
+                var $q = $('#quantity'), v = +$q.val();
+                if (v < maxStock) $q.val(v + 1);
+            });
+            $('#quantity').on('input', function () {
+                var v = this.value.replace(/\D/g, '') || 1;
+                v = Math.max(1, Math.min(maxStock, +v));
+                $(this).val(v);
+            });
 
-  // --- ABRIR MODAL con datos del producto ---
-  $('#btnAddToCart').click(function(){
-    let qty = +$('#quantity').val();
-    if(qty<1||qty>maxStock) {
-      return Swal.fire('Cantidad inválida','Revisa tu cantidad','warning');
-    }
-    @* Si no está logueado, redirigir *@
-    @if (Session["UserID"] == null) {
-      <text>
-      return Swal.fire({
-        title:'Debes iniciar sesión',
-        icon:'info',
-        confirmButtonText:'Entrar'
-      }).then(r=>{ if(r.isConfirmed) location.href='@Url.Action("Login","Usuarios")'; });
-      </text>
-    }
-    // rellenar modal
-    $('#modalProductName').text('@producto.Nombre');
-    $('#modalProductPrice').text('@producto.Precio.ToString("C0")');
-    $('#modalProductImage').attr('src','@(producto.UrlImagen ?? "/Content/images/product-placeholder.jpg")');
-    $('#modalQuantity').val(qty);
-    $('#addToCartModal').modal('show');
-  });
+            // Añadir al carrito (botón principal)
+            $('.add-to-cart-btn').click(function () {
+                var btn = $(this);
+                var name = btn.data('product-name');
+                var price = btn.data('product-price');
+                var img = btn.data('product-image') || '/Content/images/product-placeholder.jpg';
+                $('#modalProductName').text(name);
+                $('#modalProductPrice').text(new Intl.NumberFormat('es-CR', { style: 'currency', currency: 'CRC' }).format(price));
+                $('#modalProductImage').attr('src', img);
+                $('#modalQuantity').val($('#quantity').val());
+                $('#addToCartModal').modal('show');
+            });
 
-  // --- MODAL qty controls ---
-  $('#decreaseModalQty').click(()=>{
-    let v=+$('#modalQuantity').val();
-    if(v>1) $('#modalQuantity').val(v-1);
-  });
-  $('#increaseModalQty').click(()=>{
-    let v=+$('#modalQuantity').val();
-    if(v<maxStock) $('#modalQuantity').val(v+1);
-  });
-  $('#modalQuantity').on('input',function(){
-    let v = parseInt(this.value)||1;
-    v = Math.max(1,Math.min(v,maxStock));
-    $(this).val(v);
-  });
+            // Modal cantidad
+            $('#increaseModalQuantity').click(function () {
+                $('#modalQuantity').val(+$('#modalQuantity').val() + 1);
+            });
+            $('#decreaseModalQuantity').click(function () {
+                var v = +$('#modalQuantity').val();
+                if (v > 1) $('#modalQuantity').val(v - 1);
+            });
+            $('#modalQuantity').on('input', function () {
+                var v = this.value.replace(/\D/g, '') || 1;
+                v = Math.max(1, Math.min(maxStock, +v));
+                $(this).val(v);
+            });
 
-  // --- CONFIRMAR ADD TO CART AJAX ---
-  var antiforgery = $('input[name="__RequestVerificationToken"]').val();
-  $.ajaxSetup({ headers: { 'RequestVerificationToken': antiforgery } });
-
-  $('#confirmAddToCart').click(()=>{
-    let qty = +$('#modalQuantity').val();
-    Swal.fire({ title:'Añadiendo...', allowOutsideClick:false, didOpen:()=>Swal.showLoading() });
-    $.post('@Url.Action("AgregarAjax","Carrito")',
-      { idProducto:@producto.ID_Producto, cantidad:qty })
-    .done(resp=>{
-      Swal.close();
-      if(resp.success){
-        // actualiza badge
-        let $b=$('.nav-link .badge');
-        if($b.length) $b.text(resp.totalItems);
-        else $('.nav-link.position-relative')
-          .append(`<span class="badge bg-danger">${resp.totalItems}</span>`);
-        Swal.fire('¡Agregado!','Producto en tu carrito','success');
-      } else Swal.fire('Error',resp.message,'error');
-      $('#addToCartModal').modal('hide');
-    })
-    .fail(()=> Swal.fire('Error','Intenta luego','error'));
-  });
-
-});  
-</script>
+            // Confirmar modal
+            $('#confirmAddToCart').click(function () {
+                var qty = +$('#modalQuantity').val();
+                Swal.fire({ title: 'Añadiendo…', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                $.post('@Url.Action("AgregarAjax","Carrito")', { idProducto: productId, cantidad: qty })
+                    .done(function (resp) {
+                        Swal.close();
+                        if (resp.success) {
+                            // Actualizar contador
+                            var $b = $('.nav-link .badge');
+                            if ($b.length) {
+                                $b.text(resp.totalItems).addClass('cart-badge-pulse');
+                                setTimeout(() => $b.removeClass('cart-badge-pulse'), 500);
+                            }
+                            else {
+                                $('.nav-link.position-relative').append(
+                                    '<span class="badge bg-danger cart-badge-pulse">' + resp.totalItems + '</span>'
+                                );
+                                setTimeout(() => $('.badge').removeClass('cart-badge-pulse'), 500);
+                            }
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Añadido!',
+                                text: resp.message,
+                                showCancelButton: true,
+                                confirmButtonText: 'Ver carrito',
+                                cancelButtonText: 'Seguir comprando'
+                            }).then(r => { if (r.isConfirmed) location.href = '@Url.Action("Index","Carrito")'; });
+                        } else {
+                            Swal.fire('Error', resp.message || 'Ha ocurrido un error.', 'error');
+                        }
+                    })
+                    .fail(() => Swal.fire('Error de conexión', 'Intenta nuevamente más tarde.', 'error'));
+                $('#addToCartModal').modal('hide');
+            });
+        });
+    </script>
 }
