@@ -141,7 +141,7 @@
                                                     <a href="@Url.Action("Edit", "Productos", new { id = item.ID_Producto })" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Editar">
                                                         <i class="bi bi-pencil"></i>
                                                     </a>
-                                                    <a href="@Url.Action("Inventario", "Productos", new { id = item.ID_Producto })" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Inventario">
+                                                    <a href="@Url.Action("Index", "Inventario", new { productoId = item.ID_Producto })" class="btn btn-sm btn-success" data-bs-toggle="tooltip" title="Inventario">
                                                         <i class="bi bi-box"></i>
                                                     </a>
                                                     <button type="button" class="btn btn-sm @(item.estado == "Activo" ? "btn-danger" : "btn-success")"

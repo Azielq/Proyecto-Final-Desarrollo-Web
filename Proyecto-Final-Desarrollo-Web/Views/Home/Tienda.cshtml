@@ -76,23 +76,6 @@
                             </div>
                         </div>
 
-                        <!-- Filtros específicos para farmacia -->
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Tipo de producto:</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Filtros.TipoProducto" value="Medicamento" id="chkMedicamento" @(ViewBag.TipoProducto != null && ViewBag.TipoProducto.Contains("Medicamento") ? "checked" : "")>
-                                <label class="form-check-label" for="chkMedicamento">Medicamentos</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Filtros.TipoProducto" value="Cuidado" id="chkCuidado" @(ViewBag.TipoProducto != null && ViewBag.TipoProducto.Contains("Cuidado") ? "checked" : "")>
-                                <label class="form-check-label" for="chkCuidado">Cuidado Personal</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="Filtros.TipoProducto" value="Vitamina" id="chkVitamina" @(ViewBag.TipoProducto != null && ViewBag.TipoProducto.Contains("Vitamina") ? "checked" : "")>
-                                <label class="form-check-label" for="chkVitamina">Vitaminas y Suplementos</label>
-                            </div>
-                        </div>
-
                         <div class="mb-3">
                             <label class="form-label fw-bold">Opciones:</label>
                             <div class="form-check">
@@ -453,7 +436,6 @@
 
 @section scripts {
     <script>
-        // Completando la función updateFilterForm() y el resto del script
 
         // Script mejorado para manejar los filtros de la tienda
         $(document).ready(function () {

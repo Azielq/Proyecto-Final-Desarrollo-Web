@@ -5,6 +5,134 @@
     var producto = Model.Productos[0];
 }
 
+<!-- Estilos para la galería de imágenes -->
+<style>
+    /* Estilos para la galería de imágenes */
+    .product-gallery .main-image {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 350px;
+        margin-bottom: 15px;
+    }
+
+        .product-gallery .main-image img {
+            max-height: 300px;
+            max-width: 100%;
+            object-fit: contain;
+            transition: opacity 0.3s ease;
+        }
+
+    .thumbnail-item {
+        cursor: pointer;
+        width: 70px;
+        height: 70px;
+        overflow: hidden;
+        border-radius: 8px;
+        padding: 3px;
+        background-color: #f8f9fa;
+        transition: all 0.2s ease;
+        border: 2px solid transparent;
+    }
+
+        .thumbnail-item.active {
+            border-color: #4CAF50;
+        }
+
+        .thumbnail-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    /* Estilos para los productos relacionados */
+    .related-products .image-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 180px;
+        background-color: #f8f9fa;
+        padding: 10px;
+        overflow: hidden;
+    }
+
+        .related-products .image-container img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+
+    .product-card:hover .image-container img {
+        transform: scale(1.05);
+    }
+
+    /* Estilos para el selector de cantidad */
+    .quantity-selector input {
+        width: 60px;
+    }
+
+    /* Estilos para contenido TinyMCE */
+    .tinymce-content img {
+        max-width: 100%;
+        height: auto;
+        margin: 10px 0;
+    }
+
+    .tinymce-content h1,
+    .tinymce-content h2,
+    .tinymce-content h3,
+    .tinymce-content h4,
+    .tinymce-content h5,
+    .tinymce-content h6 {
+        margin-top: 1rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+    }
+
+    .tinymce-content p {
+        margin-bottom: 1rem;
+    }
+
+    .tinymce-content ul,
+    .tinymce-content ol {
+        margin-bottom: 1rem;
+        padding-left: 2rem;
+    }
+
+    .tinymce-content table {
+        width: 100%;
+        margin-bottom: 1rem;
+        border-collapse: collapse;
+    }
+
+        .tinymce-content table th,
+        .tinymce-content table td {
+            padding: 0.5rem;
+            border: 1px solid #dee2e6;
+        }
+
+        .tinymce-content table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+
+    .tinymce-content blockquote {
+        padding: 0.5rem 1rem;
+        margin-bottom: 1rem;
+        border-left: 5px solid #4CAF50;
+        background-color: #f8f9fa;
+    }
+
+    .tinymce-content iframe {
+        max-width: 100%;
+        margin: 1rem 0;
+    }
+</style>
+
 <!-- Migas de pan -->
 <nav aria-label="breadcrumb" class="bg-light py-3 mb-4">
     <div class="container">
@@ -25,8 +153,11 @@
                 <div class="col-md-5">
                     <div class="product-gallery p-4">
                         <div class="main-image mb-3">
-                            <img src="@(string.IsNullOrEmpty(producto.UrlImagen) ? "/Content/images/product-placeholder.jpg" : producto.UrlImagen)"
-                                 class="img-fluid rounded" alt="@producto.Nombre" id="mainProductImage">
+                            <div class="d-flex align-items-center justify-content-center" style="height: 350px;">
+                                <img src="@(string.IsNullOrEmpty(producto.UrlImagen) ? "/Content/images/product-placeholder.jpg" : producto.UrlImagen)"
+                                     class="img-fluid rounded" alt="@producto.Nombre" id="mainProductImage"
+                                     style="max-height: 300px; max-width: 100%; object-fit: contain;">
+                            </div>
                         </div>
                         <div class="thumbnails d-flex flex-wrap gap-2 justify-content-center">
                             <!-- Imagen principal como miniatura -->
@@ -35,15 +166,21 @@
                                      class="img-thumbnail" alt="@producto.Nombre"
                                      onclick="changeMainImage(this.src)">
                             </div>
-                            <!-- Miniaturas adicionales (simuladas) -->
-                            <div class="thumbnail-item">
-                                <img src="/Content/images/product-placeholder-2.jpg" class="img-thumbnail" alt="Vista alternativa"
-                                     onclick="changeMainImage(this.src)">
-                            </div>
-                            <div class="thumbnail-item">
-                                <img src="/Content/images/product-placeholder-3.jpg" class="img-thumbnail" alt="Vista alternativa"
-                                     onclick="changeMainImage(this.src)">
-                            </div>
+
+                            <!-- Mostrar todas las imágenes disponibles del producto -->
+                            @if (ViewBag.Imagenes != null && ViewBag.Imagenes.Count > 0)
+                            {
+                                foreach (var imagen in ViewBag.Imagenes)
+                                {
+                                    if (imagen.URL != producto.UrlImagen) // No repetir la imagen principal
+                                    {
+                                        <div class="thumbnail-item">
+                                            <img src="@imagen.URL" class="img-thumbnail" alt="@(string.IsNullOrEmpty(imagen.Descripcion) ? producto.Nombre : imagen.Descripcion)"
+                                                 onclick="changeMainImage(this.src)">
+                                        </div>
+                                    }
+                                }
+                            }
                         </div>
                     </div>
                 </div>
@@ -91,10 +228,10 @@
 
                         <hr>
 
-                        <div class="product-details mb-3">
+                        <div class="product-details mb-3 tinymce-content">
                             @if (!string.IsNullOrEmpty(producto.Descripcion))
                             {
-                                <p>@Html.Raw(producto.Descripcion)</p>
+                                @Html.Raw(producto.Descripcion)
                             }
                             else
                             {
@@ -105,10 +242,10 @@
                         <div class="product-meta mb-4">
                             <div class="row">
                                 <div class="col-6 mb-2">
-                                    <span class="fw-bold">Marca:</span> @producto.Marca
+                                    <span class="fw-bold">Marca:</span> @(string.IsNullOrEmpty(producto.Marca) ? "No especificada" : producto.Marca)
                                 </div>
                                 <div class="col-6 mb-2">
-                                    <span class="fw-bold">Contenido:</span> @producto.ContenidoNeto
+                                    <span class="fw-bold">Contenido:</span> @(string.IsNullOrEmpty(producto.ContenidoNeto) ? "No especificado" : producto.ContenidoNeto)
                                 </div>
                                 <div class="col-6 mb-2">
                                     <span class="fw-bold">Disponibilidad:</span>
@@ -134,7 +271,12 @@
                                 <button class="btn btn-outline-secondary" onclick="increaseQuantity(@producto.Stock)">+</button>
                             </div>
 
-                            <button class="btn btn-primary flex-grow-1" @(producto.Stock <= 0 ? "disabled" : "")>
+                            <button class="btn btn-primary flex-grow-1 add-to-cart-btn"
+                                    @(producto.Stock <= 0 ? "disabled" : "")
+                                    data-product-id="@producto.ID_Producto"
+                                    data-product-name="@producto.Nombre"
+                                    data-product-price="@producto.Precio"
+                                    data-product-image="@producto.UrlImagen">
                                 <i class="bi bi-cart-plus me-2"></i>Agregar al Carrito
                             </button>
 
@@ -148,7 +290,7 @@
                                 <i class="bi bi-truck fs-4 me-3 text-primary"></i>
                                 <div>
                                     <span class="fw-bold">Envío gratis</span>
-                                    <p class="mb-0 small">Para compras superiores a $30.000</p>
+                                    <p class="mb-0 small">Para compras superiores a ₡20.000</p>
                                 </div>
                             </div>
                             <div class="d-flex align-items-center">
@@ -186,7 +328,7 @@
                 </li>
             </ul>
             <div class="tab-content p-4" id="productTabContent">
-                <div class="tab-pane fade show active" id="description-tab-pane" role="tabpanel" aria-labelledby="description-tab" tabindex="0">
+                <div class="tab-pane fade show active tinymce-content" id="description-tab-pane" role="tabpanel" aria-labelledby="description-tab" tabindex="0">
                     @if (!string.IsNullOrEmpty(producto.Descripcion))
                     {
                         @Html.Raw(producto.Descripcion)
@@ -196,24 +338,25 @@
                         <p class="text-muted">No hay detalles disponibles para este producto.</p>
                     }
                 </div>
-                <div class="tab-pane fade" id="indications-tab-pane" role="tabpanel" aria-labelledby="indications-tab" tabindex="0">
-                    @if (!string.IsNullOrEmpty(producto.Descripcion))
+                <div class="tab-pane fade tinymce-content" id="indications-tab-pane" role="tabpanel" aria-labelledby="indications-tab" tabindex="0">
+                    @if (!string.IsNullOrEmpty(producto.Indicaciones))
                     {
-                        @Html.Raw(producto.Descripcion)
+                        @Html.Raw(producto.Indicaciones)
                     }
                     else
                     {
                         <p class="text-muted">No hay indicaciones disponibles para este producto.</p>
                     }
                 </div>
-                <div class="tab-pane fade" id="ingredients-tab-pane" role="tabpanel" aria-labelledby="ingredients-tab" tabindex="0">
-                    <p>Ingredientes principales:</p>
-                    <ul>
-                        <li>Componente 1</li>
-                        <li>Componente 2</li>
-                        <li>Componente 3</li>
-                    </ul>
-                    <p class="small text-muted">Consulte con su médico antes de usar este producto si tiene condiciones preexistentes.</p>
+                <div class="tab-pane fade tinymce-content" id="ingredients-tab-pane" role="tabpanel" aria-labelledby="ingredients-tab" tabindex="0">
+                    @if (!string.IsNullOrEmpty(producto.Ingredientes))
+                    {
+                        @Html.Raw(producto.Ingredientes)
+                    }
+                    else
+                    {
+                        <p class="text-muted">No hay información de ingredientes disponible para este producto.</p>
+                    }
                 </div>
             </div>
         </div>
@@ -231,8 +374,10 @@
                     <div class="col-6 col-md-3">
                         <div class="card h-100 border-0 shadow-sm product-card">
                             <div class="position-relative">
-                                <img src="@(string.IsNullOrEmpty(productoRelacionado.UrlImagen) ? "/Content/images/product-placeholder.jpg" : productoRelacionado.UrlImagen)"
-                                     class="card-img-top" alt="@productoRelacionado.Nombre" style="height: 180px; object-fit: cover;">
+                                <div class="image-container">
+                                    <img src="@(string.IsNullOrEmpty(productoRelacionado.UrlImagen) ? "/Content/images/product-placeholder.jpg" : productoRelacionado.UrlImagen)"
+                                         class="img-fluid" alt="@productoRelacionado.Nombre">
+                                </div>
 
                                 @if (productoRelacionado.EsNuevo)
                                 {
@@ -270,20 +415,74 @@
     }
 </div>
 
+<!-- Modal para añadir al carrito -->
+<div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="addToCartModalLabel">Añadir al carrito</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center">
+                    <img id="modalProductImage" src="" alt="Producto" class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;">
+                    <div>
+                        <h6 id="modalProductName" class="mb-1"></h6>
+                        <p class="mb-0">Precio: <span id="modalProductPrice" class="fw-bold"></span></p>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label for="modalQuantity" class="form-label">Cantidad:</label>
+                    <div class="input-group">
+                        <button class="btn btn-outline-secondary" type="button" id="decreaseModalQuantity">-</button>
+                        <input type="number" class="form-control text-center" id="modalQuantity" value="1" min="1">
+                        <button class="btn btn-outline-secondary" type="button" id="increaseModalQuantity">+</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmAddToCart">
+                    <i class="bi bi-cart-check me-2"></i>Añadir al carrito
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section scripts {
     <script>
         // Función para cambiar la imagen principal
         function changeMainImage(src) {
-            document.getElementById('mainProductImage').src = src;
+            // Almacena la imagen principal actual
+            const mainImage = document.getElementById('mainProductImage');
+            const currentSrc = mainImage.src;
+
+            // No hace nada si estamos haciendo clic en la misma imagen
+            if (currentSrc === src) return;
 
             // Actualiza la clase activa en las miniaturas
-            document.querySelectorAll('.thumbnail-item').forEach(item => {
-                if (item.querySelector('img').src === src) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
-            });
+            $('.thumbnail-item').removeClass('active');
+            $(`.thumbnail-item img[src="${src}"]`).parent().addClass('active');
+
+            // Aplica efecto de transición
+            $('#mainProductImage').css('opacity', 0.5);
+
+            // Cambia la imagen después de un breve retraso para el efecto visual
+            setTimeout(function() {
+                mainImage.src = src;
+
+                // Espera a que la nueva imagen se cargue antes de mostrarla
+                mainImage.onload = function() {
+                    $('#mainProductImage').css('opacity', 1);
+                };
+
+                // Por si la imagen ya estaba en caché y el evento onload no se dispara
+                setTimeout(function() {
+                    $('#mainProductImage').css('opacity', 1);
+                }, 50);
+
+            }, 200);
         }
 
         // Funciones para el selector de cantidad
@@ -303,89 +502,189 @@
             }
         }
 
-        // Inicialización cuando se carga la página
         $(document).ready(function() {
+            // Aplica el efecto zoom en hover para la imagen principal
+            $('#mainProductImage').parent().hover(
+                function(e) {
+                    $(this).css('cursor', 'zoom-in');
+                },
+                function() {
+                    $(this).css('cursor', 'default');
+                }
+            );
+
+            // Aplicar efecto de zoom al hacer clic en la imagen principal
+            $('#mainProductImage').on('click', function() {
+                const src = $(this).attr('src');
+
+                // Crea un modal para mostrar la imagen en tamaño completo
+                $('body').append(`
+                    <div class="modal fade" id="imageZoomModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body text-center p-0">
+                                    <img src="${src}" class="img-fluid" alt="Imagen ampliada">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `);
+
+                // Muestra el modal
+                var modal = new bootstrap.Modal(document.getElementById('imageZoomModal'));
+                modal.show();
+
+                // Elimina el modal al cerrarlo para evitar duplicados
+                $('#imageZoomModal').on('hidden.bs.modal', function() {
+                    $(this).remove();
+                });
+            });
+
+            // Efecto de hover para las miniaturas
+            $('.thumbnail-item').hover(
+                function() {
+                    $(this).css('transform', 'scale(1.05)');
+                    $(this).css('box-shadow', '0 4px 8px rgba(0,0,0,0.1)');
+                },
+                function() {
+                    $(this).css('transform', 'scale(1)');
+                    $(this).css('box-shadow', 'none');
+                }
+            );
+
             // Animación para las tarjetas de productos relacionados
             $('.product-card').hover(
                 function() {
                     $(this).addClass('shadow');
-                    $(this).find('.card-img-top').css('transform', 'scale(1.05)');
-                    $(this).find('.card-img-top').css('transition', 'transform 0.3s ease');
+                    $(this).find('.image-container img').css('transform', 'scale(1.05)');
+                    $(this).find('.image-container img').css('transition', 'transform 0.3s ease');
                 },
                 function() {
                     $(this).removeClass('shadow');
-                    $(this).find('.card-img-top').css('transform', 'scale(1)');
+                    $(this).find('.image-container img').css('transform', 'scale(1)');
                 }
             );
 
-            // Zoom básico para la imagen principal
-            $('#mainProductImage').on('mousemove', function(e) {
-                var zoomer = e.currentTarget;
-                var offsetX = e.offsetX ? e.offsetX : e.touches[0].pageX;
-                var offsetY = e.offsetY ? e.offsetY : e.touches[0].pageY;
-                var x = offsetX / zoomer.offsetWidth * 100;
-                var y = offsetY / zoomer.offsetHeight * 100;
-                zoomer.style.backgroundPosition = x + '% ' + y + '%';
+            // Modal para añadir al carrito
+            $('.add-to-cart-btn').click(function() {
+                var productId = $(this).data('product-id');
+                var productName = $(this).data('product-name');
+                var productPrice = $(this).data('product-price');
+                var productImage = $(this).data('product-image');
+                var quantity = $('#quantity').val();
+
+                if (!productImage || productImage === '') {
+                    productImage = '/Content/images/product-placeholder.jpg';
+                }
+
+                $('#modalProductName').text(productName);
+                $('#modalProductPrice').text(new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(productPrice));
+                $('#modalProductImage').attr('src', productImage);
+                $('#modalQuantity').val(quantity);
+                $('#addToCartModal').modal('show');
             });
+
+            // Incrementar y decrementar cantidad en el modal
+            $('#increaseModalQuantity').click(function() {
+                var currentVal = parseInt($('#modalQuantity').val());
+                $('#modalQuantity').val(currentVal + 1);
+            });
+
+            $('#decreaseModalQuantity').click(function() {
+                var currentVal = parseInt($('#modalQuantity').val());
+                if (currentVal > 1) {
+                    $('#modalQuantity').val(currentVal - 1);
+                }
+            });
+
+            // Solo permitir números en el campo de cantidad
+            $('#modalQuantity, #quantity').on('input', function() {
+                var value = $(this).val();
+                value = value.replace(/[^0-9]/g, '');
+                if (value === '' || parseInt(value) < 1) {
+                    value = 1;
+                }
+
+                // Verificar que no supere el stock disponible
+                var maxStock = @producto.Stock;
+                if (parseInt(value) > maxStock) {
+                    value = maxStock;
+                }
+
+                $(this).val(value);
+            });
+
+            // Confirmar añadir al carrito
+            $('#confirmAddToCart').click(function() {
+                var productId = @producto.ID_Producto;
+                var quantity = parseInt($('#modalQuantity').val());
+
+                // Aquí iría el código para añadir al carrito mediante AJAX
+                $.ajax({
+                    url: '/Carrito/Agregar',
+                    type: 'POST',
+                    data: {
+                        id: productId,
+                        cantidad: quantity
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Actualizar contador del carrito
+                            updateCartCounter(response.totalItems);
+
+                            // Mostrar mensaje de éxito
+                            showNotification('Producto añadido al carrito', 'success');
+
+                            // Cerrar modal
+                            $('#addToCartModal').modal('hide');
+                        } else {
+                            showNotification(response.message || 'Error al añadir el producto', 'danger');
+                        }
+                    },
+                    error: function() {
+                        showNotification('Error de conexión. Inténtalo de nuevo.', 'danger');
+                    }
+                });
+            });
+
+            // Función para mostrar notificaciones
+            function showNotification(message, type) {
+                var notificationHtml = '<div class="toast align-items-center text-white bg-' + type + ' border-0" role="alert" aria-live="assertive" aria-atomic="true">' +
+                    '<div class="d-flex">' +
+                    '<div class="toast-body">' + message + '</div>' +
+                    '<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>' +
+                    '</div></div>';
+
+                var notificationContainer = $('.toast-container');
+                if (notificationContainer.length === 0) {
+                    $('body').append('<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>');
+                    notificationContainer = $('.toast-container');
+                }
+
+                notificationContainer.append(notificationHtml);
+                var toast = new bootstrap.Toast(notificationContainer.find('.toast:last-child')[0], {
+                    autohide: true,
+                    delay: 3000
+                });
+                toast.show();
+            }
+
+            // Función para actualizar el contador del carrito
+            function updateCartCounter(count) {
+                var cartCounter = $('#cartCounter');
+                if (cartCounter.length > 0) {
+                    cartCounter.text(count);
+
+                    // Efecto de animación
+                    cartCounter.addClass('cart-counter-animation');
+                    setTimeout(function() {
+                        cartCounter.removeClass('cart-counter-animation');
+                    }, 500);
+                }
+            }
         });
     </script>
 }
-
-<style>
-    /* Estilos para la galería de imágenes */
-    .product-gallery .main-image {
-        text-align: center;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-        padding: 1rem;
-    }
-
-        .product-gallery .main-image img {
-            max-height: 300px;
-            width: auto;
-            object-fit: contain;
-        }
-
-    .thumbnail-item {
-        cursor: pointer;
-        width: 60px;
-        height: 60px;
-        overflow: hidden;
-        border-radius: 4px;
-        transition: all 0.2s ease;
-    }
-
-        .thumbnail-item.active {
-            border: 2px solid #4CAF50;
-        }
-
-        .thumbnail-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-    /* Estilos para la información del producto */
-    .product-title {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-
-    .quantity-selector input {
-        width: 60px;
-    }
-
-    /* Estilo para el zoom */
-    #mainProductImage {
-        background-repeat: no-repeat;
-        background-position: center;
-        transition: background-size 0.5s;
-        cursor: zoom-in;
-    }
-
-        #mainProductImage:hover {
-            background-size: 150%;
-        }
-</style>
