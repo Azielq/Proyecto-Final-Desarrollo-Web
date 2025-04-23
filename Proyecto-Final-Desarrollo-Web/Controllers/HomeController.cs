@@ -303,6 +303,14 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 // Convierte el producto a ViewModel
                 var productoViewModel = ProductoTiendaViewModel.FromEntity(producto);
 
+                // Obtiene todas las imágenes del producto para la galería
+                var imagenes = db.Imagenes_Producto
+                    .Where(i => i.ID_Producto == id && i.Estado)
+                    .ToList();
+
+                // Guarda las imágenes en ViewBag para usar en la vista
+                ViewBag.Imagenes = imagenes;
+
                 // Obtiene productos relacionados (de la misma categoría)
                 var productosRelacionados = db.Productos
                     .Include(p => p.Categorias)

@@ -54,6 +54,11 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
 
         [Display(Name = "Descripción")]
         public string Descripcion { get; set; }
+        [Display(Name = "Indicaciones")]
+        public string Indicaciones { get; set; }
+
+        [Display(Name = "Ingredientes")]
+        public string Ingredientes { get; set; }
 
         [Display(Name = "Categoría")]
         public string Categoria { get; set; }
@@ -122,6 +127,8 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
                 Precio = precioVenta,
                 PrecioOriginal = precioOriginal,
                 Descripcion = producto.Detalles,
+                Indicaciones = producto.Indicaciones,  // Añadir esta línea
+                Ingredientes = producto.Ingredientes,  // Añadir esta línea
                 Categoria = producto.Categorias?.Nombre,
                 ID_Categoria = producto.ID_Categoría,
                 Marca = producto.Marca,
@@ -130,9 +137,8 @@ namespace Proyecto_Final_Desarrollo_Web.ViewModels
                 PorcentajeDescuento = porcentajeDescuento,
                 EsNuevo = esNuevo,
                 EsOferta = descuento > 0,
-                // Como no existe la propiedad destacado, usamos un valor por defecto falso o alguna lógica alternativa
                 EsDestacado = false,
-                Valoracion = 4.5M, // Valor predeterminado, en un sistema real se obtendría de las reseñas
+                Valoracion = 4.5M,
                 NumeroVentas = producto.Detalles_Factura?.Sum(df => df.cantidad) ?? 0,
                 ContenidoNeto = producto.ContenidoNeto
             };

@@ -6,12 +6,15 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Proyecto_Final_Desarrollo_Web.Filters;
 using Proyecto_Final_Desarrollo_Web.Helpers;
 using Proyecto_Final_Desarrollo_Web.Models;
 using Proyecto_Final_Desarrollo_Web.TableViewModels;
 
 namespace Proyecto_Final_Desarrollo_Web.Controllers
 {
+    [AuthorizeRoles("Administrador", "Supervisor")]
+
     public class CategoriasController : Controller
     {
         private FarmaUEntities db = new FarmaUEntities();

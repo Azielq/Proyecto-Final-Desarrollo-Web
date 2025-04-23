@@ -1316,3 +1316,147 @@ footer {
 .tox-promotion-link {
     display: none !important;
 }
+
+/* =======================================
+   ESTILOS PARA IMPRESIÓN DE FACTURAS
+   ======================================= */
+
+/* Clases específicas para el layout de impresión */
+.print-body {
+    margin: 0;
+    padding: 0;
+}
+
+.print-container {
+    padding: 0;
+    margin: 0;
+}
+
+/* Contenedor principal para la factura */
+.factura-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+/* Eliminar espacio entre el header y el contenido */
+.print-header + .print-container {
+    margin-top: 0;
+    padding-top: 0;
+}
+
+/* Estilos que se aplican solamente al imprimir */
+@media print {
+    /* Reset completo de márgenes y padding */
+    body {
+        margin: 0 !important;
+        padding: 0 !important;
+        padding-top: 0 !important;
+    }
+    
+    /* Contenedor principal de la factura */
+    .factura-container {
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
+        margin-top: 0 !important;
+        max-width: none !important;
+    }
+    
+    /* Eliminar espacios entre elementos */
+    .container-fluid, .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Eliminar espacio entre header y contenido */
+    .no-print + div, .no-print + .container-fluid {
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+
+    /* Ajustes para tablas */
+    .table {
+        font-size: 10pt !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    .table th, .table td {
+        padding: 0.2rem 0.4rem !important;
+    }
+    
+    .table-sm th, .table-sm td {
+        padding: 0.15rem 0.3rem !important;
+    }
+    
+    /* Optimizar espacio vertical */
+    .mb-1 {
+        margin-bottom: 0.1rem !important;
+    }
+    
+    .mb-2 {
+        margin-bottom: 0.25rem !important;
+    }
+    
+    .mt-0 {
+        margin-top: 0 !important;
+    }
+    
+    h3, h4 {
+        margin-bottom: 0.3rem !important;
+        margin-top: 0.3rem !important;
+    }
+    
+    hr {
+        margin: 0.3rem 0 !important;
+    }
+    
+    /* Ocultar elementos no necesarios */
+    .no-print {
+        display: none !important;
+    }
+    
+    /* Asegurar que todo quepa en la página */
+    p {
+        margin-bottom: 0.2rem !important;
+    }
+    
+    .small {
+        font-size: 80% !important;
+    }
+    
+    /* Ajustar ancho de página */
+    @page {
+        margin: 0.5cm;
+    }
+}
+
+/* Estilos para el autocompletado jQuery UI */
+.autocomplete-results {
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 9999 !important;
+}
+
+.ui-autocomplete {
+    z-index: 9999 !important;
+}
+
+/* Mejorar visibilidad de elementos seleccionados en autocomplete */
+.ui-menu-item .ui-menu-item-wrapper.ui-state-active {
+    background-color: #007bff !important;
+    color: white !important;
+    border: none !important;
+}
+
+/* Formateo de elementos en el menú de autocomplete */
+.ui-menu .ui-menu-item {
+    padding: 3px 0;
+}
+
+/* Evitar que el autocomplete sea cortado por otros elementos */
+.ui-front {
+    z-index: 9999 !important;
+}
