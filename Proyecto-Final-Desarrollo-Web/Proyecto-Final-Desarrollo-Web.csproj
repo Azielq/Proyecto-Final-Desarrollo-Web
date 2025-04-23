@@ -299,6 +299,7 @@
     <Compile Include="Models\Clientes.cs">
       <DependentUpon>FarmaU.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\CarritoViewModel.cs" />
     <Compile Include="Models\ViewModels\ClienteViewModel.cs" />
     <Compile Include="Models\Compras_Farmacia.cs">
       <DependentUpon>FarmaU.tt</DependentUpon>
@@ -370,7 +371,6 @@
       <DependentUpon>FarmaU.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\ViewModels\TiendaViewModel.cs" />
-    <Compile Include="Models\ViewModels\CarritoItemViewModel.cs" />
     <Compile Include="Models\ViewModels\ClienteViewModel.cs" />
     <Compile Include="Models\ViewModels\CompraViewModel.cs" />
     <Compile Include="Models\ViewModels\DashboardViewModel.cs" />
@@ -687,6 +687,7 @@
     <Content Include="Views\Reportes\ReportesVentas.cshtml" />
     <Content Include="Views\Reportes\ReportesInventario.cshtml" />
     <Content Include="Views\Reportes\Index.cshtml" />
+    <Content Include="Views\Carrito\ProcederPago.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_ImagenesProducto.cshtml" />

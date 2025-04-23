@@ -328,6 +328,134 @@
                 zoomer.style.backgroundPosition = x + '% ' + y + '%';
             });
         });
+
+        // Conectar el botón de "Agregar al Carrito" 
+        $(document).ready(function() {
+            // Botón de agregar al carrito en la página de detalle
+            $('.product-actions .btn-primary').click(function(e) {
+                e.preventDefault();
+
+                var productId = @producto.ID_Producto;
+                var quantity = parseInt($('#quantity').val());
+
+                // Validar que la cantidad sea válida
+                if (isNaN(quantity) || quantity < 1) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Cantidad inválida',
+                        text: 'Por favor, ingresa una cantidad válida'
+                    });
+                    return;
+                }
+
+                // Verificar que haya stock disponible
+                var stockDisponible = @producto.Stock;
+                if (quantity > stockDisponible) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Stock insuficiente',
+                        text: 'Solo hay ' + stockDisponible + ' unidades disponibles'
+                    });
+                    return;
+                }
+
+                // Verificar que el usuario esté logueado
+                if (!isUserLoggedIn()) {
+                    Swal.fire({
+                        title: 'Iniciar sesión',
+                        text: 'Debes iniciar sesión para añadir productos al carrito',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Iniciar sesión',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '@Url.Action("Login", "Usuarios")';
+                        }
+                    });
+                    return;
+                }
+
+                // Mostrar indicador de carga
+                Swal.fire({
+                    title: 'Añadiendo al carrito...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Realizar la petición AJAX
+                $.ajax({
+                    url: '@Url.Action("AgregarAjax", "Carrito")',
+                    type: 'POST',
+                    data: {
+                        idProducto: productId,
+                        cantidad: quantity
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            // Actualizar contador del carrito
+                            updateCartCounter(response.totalItems);
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Producto añadido!',
+                                text: response.message,
+                                showCancelButton: true,
+                                confirmButtonText: 'Ver carrito',
+                                cancelButtonText: 'Seguir comprando'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    window.location.href = '@Url.Action("Index", "Carrito")';
+                                }
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message || 'Error al añadir el producto al carrito'
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Error de conexión. Por favor, intenta de nuevo.'
+                        });
+                    }
+                });
+            });
+
+            // Función para verificar si el usuario está logueado
+            function isUserLoggedIn() {
+                // Verificar si existe la sesión de usuario
+                return @(Session["UserID"] != null ? "true" : "false");
+            }
+
+            // Función para actualizar el contador del carrito
+            function updateCartCounter(count) {
+                // Actualizar badge en el icono del carrito
+                var $badge = $('.nav-link .badge');
+                if ($badge.length > 0) {
+                    $badge.text(count);
+
+                    // Animación para destacar el cambio
+                    $badge.addClass('cart-badge-pulse');
+                    setTimeout(function() {
+                        $badge.removeClass('cart-badge-pulse');
+                    }, 500);
+                } else {
+                    // Si no existe el badge, crearlo
+                    $('.icon-badge').append('<span class="badge bg-danger cart-badge-pulse">' + count + '</span>');
+
+                    setTimeout(function() {
+                        $('.badge').removeClass('cart-badge-pulse');
+                    }, 500);
+                }
+            }
+        });
     </script>
 }
 

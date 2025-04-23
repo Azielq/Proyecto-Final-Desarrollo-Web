@@ -9,7 +9,7 @@
         <div class="col-md-12">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
                     <li class="breadcrumb-item active" aria-current="page">Mi Carrito</li>
                 </ol>
             </nav>
@@ -57,14 +57,18 @@
                                     {
                                         <tr id="item-@item.ID_Carrito">
                                             <td class="align-middle">
-                                                <img src="@(item.ImagenUrl ?? "/Content/images/no-image.png")" alt="@item.NombreProducto" class="img-thumbnail" style="width: 50px; height: 50px; object-fit: cover;">
+                                                <img src="@(item.ImagenUrl ?? "/Content/images/no-image.png")"
+                                                     alt="@item.NombreProducto" class="img-thumbnail"
+                                                     style="width: 50px; height: 50px; object-fit: cover;">
                                             </td>
                                             <td class="align-middle">
                                                 <h6 class="mb-0">@item.NombreProducto</h6>
-                                                <small class="text-muted">Agregado: @(item.FechaAgregado.HasValue ? item.FechaAgregado.Value.ToString("dd/MM/yyyy HH:mm") : "-")</small>
+                                                <small class="text-muted">
+                                                    Agregado: @(item.FechaAgregado.HasValue ? item.FechaAgregado.Value.ToString("dd/MM/yyyy HH:mm") : "-")
+                                                </small>
                                             </td>
                                             <td class="text-center align-middle">
-                                                @item.PrecioUnitario.ToString("C")
+                                                ₡@item.PrecioUnitario.ToString("N2")
                                             </td>
                                             <td class="text-center align-middle">
                                                 <div class="d-flex align-items-center justify-content-center">
@@ -85,7 +89,7 @@
                                                 </div>
                                             </td>
                                             <td class="text-end align-middle subtotal-cell" data-item-id="@item.ID_Carrito">
-                                                @item.Subtotal.ToString("C")
+                                                ₡@((item.PrecioUnitario * item.Cantidad).ToString("N2"))
                                             </td>
                                             <td class="text-center align-middle">
                                                 <div class="d-flex justify-content-center">
@@ -105,7 +109,7 @@
                                 <tfoot>
                                     <tr class="bg-light">
                                         <td colspan="4" class="text-end fw-bold">Subtotal:</td>
-                                        <td class="text-end fw-bold" id="cart-subtotal">@Model.Subtotal.ToString("C")</td>
+                                        <td class="text-end fw-bold" id="cart-subtotal">₡@Model.Subtotal.ToString("N2")</td>
                                         <td></td>
                                     </tr>
                                 </tfoot>
@@ -204,12 +208,12 @@
                         if (response.success) {
                             // Actualizar el subtotal del producto
                             $(`.subtotal-cell[data-item-id="${itemId}"]`).text(
-                                new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(response.subtotal)
+                                '₡' + response.subtotal.toFixed(2)
                             );
 
                             // Actualizar el subtotal del carrito
                             $('#cart-subtotal').text(
-                                new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(response.totalCarrito)
+                                '₡' + response.totalCarrito.toFixed(2)
                             );
 
                             Swal.fire({
@@ -274,7 +278,7 @@
 
                                         // Actualizar el subtotal del carrito
                                         $('#cart-subtotal').text(
-                                            new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(response.totalCarrito)
+                                            '₡' + response.totalCarrito.toFixed(2)
                                         );
 
                                         // Si no quedan productos, recargar la página

@@ -294,7 +294,11 @@
                                         <a href="@Url.Action("DetalleProducto", "Home", new { id = producto.ID_Producto })" class="btn btn-outline-primary btn-sm mb-2">
                                             <i class="bi bi-eye me-1"></i>Ver Detalles
                                         </a>
-                                        <button class="btn btn-primary add-to-cart-btn" data-product-id="@producto.ID_Producto" data-product-name="@producto.Nombre" data-product-price="@producto.Precio" data-product-image="@producto.UrlImagen">
+                                        <button class="btn btn-primary add-to-cart-btn"
+                                                data-product-id="@producto.ID_Producto"
+                                                data-product-name="@producto.Nombre"
+                                                data-product-price="@producto.Precio"
+                                                data-product-image="@(string.IsNullOrEmpty(producto.UrlImagen) ? "/Content/images/no-image.png" : producto.UrlImagen)">
                                             <i class="bi bi-cart-plus me-2"></i>Añadir al carrito
                                         </button>
                                     </div>
@@ -373,7 +377,11 @@
                                                 <a href="@Url.Action("DetalleProducto", "Home", new { id = producto.ID_Producto })" class="btn btn-outline-primary">
                                                     <i class="bi bi-eye me-1"></i>Ver Detalles
                                                 </a>
-                                                <button class="btn btn-primary add-to-cart-btn" data-product-id="@producto.ID_Producto" data-product-name="@producto.Nombre" data-product-price="@producto.Precio" data-product-image="@producto.UrlImagen">
+                                                <button class="btn btn-primary add-to-cart-btn"
+                                                        data-product-id="@producto.ID_Producto"
+                                                        data-product-name="@producto.Nombre"
+                                                        data-product-price="@producto.Precio"
+                                                        data-product-image="@(string.IsNullOrEmpty(producto.UrlImagen) ? "/Content/images/no-image.png" : producto.UrlImagen)">
                                                     <i class="bi bi-cart-plus me-1"></i>Añadir al carrito
                                                 </button>
                                             </div>
@@ -416,7 +424,7 @@
     </div>
 </div>
 
-<!-- Modal para añadir al carrito -->
+
 <div class="modal fade" id="addToCartModal" tabindex="-1" aria-labelledby="addToCartModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -440,6 +448,8 @@
                         <button class="btn btn-outline-secondary" type="button" id="increaseQuantity">+</button>
                     </div>
                 </div>
+                <!-- Campo oculto para almacenar el ID del producto -->
+                <input type="hidden" id="productId" value="" />
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
@@ -450,6 +460,7 @@
         </div>
     </div>
 </div>
+
 
 @section scripts {
     <script>
@@ -576,112 +587,118 @@
                 window.location.href = window.location.pathname;
             });
 
-            // Modal para añadir al carrito
-            $('.add-to-cart-btn').click(function () {
-                var productId = $(this).data('product-id');
-                var productName = $(this).data('product-name');
-                var productPrice = $(this).data('product-price');
-                var productImage = $(this).data('product-image');
-
-                if (!productImage || productImage === '') {
-                    productImage = '/Content/images/product-placeholder.jpg';
-                }
-
-                $('#modalProductName').text(productName);
-                $('#modalProductPrice').text(new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'COP' }).format(productPrice));
-                $('#modalProductImage').attr('src', productImage);
-                $('#modalQuantity').val(1);
-                $('#addToCartModal').modal('show');
-            });
-
-            // Incrementa y decrementar cantidad en el modal
-            $('#increaseQuantity').click(function () {
-                var currentVal = parseInt($('#modalQuantity').val());
-                $('#modalQuantity').val(currentVal + 1);
-            });
-
-            $('#decreaseQuantity').click(function () {
-                var currentVal = parseInt($('#modalQuantity').val());
-                if (currentVal > 1) {
-                    $('#modalQuantity').val(currentVal - 1);
-                }
-            });
-
-            // Solo permite números en el campo de cantidad
-            $('#modalQuantity').on('input', function () {
-                var value = $(this).val();
-                value = value.replace(/[^0-9]/g, '');
-                if (value === '' || parseInt(value) < 1) {
-                    value = 1;
-                }
-                $(this).val(value);
-            });
-
             // Confirma añadir al carrito
             $('#confirmAddToCart').click(function () {
-                var productId = $('.add-to-cart-btn:first').data('product-id');
+                var productId = $('#productId').val();
                 var quantity = parseInt($('#modalQuantity').val());
 
-                // Aquí iría el código para añadir al carrito mediante AJAX
+                // Verificar datos antes de enviar
+                console.log("Añadiendo producto ID:", productId, "Cantidad:", quantity);
+
+                // Verificar que el usuario esté logueado
+                if (!isUserLoggedIn()) {
+                    Swal.fire({
+                        title: 'Iniciar sesión',
+                        text: 'Debes iniciar sesión para añadir productos al carrito',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Iniciar sesión',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '@Url.Action("Login", "Usuarios")';
+                        }
+                    });
+                    return;
+                }
+
+                // Mostrar indicador de carga
+                Swal.fire({
+                    title: 'Añadiendo al carrito...',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Realizar la petición AJAX con manejo adecuado de errores
                 $.ajax({
-                    url: '/Carrito/Agregar',
+                    url: '@Url.Action("AgregarAjax", "Carrito")',
                     type: 'POST',
                     data: {
-                        id: productId,
+                        idProducto: productId,
                         cantidad: quantity
                     },
                     success: function (response) {
+                        console.log("Respuesta del servidor:", response);
+
                         if (response.success) {
-                            // Actualiza contador del carrito
+                            // Actualizar contador del carrito
                             updateCartCounter(response.totalItems);
 
-                            // Muestra mensaje de éxito
-                            showNotification('Producto añadido al carrito', 'success');
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Producto añadido!',
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
 
-                            // Cierra modal
+                            // Cerrar modal
                             $('#addToCartModal').modal('hide');
                         } else {
-                            showNotification(response.message || 'Error al añadir el producto', 'danger');
+                            var errorMsg = response.message || 'Error al añadir el producto al carrito';
+                            if (response.details) {
+                                errorMsg += '\nDetalles: ' + response.details;
+                            }
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: errorMsg
+                            });
+
+                            console.error("Error servidor:", errorMsg);
                         }
                     },
-                    error: function () {
-                        showNotification('Error de conexión. Inténtalo de nuevo.', 'danger');
+                    error: function (xhr, status, error) {
+                        console.error("Error en la petición AJAX:", error);
+                        console.error("Estado:", status);
+                        console.error("Respuesta:", xhr.responseText);
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error de conexión',
+                            text: 'No se pudo conectar con el servidor. Por favor, intenta de nuevo.'
+                        });
                     }
                 });
             });
 
-            // Función para mostrar notificaciones
-            function showNotification(message, type) {
-                var notificationHtml = '<div class="toast align-items-center text-white bg-' + type + ' border-0" role="alert" aria-live="assertive" aria-atomic="true">' +
-                    '<div class="d-flex">' +
-                    '<div class="toast-body">' + message + '</div>' +
-                    '<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>' +
-                    '</div></div>';
-
-                var notificationContainer = $('.toast-container');
-                if (notificationContainer.length === 0) {
-                    $('body').append('<div class="toast-container position-fixed bottom-0 end-0 p-3"></div>');
-                    notificationContainer = $('.toast-container');
-                }
-
-                notificationContainer.append(notificationHtml);
-                var toast = new bootstrap.Toast(notificationContainer.find('.toast:last-child')[0], {
-                    autohide: true,
-                    delay: 3000
-                });
-                toast.show();
+            // Función para verificar si el usuario está logueado
+            function isUserLoggedIn() {
+                // Verificar si existe la sesión de usuario
+                return @(Session["UserID"] != null ? "true" : "false");
             }
 
             // Función para actualizar el contador del carrito
             function updateCartCounter(count) {
-                var cartCounter = $('#cartCounter');
-                if (cartCounter.length > 0) {
-                    cartCounter.text(count);
+                // Actualizar badge en el icono del carrito
+                var $badge = $('.nav-link .badge');
+                if ($badge.length > 0) {
+                    $badge.text(count);
 
-                    // Efecto de animación
-                    cartCounter.addClass('cart-counter-animation');
-                    setTimeout(function () {
-                        cartCounter.removeClass('cart-counter-animation');
+                    // Animación para destacar el cambio
+                    $badge.addClass('cart-badge-pulse');
+                    setTimeout(function() {
+                        $badge.removeClass('cart-badge-pulse');
+                    }, 500);
+                } else {
+                    // Si no existe el badge, crearlo
+                    $('.icon-badge').append('<span class="badge bg-danger cart-badge-pulse">' + count + '</span>');
+
+                    setTimeout(function() {
+                        $('.badge').removeClass('cart-badge-pulse');
                     }, 500);
                 }
             }

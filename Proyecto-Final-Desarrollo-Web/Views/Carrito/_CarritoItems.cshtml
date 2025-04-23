@@ -40,7 +40,7 @@ else
                             }
                         </td>
                         <td class="text-center align-middle">
-                            @item.PrecioUnitario.ToString("C")
+                            ₡@item.PrecioUnitario.ToString("N2")
                         </td>
                         <td class="text-center align-middle">
                             @if (ViewBag.AllowEdit ?? true)
@@ -68,7 +68,7 @@ else
                             }
                         </td>
                         <td class="text-end align-middle subtotal-cell" data-item-id="@item.ID_Carrito">
-                            @item.Subtotal.ToString("C")
+                            ₡@((item.PrecioUnitario * item.Cantidad).ToString("N2"))
                         </td>
                         @if (ViewBag.ShowActions ?? true)
                         {

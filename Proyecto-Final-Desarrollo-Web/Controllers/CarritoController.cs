@@ -143,9 +143,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             return RedirectToAction("Index");
         }
 
-        // POST: Carrito/AgregarAjax
         [HttpPost]
-        [Authorize]
         public JsonResult AgregarAjax(int idProducto, int cantidad = 1)
         {
             if (Session["UserID"] == null)
@@ -165,17 +163,18 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 }
 
                 // Verificar si el producto ya está en el carrito
-                var itemExistente = db.Carrito.FirstOrDefault(c =>
+                var itemCarrito = db.Carrito.FirstOrDefault(c =>
                     c.ID_Usuario == idUsuario && c.ID_Producto == idProducto);
 
-                if (itemExistente != null)
+                if (itemCarrito != null)
                 {
-                    // Actualizar cantidad si ya existe
-                    itemExistente.Cantidad += cantidad;
+                    // Si ya existe, actualizamos la cantidad
+                    itemCarrito.Cantidad += cantidad;
+                    itemCarrito.FechaAgregado = DateTime.Now; // Actualizamos la fecha
                 }
                 else
                 {
-                    // Crear nuevo item en el carrito
+                    // Si no existe, creamos un nuevo item
                     var nuevoItem = new Carrito
                     {
                         ID_Usuario = idUsuario,
@@ -184,12 +183,14 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                         FechaAgregado = DateTime.Now
                     };
 
+                    // Agregamos el nuevo item al contexto
                     db.Carrito.Add(nuevoItem);
                 }
 
+                // Guardamos los cambios
                 db.SaveChanges();
 
-                // Calcular total de items en el carrito para actualizar el contador
+                // Calculamos el total de items en el carrito
                 int totalItems = db.Carrito
                     .Where(c => c.ID_Usuario == idUsuario)
                     .Sum(c => c.Cantidad);
@@ -203,7 +204,57 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = "Error al agregar al carrito: " + ex.Message });
+                // Si hay una excepción durante el proceso, podemos detectar si es por la restricción UNIQUE
+                string mensajeError = ex.InnerException?.Message ?? ex.Message;
+
+                if (mensajeError.Contains("UQ_Carrito_Usuario_Producto") ||
+                    mensajeError.Contains("UNIQUE KEY constraint") ||
+                    mensajeError.Contains("duplicate key"))
+                {
+                    // Si es un error de duplicado, intentamos actualizar en lugar de insertar
+                    try
+                    {
+                        var itemExistente = db.Carrito.FirstOrDefault(c =>
+                            c.ID_Usuario == idUsuario && c.ID_Producto == idProducto);
+
+                        if (itemExistente != null)
+                        {
+                            // Actualizamos directamente con una nueva consulta para evitar problemas de contexto
+                            itemExistente.Cantidad += cantidad;
+                            itemExistente.FechaAgregado = DateTime.Now;
+                            db.SaveChanges();
+
+                            // Calculamos el total de items
+                            int totalItems = db.Carrito
+                                .Where(c => c.ID_Usuario == idUsuario)
+                                .Sum(c => c.Cantidad);
+
+                            return Json(new
+                            {
+                                success = true,
+                                message = $"Cantidad actualizada en el carrito",
+                                totalItems = totalItems
+                            });
+                        }
+                    }
+                    catch (Exception ex2)
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "Error al actualizar el carrito",
+                            error = ex2.Message
+                        });
+                    }
+                }
+
+                // Devolvemos el error original si no pudimos manejarlo
+                return Json(new
+                {
+                    success = false,
+                    message = "Error al agregar al carrito",
+                    error = mensajeError
+                });
             }
         }
 
@@ -488,35 +539,50 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
         [ChildActionOnly]
         public ActionResult ObtenerTotalElementos()
         {
-            int totalItems = 0;
-
-            if (Session["UserID"] != null)
+            try
             {
-                try
+                int totalItems = 0;
+
+                if (Session["UserID"] != null)
                 {
-                    int idUsuario = Convert.ToInt32(Session["UserID"]);
-
-                    // Versión segura para manejar posibles valores nulos
-                    var itemsCount = db.Carrito
-                        .Where(c => c.ID_Usuario == idUsuario)
-                        .Select(c => c.Cantidad)
-                        .ToList();
-
-                    // Sumar solo si hay elementos
-                    if (itemsCount.Any())
+                    try
                     {
-                        totalItems = itemsCount.Sum();
+                        int idUsuario = Convert.ToInt32(Session["UserID"]);
+
+                        using (var connection = new System.Data.SqlClient.SqlConnection(
+                            System.Configuration.ConfigurationManager.ConnectionStrings["FarmaUEntities"].ConnectionString))
+                        {
+                            connection.Open();
+
+                            var command = new System.Data.SqlClient.SqlCommand(
+                                "SELECT SUM(Cantidad) FROM Carrito WHERE ID_Usuario = @idUsuario",
+                                connection);
+
+                            command.Parameters.AddWithValue("@idUsuario", idUsuario);
+
+                            var result = command.ExecuteScalar();
+                            if (result != DBNull.Value && result != null)
+                            {
+                                totalItems = Convert.ToInt32(result);
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log del error
+                        System.Diagnostics.Debug.WriteLine("Error al obtener total de elementos: " + ex.Message);
+                        totalItems = 0;
                     }
                 }
-                catch (Exception ex)
-                {
-                    // Registrar el error para depuración
-                    System.Diagnostics.Debug.WriteLine("Error al obtener total de elementos: " + ex.Message);
-                    totalItems = 0;
-                }
-            }
 
-            return Content(totalItems.ToString());
+                return Content(totalItems.ToString());
+            }
+            catch (Exception ex)
+            {
+                // En caso de error, simplemente devolvemos 0
+                System.Diagnostics.Debug.WriteLine("Error general en ObtenerTotalElementos: " + ex.Message);
+                return Content("0");
+            }
         }
 
         // GET: Carrito/ObtenerResumenCarrito
@@ -574,6 +640,77 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                     ID_Usuario = Convert.ToInt32(Session["UserID"])
                 });
             }
+        }
+
+        // GET: Carrito/AgregarProductosDePrueba
+        public ActionResult AgregarProductosDePrueba()
+        {
+            if (Session["UserID"] == null)
+            {
+                TempData["Message"] = "Debes iniciar sesión para realizar esta acción";
+                TempData["MessageType"] = "warning";
+                return RedirectToAction("Login", "Usuarios");
+            }
+
+            int idUsuario = Convert.ToInt32(Session["UserID"]);
+            List<string> resultados = new List<string>();
+
+            try
+            {
+                // Obtener algunos productos aleatorios de la base de datos
+                var productos = db.Productos.Where(p => p.estado == "Activo").Take(3).ToList();
+
+                if (!productos.Any())
+                {
+                    TempData["Message"] = "No hay productos disponibles para agregar";
+                    TempData["MessageType"] = "warning";
+                    return RedirectToAction("Index");
+                }
+
+                foreach (var producto in productos)
+                {
+                    // Generar una cantidad aleatoria entre 1 y 3
+                    int cantidad = new Random().Next(1, 4);
+
+                    // Verificar si el producto ya está en el carrito
+                    var itemExistente = db.Carrito.FirstOrDefault(c =>
+                        c.ID_Usuario == idUsuario && c.ID_Producto == producto.ID_Producto);
+
+                    if (itemExistente != null)
+                    {
+                        // Actualizar cantidad si ya existe
+                        itemExistente.Cantidad += cantidad;
+                        itemExistente.FechaAgregado = DateTime.Now;
+                        resultados.Add($"Actualizado: {producto.Nombre} (+{cantidad})");
+                    }
+                    else
+                    {
+                        // Crear nuevo item en el carrito
+                        var nuevoItem = new Carrito
+                        {
+                            ID_Usuario = idUsuario,
+                            ID_Producto = producto.ID_Producto,
+                            Cantidad = cantidad,
+                            FechaAgregado = DateTime.Now
+                        };
+
+                        db.Carrito.Add(nuevoItem);
+                        resultados.Add($"Agregado: {producto.Nombre} (x{cantidad})");
+                    }
+                }
+
+                db.SaveChanges();
+
+                TempData["Message"] = "Productos de prueba agregados al carrito: " + string.Join(", ", resultados);
+                TempData["MessageType"] = "success";
+            }
+            catch (Exception ex)
+            {
+                TempData["Message"] = "Error al agregar productos de prueba: " + ex.Message;
+                TempData["MessageType"] = "error";
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

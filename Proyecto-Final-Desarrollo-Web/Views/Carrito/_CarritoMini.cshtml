@@ -39,7 +39,7 @@
                         <div class="flex-grow-1 ms-1">
                             <div class="d-flex justify-content-between">
                                 <h6 class="mb-0 text-truncate" style="max-width: 150px;" title="@item.NombreProducto">@item.NombreProducto</h6>
-                                <span class="text-primary fw-bold">@item.PrecioUnitario.ToString("C")</span>
+                                <span class="text-primary fw-bold">₡@item.PrecioUnitario.ToString("N2")</span>
                             </div>
                             <small class="text-muted">Cantidad: @item.Cantidad</small>
                         </div>
@@ -56,7 +56,7 @@
                 <div class="d-flex justify-content-between align-items-center border-top py-3 mt-1">
                     <div>
                         <h6 class="mb-0">Subtotal:</h6>
-                        <span class="text-primary fw-bold">@Model.Subtotal.ToString("C")</span>
+                        <span class="text-primary fw-bold">₡@Model.Subtotal.ToString("N2")</span>
                     </div>
                     <a href="@Url.Action("Index", "Carrito")" class="btn btn-primary btn-sm">
                         <i class="bi bi-cart-check me-1"></i>Ver Carrito

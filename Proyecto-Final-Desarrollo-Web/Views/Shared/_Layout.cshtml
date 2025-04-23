@@ -73,22 +73,9 @@
                                 <i class="bi bi-envelope nav-icon"></i>Contact
                             </a>
                         </li>
-                        <!-- Categories Dropdown -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="bi bi-tags nav-icon"></i>Categorías
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                                <li>@Html.ActionLink("Medicamentos", "Medicamentos", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Productos", "Index", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Cuidado Personal", "CuidadoPersonal", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Vitaminas y Suplementos", "Vitaminas", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                                <li>@Html.ActionLink("Bebés y Maternidad", "Bebes", "Productos", new { area = "" }, new { @class = "dropdown-item" })</li>
-                            </ul>
-                        </li>
 
 
-                        <!-- Opción 1: Botón en formato de ítem de navegación -->
+
                         <li class="nav-item">
                             <a class="nav-link position-relative" href="@Url.Action("Index", "Carrito")">
                                 <i class="bi bi-cart-fill nav-icon"></i>Carrito
@@ -129,17 +116,18 @@
                                 }
                             </a>
                         </li>
+
+                        @if (Session["UserID"] != null && (Request.IsLocal || HttpContext.Current.Request.IsLocal))
+                        {
+                            <div class="mt-3 mb-3 text-center">
+                                <a href="@Url.Action("AgregarProductosDePrueba", "Carrito")" class="btn btn-info">
+                                    <i class="bi bi-cart-plus me-2"></i>Agregar productos de prueba
+                                </a>
+                            </div>
+                        }
                     </ul>
 
-                    <!-- Barra de búsqueda -->
-                    <form class="d-flex me-2" action="/Search" method="get">
-                        <div class="input-group">
-                            <input class="form-control" type="search" placeholder="Buscar productos..." aria-label="Search" name="query">
-                            <button class="btn btn-outline-light" type="submit" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Buscar">
-                                <i class="bi bi-search"></i>
-                            </button>
-                        </div>
-                    </form>
+                    
 
                     <!-- Menú de usuario -->
                     <div class="dropdown">
