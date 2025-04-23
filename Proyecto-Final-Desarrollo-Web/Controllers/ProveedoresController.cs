@@ -364,19 +364,27 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
         // POST: Proveedores/ToggleActivo
         [HttpPost]
-        public ActionResult ToggleActivo(int id)
+        public JsonResult ToggleActivo(int id)
         {
-            var proveedor = db.Proveedores.Find(id);
-            if (proveedor == null)
+            try
             {
-                return HttpNotFound();
+                var proveedor = db.Proveedores.Find(id);
+                if (proveedor == null)
+                {
+                    return Json(new { success = false, message = "Proveedor no encontrado" });
+                }
+
+                proveedor.activo = !proveedor.activo;
+                db.Entry(proveedor).State = EntityState.Modified;
+                db.SaveChanges();
+
+                string mensaje = proveedor.activo ? "Proveedor activado correctamente" : "Proveedor desactivado correctamente";
+                return Json(new { success = true, activo = proveedor.activo, message = mensaje });
             }
-
-            proveedor.activo = !proveedor.activo;
-            db.Entry(proveedor).State = EntityState.Modified;
-            db.SaveChanges();
-
-            return Json(new { success = true, activo = proveedor.activo });
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Error al cambiar estado: " + ex.Message });
+            }
         }
 
         protected override void Dispose(bool disposing)

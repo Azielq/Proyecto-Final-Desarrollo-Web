@@ -38,6 +38,7 @@
                     {
                         @Html.AntiForgeryToken()
                         @Html.HiddenFor(m => m.Pk_Proveedor)
+                        @Html.HiddenFor(m => m.activo)
 
                         <div class="alert alert-info mb-4">
                             <div class="d-flex">
@@ -73,11 +74,6 @@
                             @Html.LabelFor(m => m.direccion, htmlAttributes: new { @class = "form-label" })
                             @Html.TextBoxFor(m => m.direccion, new { @class = "form-control" })
                             @Html.ValidationMessageFor(m => m.direccion, "", new { @class = "text-danger" })
-                        </div>
-
-                        <div class="form-check form-switch mb-4">
-                            @Html.CheckBoxFor(m => m.activo, new { @class = "form-check-input", role = "switch", id = "activoSwitch" })
-                            <label class="form-check-label" for="activoSwitch">@Html.DisplayNameFor(m => m.activo)</label>
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
