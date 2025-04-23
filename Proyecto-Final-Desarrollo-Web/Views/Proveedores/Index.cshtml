@@ -4,9 +4,21 @@
     ViewBag.Title = "Lista de Proveedores";
 }
 
-<!-- Hero Section -->
-<section class="hero" id="proveedores-header">
-    <div class="container">
+<div class="container">
+    <!-- Breadcrumb -->
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Proveedores</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero" id="proveedores-header">
         <div class="hero-content">
             <div class="hero-text">
                 <h2>Proveedores</h2>
@@ -16,131 +28,257 @@
                 <img src="@Url.Content("~/Content/img/proveedor.png")" alt="Proveedores" class="img-fluid" style="max-width: 300px; height: auto;">
             </div>
         </div>
-    </div>
-</section>
+    </section>
 
-<!-- Sección de Lista de Proveedores -->
-<section class="providers-list" id="lista-proveedores">
-    <div class="container pt-4">
-        @if (TempData["Message"] != null)
-        {
-            <div class="alert alert-@TempData["MessageType"]">
-                @TempData["Message"]
+    <!-- Sección de Lista de Proveedores -->
+    <section class="providers-list" id="lista-proveedores">
+        <div class="pt-4">
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-@TempData["MessageType"]">
+                    @TempData["Message"]
+                </div>
+            }
+
+            <!-- Filtro -->
+            <div class="mb-3">
+                <form method="get" action="@Url.Action("Index", "Proveedores")" class="form-inline d-flex justify-content-between align-items-center" id="filtroForm">
+                    <div class="form-group">
+                        <div class="input-group">
+                            <span class="input-group-text" style="background-color: #007bff; color: white;">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </span>
+                            <input type="text" id="searchTerm" name="searchTerm" class="form-control" value="@ViewBag.SearchTerm" placeholder="Buscar proveedor..." />
+                        </div>
+                    </div>
+
+                    <div class="form-group form-check me-3">
+                        <div class="form-check">
+                            <input type="checkbox" id="soloActivos" name="soloActivos" class="form-check-input"
+                                   value="true" @(ViewBag.SoloActivos != null && (bool)ViewBag.SoloActivos ? "checked" : "")
+                                   onchange="this.form.submit();" style="height: 1.5em; width: 1.5em; cursor: pointer;" />
+                            <label class="form-check-label ms-2" for="soloActivos" style="cursor: pointer;">Solo Activos</label>
+                        </div>
+                    </div>
+                </form>
             </div>
+
+            <div class="actions mb-3">
+                <a href="@Url.Action("Create", "Proveedores")" class="btn btn-success">Agregar Proveedor</a>
+            </div>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var proveedor in Model)
+                    {
+                        <tr>
+                            <td>@proveedor.Nombre</td>
+                            <td>@proveedor.Correo</td>
+                            <td>@proveedor.Telefono</td>
+                            <td>
+                                <span class="@proveedor.EstadoClass">
+                                    @proveedor.EstadoTexto
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <a href="@Url.Action("Details", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Ver detalles">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="@Url.Action("Edit", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm @(proveedor.activo ? "btn-danger" : "btn-success")"
+                                            onclick="cambiarEstadoProveedor(@proveedor.Pk_Proveedor, '@proveedor.Nombre', @(proveedor.activo ? "true" : "false"))"
+                                            data-bs-toggle="tooltip"
+                                            title="@(proveedor.activo ? "Desactivar" : "Activar")">
+                                        <i class="bi bi-@(proveedor.activo ? "toggle-off" : "toggle-on")"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted">
+                                @(ViewBag.MensajeVacio ?? "No se encontraron proveedores.")
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            @Html.RenderPagination(
+                currentPage: (int)ViewData["CurrentPage"],
+                totalPages: (int)ViewData["TotalPages"],
+                pageSize: (int)ViewData["PageSize"],
+                actionName: "Index",
+                controllerName: "Proveedores",
+                routeValues: new
+                {
+                    searchTerm = ViewBag.SearchTerm,
+                    soloActivos = ViewBag.SoloActivos
+                }
+            )
+        </div>
+    </section>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        function changePageSize(size) {
+            const url = new URL(window.location.href);
+            url.searchParams.set("pageSize", size);
+            url.searchParams.set("page", 1); // Reinicia a la primera página
+            window.location.href = url.toString();
         }
 
-        <!-- Filtro -->
-        <div class="mb-3">
-            <form method="get" action="@Url.Action("Index", "Proveedores")" class="form-inline d-flex justify-content-between align-items-center">
-                <div class="form-group">
-                    <label for="searchTerm" class="me-2">Buscar:</label>
-                    <input type="text" id="searchTerm" name="searchTerm" class="form-control me-3" value="@ViewBag.SearchTerm" placeholder="Buscar proveedor..." />
-                </div>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
 
-                <div class="form-group form-check me-3">
-                    <input type="checkbox" id="soloActivos" name="soloActivos" class="form-check-input" value="true" @(ViewBag.SoloActivos != null && (bool)ViewBag.SoloActivos ? "checked" : "") />
-                    <label class="form-check-label" for="soloActivos">Solo Activos</label>
-                </div>
+            const searchInput = document.getElementById('searchTerm');
 
-                <button type="submit" class="btn btn-primary">Aplicar Filtros</button>
-            </form>
-        </div>
-
-        <div class="actions mb-3">
-            <a href="@Url.Action("Create", "Proveedores")" class="btn btn-success">Agregar Proveedor</a>
-        </div>
-
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Correo</th>
-                    <th>Teléfono</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var proveedor in Model)
-                {
-                    <tr>
-                        <td>@proveedor.Nombre</td>
-                        <td>@proveedor.Correo</td>
-                        <td>@proveedor.Telefono</td>
-                        <td>
-                            <span class="@proveedor.EstadoClass">
-                                @proveedor.EstadoTexto
-                            </span>
-                        </td>
-                        <td>
-                            <a href="@Url.Action("Details", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-info">Ver Detalles</a>
-                            <a href="@Url.Action("Edit", "Proveedores", new { id = proveedor.Pk_Proveedor })" class="btn btn-warning">Editar</a>
-                            @using (Html.BeginForm("Delete", "Proveedores", new { id = proveedor.Pk_Proveedor }, FormMethod.Post, new { id = "formEliminar_" + proveedor.Pk_Proveedor }))
-                            {
-                                @Html.AntiForgeryToken()
-                                <div class="btn-group" role="group">
-                                    <button type="button" class="btn btn-danger" onclick="return confirmarEliminacion('formEliminar_@proveedor.Pk_Proveedor')">Eliminar</button>
-                                </div>
-                            }
-                        </td>
-                    </tr>
+            // Agregar evento para enviar el formulario al presionar Enter en el campo de búsqueda
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('filtroForm').submit();
                 }
-                @if (Model == null || !Model.Any())
-                {
-                    <tr>
-                        <td colspan="8" class="text-center text-muted">
-                            @(ViewBag.MensajeVacio ?? "No se encontraron proveedores.")
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+            });
 
-        @Html.RenderPagination(
-    currentPage: (int)ViewData["CurrentPage"],
-    totalPages: (int)ViewData["TotalPages"],
-    pageSize: (int)ViewData["PageSize"],
-    actionName: "Index",
-    controllerName: "Proveedores",
-    routeValues: new
-         {
-        searchTerm = ViewBag.SearchTerm,
-        soloActivos = ViewBag.SoloActivos
-    }
-)
+            // Añadir una pequeña animación al cambiar el checkbox
+            const checkbox = document.getElementById('soloActivos');
+            checkbox.addEventListener('change', function() {
+                // Añadir clase de animación antes de enviar el formulario
+                const formElement = document.getElementById('filtroForm');
+                formElement.classList.add('filtering');
 
-    </div>
+                // Pequeño retraso para que se vea la animación antes de recargar
+                setTimeout(() => {
+                    formElement.submit();
+                }, 150);
+            });
+        });
 
-    @section Scripts {
-        <script>
-            function changePageSize(size) {
-                const url = new URL(window.location.href);
-                url.searchParams.set("pageSize", size);
-                url.searchParams.set("page", 1); // Reinicia a la primera página
-                window.location.href = url.toString();
-            }
-        </script>
+        // Función para cambiar el estado del proveedor
+        function cambiarEstadoProveedor(id, nombre, estadoActual) {
+            var nuevoEstado = estadoActual === true ? 'Inactivo' : 'Activo';
 
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            Swal.fire({
+                title: 'Cambiar Estado',
+                html: `¿Estás seguro de que deseas cambiar el estado del proveedor <strong>${nombre}</strong> a <strong>${nuevoEstado}</strong>?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, cambiar estado',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Obtener el token anti-falsificación (si existe en la página)
+                    const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+                    let formData = new FormData();
+                    formData.append('id', id);
 
-        <script>
-            function confirmarEliminacion(formId) {
-                Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "¡No podrás revertir esto!",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Sí, eliminar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        document.getElementById(formId).submit();
+                    if (tokenElement) {
+                        formData.append('__RequestVerificationToken', tokenElement.value);
                     }
-                });
-                return false;
-            }
-        </script>
-    }
-</section>
+
+                    // Llamada AJAX para actualizar el estado usando el método ToggleActivo
+                    fetch('@Url.Action("ToggleActivo", "Proveedores")', {
+                        method: 'POST',
+                        body: formData,
+                        credentials: 'same-origin'
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Error al actualizar. Código: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if(data && data.success) {
+                            // Notificación de éxito
+                            Swal.fire({
+                                position: 'center',
+                                icon: 'success',
+                                title: data.message || 'Estado actualizado con éxito',
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then(() => {
+                                // Recarga la página para reflejar el cambio
+                                window.location.reload();
+                            });
+                        } else {
+                            throw new Error(data && data.message ? data.message : 'Error al actualizar');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+
+                        // Mostrar error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: error.message || 'No se pudo actualizar el estado'
+                        });
+                    });
+                }
+            });
+        }
+    </script>
+
+    <style>
+        /* Estilos para el checkbox y filtros */
+        .form-check-input:checked {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        /* Animación al filtrar */
+        keyframes filtering {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        .filtering {
+            animation: filtering 0.3s ease-in-out;
+        }
+
+        /* Mejoras visuales al formulario */
+        #filtroForm {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Estilos para el switch de activación */
+        .form-switch .form-check-input {
+            margin-top: 0.3em;
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+        }
+
+        .toggle-estado:checked {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .toggle-estado:not(:checked) {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+    </style>
+}
