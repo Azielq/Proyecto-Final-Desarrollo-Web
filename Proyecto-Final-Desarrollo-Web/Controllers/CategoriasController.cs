@@ -6,12 +6,15 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
+using Proyecto_Final_Desarrollo_Web.Filters;
 using Proyecto_Final_Desarrollo_Web.Helpers;
 using Proyecto_Final_Desarrollo_Web.Models;
 using Proyecto_Final_Desarrollo_Web.TableViewModels;
 
 namespace Proyecto_Final_Desarrollo_Web.Controllers
 {
+    [AuthorizeRoles("Administrador", "Supervisor")]
+
     public class CategoriasController : Controller
     {
         private FarmaUEntities db = new FarmaUEntities();
@@ -60,6 +63,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             }
         }
 
+        // GET: Categorías/GetCategorias (para DataTables)
         [HttpPost]
         public ActionResult GetCategorias(CategoriaTableRequest request)
         {
@@ -68,83 +72,119 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 draw = request.Start
             };
 
-            // Consulta base: se incluye la relación con Productos
-            var query = db.Categorias
-                .Include(c => c.Productos)
-                .AsQueryable();
-
-            // Búsqueda por término
-            if (!string.IsNullOrWhiteSpace(request.SearchValue))
+            try
             {
-                var searchValue = request.SearchValue.ToLower();
-                query = query.Where(c => c.Nombre.ToLower().Contains(searchValue) ||
-                                       c.Descripcion.ToLower().Contains(searchValue));
-            }
+                // Consulta base: se incluye la relación con Productos
+                var query = db.Categorias
+                    .Include(c => c.Productos)
+                    .AsQueryable();
 
-            // Total de registros sin filtrar
-            response.recordsTotal = db.Categorias.Count();
-
-            // Total después de filtrar
-            response.recordsFiltered = query.Count();
-
-            // Ordenamiento según columna
-            if (!string.IsNullOrEmpty(request.SortColumn))
-            {
-                if (request.SortDirection.ToLower() == "asc")
+                // Búsqueda por término
+                if (!string.IsNullOrWhiteSpace(request.SearchValue))
                 {
-                    switch (request.SortColumn)
+                    var searchValue = request.SearchValue.ToLower();
+                    query = query.Where(c => c.Nombre.ToLower().Contains(searchValue) ||
+                                           c.Descripcion.ToLower().Contains(searchValue));
+                }
+
+                // Total de registros sin filtrar
+                response.recordsTotal = db.Categorias.Count();
+
+                // Total después de filtrar
+                response.recordsFiltered = query.Count();
+
+                // Ordenamiento según columna
+                if (!string.IsNullOrEmpty(request.SortColumn))
+                {
+                    if (request.SortDirection.ToLower() == "asc")
                     {
-                        case "Nombre":
-                            query = query.OrderBy(c => c.Nombre);
-                            break;
-                        case "Descripcion":
-                            query = query.OrderBy(c => c.Descripcion);
-                            break;
-                        case "TotalProductos":
-                            query = query.OrderBy(c => c.Productos.Count);
-                            break;
-                        default:
-                            query = query.OrderBy(c => c.Nombre);
-                            break;
+                        switch (request.SortColumn)
+                        {
+                            case "Nombre":
+                                query = query.OrderBy(c => c.Nombre);
+                                break;
+                            case "Descripcion":
+                                query = query.OrderBy(c => c.Descripcion);
+                                break;
+                            case "TotalProductos":
+                                query = query.OrderBy(c => c.Productos.Count);
+                                break;
+                            default:
+                                query = query.OrderBy(c => c.Nombre);
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        switch (request.SortColumn)
+                        {
+                            case "Nombre":
+                                query = query.OrderByDescending(c => c.Nombre);
+                                break;
+                            case "Descripcion":
+                                query = query.OrderByDescending(c => c.Descripcion);
+                                break;
+                            case "TotalProductos":
+                                query = query.OrderByDescending(c => c.Productos.Count);
+                                break;
+                            default:
+                                query = query.OrderByDescending(c => c.Nombre);
+                                break;
+                        }
                     }
                 }
                 else
                 {
-                    switch (request.SortColumn)
-                    {
-                        case "Nombre":
-                            query = query.OrderByDescending(c => c.Nombre);
-                            break;
-                        case "Descripcion":
-                            query = query.OrderByDescending(c => c.Descripcion);
-                            break;
-                        case "TotalProductos":
-                            query = query.OrderByDescending(c => c.Productos.Count);
-                            break;
-                        default:
-                            query = query.OrderByDescending(c => c.Nombre);
-                            break;
-                    }
+                    query = query.OrderBy(c => c.Nombre);
                 }
+
+                // Paginación
+                query = query.Skip(request.Start).Take(request.Length);
+
+                // Conversión a ViewModel
+                response.data = query.ToList().Select(c => new CategoriaTableViewModel
+                {
+                    ID_Categoría = c.ID_Categoría,
+                    Nombre = c.Nombre,
+                    Descripcion = c.Descripcion,
+                    TotalProductos = c.Productos.Count(p => p.estado == "Activo")
+                }).ToList();
+
+                return Json(response, JsonRequestBehavior.AllowGet);
             }
-            else
+            catch (Exception ex)
             {
-                query = query.OrderBy(c => c.Nombre);
+                System.Diagnostics.Debug.WriteLine($"Error en GetCategorias: {ex.Message}");
+                response.data = new List<CategoriaTableViewModel>();
+                return Json(response, JsonRequestBehavior.AllowGet);
             }
+        }
 
-            // Paginación
-            query = query.Skip(request.Start).Take(request.Length);
-
-            // Conversión a ViewModel
-            response.data = query.ToList().Select(c => new CategoriaTableViewModel
+        // Método de Categorías con corrección para el error de 'codigo'
+        [HttpGet]
+        public ActionResult GetProductosByCategoria(int id)
+        {
+            try
             {
-                ID_Categoría = c.ID_Categoría,
-                Nombre = c.Nombre,
-                Descripcion = c.Descripcion,
-                TotalProductos = c.Productos.Count(m => m.estado == "Activo")
-            }).ToList();
+                // El problema estaba aquí: estábamos usando 'codigo' en lugar de acceder a las propiedades correctas
+                var productos = db.Productos
+                    .Where(p => p.ID_Categoría == id)
+                    .Select(p => new {
+                        ID_Producto = p.ID_Producto,
+                        Nombre = p.Nombre,               // <-- Se cambió 'nombre' a 'Nombre' para que coincida con el modelo
+                        precio_venta = p.precio_venta,
+                        stock = p.Lotes.Sum(l => l.cantidad),
+                        estado = p.estado
+                    })
+                    .ToList();
 
-            return Json(response, JsonRequestBehavior.AllowGet);
+                return Json(productos, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al obtener productos por categoría: {ex.Message}");
+                return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         // GET: Categorías/Details
@@ -155,25 +195,35 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            // Se incluye la relación con Productos
-            Categorias categoria = db.Categorias
-                .Include(c => c.Productos)
-                .FirstOrDefault(c => c.ID_Categoría == id);
-
-            if (categoria == null)
+            try
             {
-                return HttpNotFound();
+                // Se incluye la relación con Productos
+                Categorias categoria = db.Categorias
+                    .Include(c => c.Productos)
+                    .FirstOrDefault(c => c.ID_Categoría == id);
+
+                if (categoria == null)
+                {
+                    return HttpNotFound();
+                }
+
+                // Se obtienen los productos activos de esta categoría
+                var productos = db.Productos
+                    .Where(p => p.ID_Categoría == id && p.estado == "Activo")
+                    .ToList();
+
+                ViewBag.Productos = productos;
+                ViewBag.TotalProductos = productos.Count;
+
+                return View(categoria);
             }
-
-            // Se obtienen los productos activos de esta categoría
-            var productos = db.Productos
-                .Where(p => p.ID_Categoría == id && p.estado == "Activo")
-                .ToList();
-
-            ViewBag.Productos = productos;
-            ViewBag.TotalProductos = productos.Count;
-
-            return View(categoria);
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al cargar detalles de categoría: {ex.Message}");
+                TempData["Message"] = "Error al cargar detalles de la categoría: " + ex.Message;
+                TempData["MessageType"] = "danger";
+                return RedirectToAction("Index");
+            }
         }
 
         // GET: Categorías/Create
@@ -182,20 +232,51 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
             return View();
         }
 
-        // POST: Categorías/Create
+        // POST: Categorías/Create (AJAX)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "ID_Categoría,Nombre,Descripcion")] Categorias categoria)
         {
             if (ModelState.IsValid)
             {
-                db.Categorias.Add(categoria);
-                db.SaveChanges();
+                try
+                {
+                    // Verifica si ya existe una categoría con el mismo nombre
+                    if (db.Categorias.Any(c => c.Nombre.ToLower() == categoria.Nombre.ToLower()))
+                    {
+                        return Json(new { success = false, message = "Ya existe una categoría con este nombre" });
+                    }
 
-                TempData["Message"] = "Categoría creada correctamente";
-                TempData["MessageType"] = "success";
+                    db.Categorias.Add(categoria);
+                    db.SaveChanges();
 
-                return RedirectToAction("Index");
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = true, message = "Categoría creada correctamente" });
+                    }
+
+                    TempData["Message"] = "Categoría creada correctamente";
+                    TempData["MessageType"] = "success";
+
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error al crear categoría: {ex.Message}");
+
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = false, message = "Error al crear la categoría: " + ex.Message });
+                    }
+
+                    ModelState.AddModelError("", "Error al crear la categoría: " + ex.Message);
+                }
+            }
+
+            if (Request.IsAjaxRequest())
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return Json(new { success = false, message = "Error de validación: " + string.Join(", ", errors) });
             }
 
             return View(categoria);
@@ -209,29 +290,76 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Categorias categoria = db.Categorias.Find(id);
-            if (categoria == null)
+            try
             {
-                return HttpNotFound();
-            }
+                Categorias categoria = db.Categorias.Find(id);
+                if (categoria == null)
+                {
+                    return HttpNotFound();
+                }
 
-            return View(categoria);
+                return View(categoria);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al cargar categoría para editar: {ex.Message}");
+                TempData["Message"] = "Error al cargar la categoría para editar: " + ex.Message;
+                TempData["MessageType"] = "danger";
+                return RedirectToAction("Index");
+            }
         }
 
-        // POST: Categorías/Edit
+        // POST: Categorías/Edit (AJAX)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "ID_Categoría,Nombre,Descripcion")] Categorias categoria)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(categoria).State = EntityState.Modified;
-                db.SaveChanges();
+                try
+                {
+                    // Verifica si ya existe otra categoría con el mismo nombre
+                    if (db.Categorias.Any(c => c.Nombre.ToLower() == categoria.Nombre.ToLower() && c.ID_Categoría != categoria.ID_Categoría))
+                    {
+                        if (Request.IsAjaxRequest())
+                        {
+                            return Json(new { success = false, message = "Ya existe otra categoría con este nombre" });
+                        }
 
-                TempData["Message"] = "Categoría actualizada correctamente";
-                TempData["MessageType"] = "success";
+                        ModelState.AddModelError("Nombre", "Ya existe otra categoría con este nombre");
+                        return View(categoria);
+                    }
 
-                return RedirectToAction("Index");
+                    db.Entry(categoria).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = true, message = "Categoría actualizada correctamente" });
+                    }
+
+                    TempData["Message"] = "Categoría actualizada correctamente";
+                    TempData["MessageType"] = "success";
+
+                    return RedirectToAction("Index");
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Error al actualizar categoría: {ex.Message}");
+
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = false, message = "Error al actualizar la categoría: " + ex.Message });
+                    }
+
+                    ModelState.AddModelError("", "Error al actualizar la categoría: " + ex.Message);
+                }
+            }
+
+            if (Request.IsAjaxRequest())
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                return Json(new { success = false, message = "Error de validación: " + string.Join(", ", errors) });
             }
 
             return View(categoria);
@@ -245,72 +373,152 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Categorias categoria = db.Categorias
-                .Include(c => c.Productos)
-                .FirstOrDefault(c => c.ID_Categoría == id);
-
-            if (categoria == null)
+            try
             {
-                return HttpNotFound();
-            }
+                Categorias categoria = db.Categorias
+                    .Include(c => c.Productos)
+                    .FirstOrDefault(c => c.ID_Categoría == id);
 
-            // Verifica si tiene productos asociados
-            if (categoria.Productos.Any())
-            {
-                ViewBag.TieneProductos = true;
-                ViewBag.TotalProductos = categoria.Productos.Count;
-            }
-            else
-            {
-                ViewBag.TieneProductos = false;
-            }
+                if (categoria == null)
+                {
+                    return HttpNotFound();
+                }
 
-            return View(categoria);
+                // Verifica si tiene productos asociados
+                if (categoria.Productos.Any())
+                {
+                    ViewBag.TieneProductos = true;
+                    ViewBag.TotalProductos = categoria.Productos.Count;
+                }
+                else
+                {
+                    ViewBag.TieneProductos = false;
+                }
+
+                return View(categoria);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al cargar categoría para eliminar: {ex.Message}");
+                TempData["Message"] = "Error al cargar la categoría para eliminar: " + ex.Message;
+                TempData["MessageType"] = "danger";
+                return RedirectToAction("Index");
+            }
         }
 
-        // POST: Categorías/Delete
-        [HttpPost, ActionName("Delete")]
+        // POST: Categorías/Delete (AJAX)
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult Delete(int id)
         {
-            Categorias categoria = db.Categorias
-                .Include(c => c.Productos)
-                .FirstOrDefault(c => c.ID_Categoría == id);
-
-            // Verifica si tiene productos asociados
-            if (categoria.Productos.Any())
+            try
             {
-                TempData["Message"] = "No se puede eliminar la categoría porque tiene productos asociados";
-                TempData["MessageType"] = "error";
-                return RedirectToAction("Delete", new { id = id });
+                Categorias categoria = db.Categorias
+                    .Include(c => c.Productos)
+                    .FirstOrDefault(c => c.ID_Categoría == id);
+
+                if (categoria == null)
+                {
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new { success = false, message = "La categoría no existe" });
+                    }
+
+                    TempData["Message"] = "La categoría no existe";
+                    TempData["MessageType"] = "error";
+                    return RedirectToAction("Index");
+                }
+
+                // Verifica si tiene productos asociados
+                if (categoria.Productos.Any())
+                {
+                    if (Request.IsAjaxRequest())
+                    {
+                        return Json(new
+                        {
+                            success = false,
+                            message = "No se puede eliminar la categoría porque tiene productos asociados",
+                            productos = categoria.Productos.Count
+                        });
+                    }
+
+                    TempData["Message"] = "No se puede eliminar la categoría porque tiene productos asociados";
+                    TempData["MessageType"] = "error";
+                    return RedirectToAction("Delete", new { id = id });
+                }
+
+                db.Categorias.Remove(categoria);
+                db.SaveChanges();
+
+                if (Request.IsAjaxRequest())
+                {
+                    return Json(new { success = true, message = "Categoría eliminada correctamente" });
+                }
+
+                TempData["Message"] = "Categoría eliminada correctamente";
+                TempData["MessageType"] = "success";
+
+                return RedirectToAction("Index");
             }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al eliminar categoría: {ex.Message}");
 
-            db.Categorias.Remove(categoria);
-            db.SaveChanges();
+                if (Request.IsAjaxRequest())
+                {
+                    return Json(new { success = false, message = "Error al eliminar la categoría: " + ex.Message });
+                }
 
-            TempData["Message"] = "Categoría eliminada correctamente";
-            TempData["MessageType"] = "success";
-
-            return RedirectToAction("Index");
+                TempData["Message"] = "Error al eliminar la categoría: " + ex.Message;
+                TempData["MessageType"] = "danger";
+                return RedirectToAction("Index");
+            }
         }
 
-        // GET: Categorías/ProductosPorCategoria
+        // GET: Categorías/ProductosPorCategoria (para gráficos)
         public ActionResult ProductosPorCategoria()
         {
-            var categorias = db.Categorias
-                .Include(c => c.Productos)
-                .ToList()
-                .Select(c => new
-                {
-                    Categoria = c.Nombre,
-                    TotalProductos = c.Productos.Count(m => m.estado == "Activo"),
-                    ProductosActivos = c.Productos.Where(m => m.estado == "Activo").Count(),
-                    ProductosInactivos = c.Productos.Where(m => m.estado != "Activo").Count()
-                })
-                .OrderByDescending(c => c.TotalProductos)
-                .ToList();
+            try
+            {
+                var categorias = db.Categorias
+                    .Include(c => c.Productos)
+                    .ToList()
+                    .Select(c => new
+                    {
+                        Categoria = c.Nombre,
+                        TotalProductos = c.Productos.Count(p => p.estado == "Activo"),
+                        ProductosActivos = c.Productos.Where(p => p.estado == "Activo").Count(),
+                        ProductosInactivos = c.Productos.Where(p => p.estado != "Activo").Count()
+                    })
+                    .OrderByDescending(c => c.TotalProductos)
+                    .ToList();
 
-            return Json(categorias, JsonRequestBehavior.AllowGet);
+                return Json(categorias, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al obtener estadísticas: {ex.Message}");
+                return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        // GET: Categorías/GetCategoriasList (para selectores)
+        public ActionResult GetCategoriasList()
+        {
+            try
+            {
+                var categorias = db.Categorias
+                    .OrderBy(c => c.Nombre)
+                    .Select(c => new { ID = c.ID_Categoría, Nombre = c.Nombre })
+                    .ToList();
+
+                return Json(categorias, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error al obtener lista de categorías: {ex.Message}");
+                return Json(new { error = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
         }
 
         protected override void Dispose(bool disposing)

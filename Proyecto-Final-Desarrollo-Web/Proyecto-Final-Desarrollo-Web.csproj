@@ -369,6 +369,7 @@
     <Compile Include="Models\Usuarios.cs">
       <DependentUpon>FarmaU.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\ViewModels\TiendaViewModel.cs" />
     <Compile Include="Models\ViewModels\CarritoItemViewModel.cs" />
     <Compile Include="Models\ViewModels\ClienteViewModel.cs" />
     <Compile Include="Models\ViewModels\CompraViewModel.cs" />
@@ -384,6 +385,7 @@
     <Compile Include="Utilities\AuthorizeRolesAttribute.cs" />
     <Compile Include="Utilities\PaginationHelper.cs" />
     <Compile Include="Utilities\PBKDF2PasswordHasher.cs" />
+    <Compile Include="Utilities\SweetAlertHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
@@ -392,6 +394,8 @@
     <Content Include="Content\bootstrap-grid.rtl.min.css" />
     <Content Include="Content\bootstrap-icons\bootstrap-icons.css" />
     <Content Include="Content\bootstrap-icons\bootstrap-icons.min.css" />
+    <Content Include="Content\bootstrap-icons\font\bootstrap-icons.css" />
+    <Content Include="Content\bootstrap-icons\font\bootstrap-icons.min.css" />
     <Content Include="Content\bootstrap-reboot.css" />
     <Content Include="Content\bootstrap-reboot.min.css" />
     <Content Include="Content\bootstrap-reboot.rtl.css" />
@@ -406,7 +410,9 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\img\appstore.jpg" />
     <Content Include="Content\img\asesoria.jpg" />
+    <Content Include="Content\img\Cat.png" />
     <Content Include="Content\img\cuidado.jpg" />
+    <Content Include="Content\img\Descuentos.png" />
     <Content Include="Content\img\entrega.jpg" />
     <Content Include="Content\img\facebook.jpg" />
     <Content Include="Content\img\farmaceutica-hispana.png" />
@@ -424,6 +430,7 @@
     <Content Include="Content\img\proveedor.png" />
     <Content Include="Content\img\recetas.jpg" />
     <Content Include="Content\img\recordatorio.jpg" />
+    <Content Include="Content\img\News-P.png" />
     <Content Include="Content\img\subscripcion.jpg" />
     <Content Include="Content\img\usuario.jpg" />
     <Content Include="Content\img\vitaminas.jpg" />
@@ -608,6 +615,9 @@
     <Content Include="Scripts\tinymce\CHANGELOG.md" />
     <Content Include="Scripts\tinymce\langs\README.md" />
     <Content Include="Scripts\tinymce\license.md" />
+    <Content Include="Content\bootstrap-icons\font\bootstrap-icons.json" />
+    <Content Include="Content\bootstrap-icons\font\fonts\bootstrap-icons.woff" />
+    <Content Include="Content\bootstrap-icons\font\fonts\bootstrap-icons.woff2" />
     <None Include="Scripts\jquery-3.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.1.js" />
     <Content Include="Scripts\jquery-3.7.1.min.js" />
@@ -647,6 +657,10 @@
     <Content Include="Views\Shared\AccesoDenegado.cshtml" />
     <Content Include="Views\Proveedores\Details.cshtml" />
     <Content Include="Views\Proveedores\Index.cshtml" />
+    <Content Include="Views\Lotes\Index.cshtml" />
+    <Content Include="Views\Lotes\Create.cshtml" />
+    <Content Include="Views\Inventario\Index.cshtml" />
+    <Content Include="Views\Inventario\Create.cshtml" />
     <Content Include="Views\Proveedores\Create.cshtml" />
     <Content Include="Views\Proveedores\Edit.cshtml" />
     <Content Include="Views\Carrito\Index.cshtml" />
@@ -660,6 +674,19 @@
     <Content Include="Views\Facturacion\Details.cshtml" />
     <Content Include="Views\Facturacion\Print.cshtml" />
     <Content Include="Views\Shared\_LayoutPrint.cshtml" />
+    <Content Include="Views\Inventario\Details.cshtml" />
+    <Content Include="Views\Inventario\Edit.cshtml" />
+    <Content Include="Views\Inventario\Delete.cshtml" />
+    <Content Include="Views\Inventario\Reporte.cshtml" />
+    <Content Include="Views\Inventario\MovimientosInventario.cshtml" />
+    <Content Include="Views\Lotes\Details.cshtml" />
+    <Content Include="Views\Lotes\Delete.cshtml" />
+    <Content Include="Views\Lotes\Edit.cshtml" />
+    <Content Include="Views\Lotes\LotesVencidos.cshtml" />
+    <Content Include="Views\Lotes\PocoStock.cshtml" />
+    <Content Include="Views\Reportes\ReportesVentas.cshtml" />
+    <Content Include="Views\Reportes\ReportesInventario.cshtml" />
+    <Content Include="Views\Reportes\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\_ImagenesProducto.cshtml" />
@@ -675,6 +702,18 @@
     <Content Include="Views\ImagenesProducto\Details.cshtml" />
     <Content Include="Views\ImgBB\Index.cshtml" />
     <Content Include="Views\ImgBB\ProductImages.cshtml" />
+    <Content Include="Views\Clientes\Index.cshtml" />
+    <Content Include="Views\Categorias\Index.cshtml" />
+    <Content Include="Views\Clientes\Create.cshtml" />
+    <Content Include="Views\Clientes\Edit.cshtml" />
+    <Content Include="Views\Clientes\Details.cshtml" />
+    <Content Include="Views\Clientes\Delete.cshtml" />
+    <Content Include="Views\Clientes\ComprasCliente.cshtml" />
+    <Content Include="Views\Shared\_SweetAlertPartial.cshtml" />
+    <Content Include="Views\Home\Tienda.cshtml" />
+    <Content Include="Views\Home\DetalleProducto.cshtml" />
+    <Content Include="Views\Home\Categorias.cshtml" />
+    <Content Include="Views\Home\Index2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

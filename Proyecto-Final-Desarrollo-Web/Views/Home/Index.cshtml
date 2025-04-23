@@ -18,7 +18,7 @@
                 <div class="hero-text">
                     <h2>Tu farmacia de confianza, ahora digital</h2>
                     <p>Medicamentos, productos de cuidado personal y asesoría profesional. Todo en un solo lugar, con entrega a domicilio en menos de 30 minutos.</p>
-                    <a href="#" class="btn">Comprar ahora</a>
+                    <a href="@Url.Action("Tienda", "Home")" class="btn">Comprar ahora</a>
                 </div>
                 <div class="hero-image">
                     <img src="..\Content\img\FarmaU.png" alt="Farmacia Digital">
@@ -37,42 +37,42 @@
             <div class="category-grid">
                 <div class="category-card">
                     <div class="category-image">
-                        <img src="..\Content\img\medicamentos.jpg" alt="Medicamentos">
+                        <img src="..\Content\img\medicamentos.jpg" alt="Analgésicos">
                     </div>
                     <div class="category-content">
-                        <h3>Medicamentos</h3>
-                        <p>Con y sin receta médica, para todas tus necesidades de salud.</p>
-                        <a href="#" class="btn">Ver productos</a>
+                        <h3>Analgésicos</h3>
+                        <p>Medicamentos para el dolor.</p>
+                        <a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 1, Nombre = "Analgésicos" } })" class="btn">Ver Productos</a>
                     </div>
                 </div>
                 <div class="category-card">
                     <div class="category-image">
-                        <img src="..\Content\img\cuidado.jpg" alt="Cuidado Personal">
+                        <img src="..\Content\img\cuidado.jpg" alt="Antibióticos">
                     </div>
                     <div class="category-content">
-                        <h3>Cuidado Personal</h3>
-                        <p>Productos de higiene y belleza para tu bienestar diario.</p>
-                        <a href="#" class="btn">Ver productos</a>
+                        <h3>Antibióticos</h3>
+                        <p>Tratamiento de infecciones bacterianas.</p>
+                        <a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 2, Nombre = "Antibióticos" } })" class="btn">Ver Productos</a>
                     </div>
                 </div>
                 <div class="category-card">
                     <div class="category-image">
-                        <img src="..\Content\img\vitaminas.jpg" alt="Vitaminas y Suplementos">
+                        <img src="..\Content\img\vitaminas.jpg" alt="Antiinflamatorios">
                     </div>
                     <div class="category-content">
-                        <h3>Vitaminas y Suplementos</h3>
-                        <p>Complementa tu alimentación con lo mejor para tu salud.</p>
-                        <a href="#" class="btn">Ver productos</a>
+                        <h3>Antiinflamatorios</h3>
+                        <p>Reducen inflamación y dolor.</p>
+                        <a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 3, Nombre = "Antiinflamatorios" } })" class="btn">Ver Productos</a>
                     </div>
                 </div>
                 <div class="category-card">
                     <div class="category-image">
-                        <img src="..\Content\img\maternidad.jpg" alt="Bebés y Maternidad">
+                        <img src="..\Content\img\maternidad.jpg" alt="Antihistamínicos">
                     </div>
                     <div class="category-content">
-                        <h3>Bebés y Maternidad</h3>
-                        <p>Todo lo que mamá y bebé necesitan para su cuidado.</p>
-                        <a href="#" class="btn">Ver productos</a>
+                        <h3>Antihistamínicos</h3>
+                        <p>Bloquean la histamina en reacciones alérgicas.</p>
+                        <a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 4, Nombre = "Antihistamínicos" } })" class="btn">Ver Productos</a>
                     </div>
                 </div>
             </div>

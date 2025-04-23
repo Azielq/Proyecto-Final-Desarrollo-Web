@@ -1,0 +1,117 @@
+@model Proyecto_Final_Desarrollo_Web.ViewModels.ReporteInventarioViewModel
+
+@{
+    ViewData["Title"] = "Reporte de Inventario";
+}
+
+<div class="container mt-4">
+    <div class="row align-items-center">
+        <div class="col-md-7">
+            <h1 class="text-success">Reporte de Inventario</h1>
+            <p>Consulta el estado actual del inventario de productos en FarmaU.</p>
+        </div>
+        <div class="col-md-5 text-end">
+            <img src="~/images/inventory-illustration.png" alt="Inventario" class="img-fluid" style="max-height: 200px;" />
+        </div>
+    </div>
+
+    <div class="row my-4">
+        <div class="col-md-4">
+            <div class="card text-bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Productos</h5>
+                    <p class="card-text">@Model.TotalProductos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Unidades Totales</h5>
+                    <p class="card-text">@Model.TotalUnidades</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Valor Total Inventario</h5>
+                    <p class="card-text">@Model.ValorTotalInventario.ToString("C2")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card text-bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Productos Vencidos</h5>
+                    <p class="card-text">@Model.ProductosVencidos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card text-bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Productos por Vencer (30 días)</h5>
+                    <p class="card-text">@Model.ProductosPorVencer</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-5">Detalle de Inventario</h3>
+    <table class="table table-bordered table-hover">
+        <thead class="table-success">
+            <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Precio Compra</th>
+                <th>Stock Total</th>
+                <th>Valor Total</th>
+                <th>Lotes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var producto in Model.DetallesInventario)
+            {
+                <tr>
+                    <td>@producto.NombreProducto</td>
+                    <td>@producto.Categoria</td>
+                    <td>@producto.PrecioCompra.ToString("C2")</td>
+                    <td>@producto.StockTotal</td>
+                    <td>@producto.ValorTotal.ToString("C2")</td>
+                    <td>
+                        <ul class="list-unstyled mb-0">
+                            @foreach (var lote in producto.Lotes)
+                            {
+                                <li>
+                                    <strong>Lote:</strong> @lote.id_Lote |
+                                    <strong>Ubicación:</strong> @lote.Ubicacion |
+                                    <strong>Cantidad:</strong> @lote.Cantidad |
+                                    <strong>Vence:</strong> @lote.FechaVencimiento?.ToString("dd/MM/yyyy") |
+                                    <strong>Estado:</strong> @lote.Estado
+                                </li>
+                            }
+                        </ul>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- ? Paginación al final de la tabla -->
+    <div class="d-flex justify-content-center mt-4">
+        <nav aria-label="Paginación de Inventario">
+            <ul class="pagination">
+                @for (int i = 1; i <= Model.TotalPaginas; i++)
+                {
+                    <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("ReportesInventario", new { pagina = i })">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

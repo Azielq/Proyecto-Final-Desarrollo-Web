@@ -1,0 +1,250 @@
+﻿@model Proyecto_Final_Desarrollo_Web.TableViewModels.InventarioTableViewModel
+
+@{
+    ViewBag.Title = "Asignar Ubicación a Lote";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <!-- Migas de pan -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Inventario")">Inventario</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Asignar Ubicación</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="fas fa-plus-circle me-2"></i>Asignar Ubicación a Lote</h5>
+        </div>
+        <div class="card-body">
+            @if (ViewBag.NoLotesMessage != null)
+            {
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    @ViewBag.NoLotesMessage
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                    <a href="@Url.Action("Index", "Inventario")" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Volver
+                    </a>
+                </div>
+            }
+            else
+            {
+                using (Html.BeginForm())
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-box me-1"></i>Lote
+                                </label>
+                                @if (ViewBag.ReadOnlyLote == true)
+                                {
+                                    @Html.HiddenFor(model => model.ID_Lote)
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6>@Model.NombreProducto</h6>
+                                            <p class="mb-0"><strong>Categoría:</strong> @Model.Categoria</p>
+                                            <p class="mb-0"><strong>Cantidad:</strong> @Model.Cantidad</p>
+                                            <p class="mb-0"><strong>Vencimiento:</strong> @Model.FechaVencimiento.ToString("dd/MM/yyyy")</p>
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    @Html.DropDownList("ID_Lote", (SelectList)ViewBag.ID_Lote, "-- Seleccione un lote --",
+                                        new { @class = "form-select", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.ID_Lote, "", new { @class = "text-danger" })
+                                    <div id="loteInfo"></div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-map-marker-alt me-1"></i>Ubicación
+                                </label>
+                                @Html.EditorFor(model => model.ubicacion, new
+                                {
+                                    htmlAttributes =
+                                    new { @class = "form-control", placeholder = "Ej: Bodega A - Estante 3", required = "required", list = "ubicacionesSugeridas" }
+                                })
+                                <datalist id="ubicacionesSugeridas">
+                                    <option value="Bodega A - Estante 1">
+                                    <option value="Bodega A - Estante 2">
+                                    <option value="Bodega A - Estante 3">
+                                    <option value="Bodega B - Estante 1">
+                                    <option value="Bodega B - Estante 2">
+                                    <option value="Bodega C - Productos Controlados">
+                                    <option value="Refrigeración - Nivel 1">
+                                    <option value="Refrigeración - Nivel 2">
+                                    <option value="Mostrador Principal">
+                                    <option value="Mostrador Secundario">
+                                </datalist>
+                                @Html.ValidationMessageFor(model => model.ubicacion, "", new { @class = "text-danger" })
+                                <small class="form-text text-muted">
+                                    Ingrese la ubicación específica donde se almacenará el lote.
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-end">
+                            <a href="@Url.Action("Index", "Inventario")" class="btn btn-secondary me-2">
+                                <i class="fas fa-arrow-left me-1"></i>Volver
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>Guardar
+                            </button>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- Panel informativo -->
+    <div class="card mt-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Información sobre ubicaciones</h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <p><strong>Nomenclatura sugerida para ubicaciones:</strong></p>
+                <ul>
+                    <li><strong>Bodega [Letra]:</strong> Indica la bodega principal (Ej: Bodega A, Bodega B)</li>
+                    <li><strong>Estante [Número]:</strong> Indica el número de estante (Ej: Estante 1, Estante 2)</li>
+                    <li><strong>Nivel [Número]:</strong> Indica el nivel dentro del estante (Ej: Nivel 1, Nivel 2)</li>
+                </ul>
+                <p>Ejemplos de ubicaciones bien estructuradas:</p>
+                <ul>
+                    <li>Bodega A - Estante 3 - Nivel 2</li>
+                    <li>Refrigeración - Estante 1</li>
+                    <li>Bodega Principal - Productos Controlados - Nivel 1</li>
+                </ul>
+                <p>Una buena estructura facilita la localización rápida de los productos.</p>
+            </div>
+
+            <div class="card mt-3">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="fas fa-exclamation-triangle me-2"></i>Consideraciones especiales</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="mb-0">
+                        <li><strong>Productos refrigerados:</strong> Deben ser ubicados en zonas de refrigeración.</li>
+                        <li><strong>Productos controlados:</strong> Deben colocarse en áreas de acceso restringido.</li>
+                        <li><strong>Productos de alta rotación:</strong> Ubíquelos en zonas de fácil acceso.</li>
+                        <li><strong>Productos pesados:</strong> Colóquelos en los niveles inferiores de los estantes.</li>
+                        <li><strong>Productos próximos a vencer:</strong> Considere ubicarlos en zonas prioritarias para su dispensación.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(document).ready(function() {
+            // Solo si no es un lote predeterminado, configurar el cambio de lote para mostrar información
+            @if (ViewBag.ReadOnlyLote != true)
+            {
+                <text>
+                $('#ID_Lote').change(function() {
+                    var loteId = $(this).val();
+                    if (loteId) {
+                        $.ajax({
+                            url: '@Url.Action("GetLoteInfo", "Inventario")',
+                            type: 'GET',
+                            data: { id: loteId },
+                            success: function(data) {
+                                if (data) {
+                                    var html = '<div class="card mt-2"><div class="card-body">' +
+                                              '<h6>' + data.NombreProducto + '</h6>' +
+                                              '<p class="mb-0"><strong>Categoría:</strong> ' + data.Categoria + '</p>' +
+                                              '<p class="mb-0"><strong>Cantidad:</strong> ' + data.Cantidad + '</p>';
+
+                                    // Formatear la fecha
+                                    var fechaVenc = new Date(parseInt(data.FechaVencimiento.substr(6)));
+                                    var fechaFormateada = fechaVenc.getDate() + '/' + (fechaVenc.getMonth() + 1) + '/' + fechaVenc.getFullYear();
+
+                                    html += '<p class="mb-0"><strong>Vencimiento:</strong> ' + fechaFormateada + '</p>';
+
+                                    // Determinar el estado del lote
+                                    var hoy = new Date();
+                                    var diasParaVencer = Math.floor((fechaVenc - hoy) / (1000 * 60 * 60 * 24));
+                                    var estadoClass = '';
+                                    var estadoText = '';
+
+                                    if (diasParaVencer @Html.Raw("< 0")) {
+                                        estadoClass = 'bg-danger';
+                                        estadoText = 'Vencido';
+                                    } else if (diasParaVencer @Html.Raw("<= 30")) {
+                                        estadoClass = 'bg-warning text-dark';
+                                        estadoText = 'Por vencer';
+                                    } else {
+                                        estadoClass = 'bg-success';
+                                        estadoText = 'Vigente';
+                                    }
+
+                                    html += '<p class="mb-0 mt-2"><strong>Estado:</strong> <span class="badge ' + estadoClass + '">' + estadoText + '</span></p>';
+                                    html += '</div></div>';
+
+                                    $('#loteInfo').html(html);
+
+                                    // Sugerir ubicación basada en la categoría del producto
+                                    if (data.Categoria) {
+                                        var ubicacionSugerida = '';
+                                        var categoria = data.Categoria.toLowerCase();
+
+                                        if (categoria.includes('control') || categoria.includes('psicotróp') || categoria.includes('narcót')) {
+                                            ubicacionSugerida = 'Bodega C - Productos Controlados';
+                                        } else if (categoria.includes('refrigera') || categoria.includes('frio')) {
+                                            ubicacionSugerida = 'Refrigeración - Nivel 1';
+                                        } else {
+                                            ubicacionSugerida = 'Bodega A - Estante 1';
+                                        }
+
+                                        if (!$('#ubicacion').val()) {
+                                            $('#ubicacion').val(ubicacionSugerida);
+                                        }
+                                    }
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("Error al obtener información del lote:", error);
+                                $('#loteInfo').html('<div class="alert alert-danger mt-2">Error al cargar la información del lote</div>');
+                            }
+                        });
+                    } else {
+                        $('#loteInfo').html('');
+                    }
+                });
+
+                // Disparar el cambio si ya hay un valor seleccionado al cargar la página
+                if ($('#ID_Lote').val()) {
+                    $('#ID_Lote').trigger('change');
+                }
+                </text>
+            }
+
+            // Verificar si hay algún mensaje de error del servidor
+            if ($('.validation-summary-errors').length > 0) {
+                $('html, body').animate({
+                    scrollTop: $('.validation-summary-errors').offset().top - 100
+                }, 500);
+            }
+        });
+    </script>
+}
