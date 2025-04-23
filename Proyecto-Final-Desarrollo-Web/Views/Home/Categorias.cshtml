@@ -1,0 +1,137 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.TiendaViewModel
+
+@{
+    ViewBag.Title = "Categorías - FarmaU";
+}
+
+<!-- Encabezado de la página -->
+<div class="bg-light py-4 mb-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="h2 mb-0">Categorías</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Categorías</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <p class="mb-0 text-muted">
+                    <i class="bi bi-grid-3x3-gap me-1"></i>Total: <span class="fw-bold">@Model.Categorias.Count</span> categorías
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <!-- Banner promocional -->
+    <div class="card mb-4 border-0 shadow-sm overflow-hidden">
+        <div class="card-body p-0">
+            <div class="row g-0 align-items-center">
+                <div class="col-md-8 p-4 p-md-5">
+                    <h2 class="display-6 fw-bold mb-3">Explora todas nuestras categorías</h2>
+                    <p class="lead mb-4">Encuentra productos de alta calidad organizados en categorías para tu comodidad.</p>
+                    <a href="@Url.Action("Tienda", "Home")" class="btn btn-primary btn-lg">
+                        <i class="bi bi-shop me-2"></i>Ver Todos los Productos
+                    </a>
+                </div>
+                <div class="col-md-4 d-none d-md-block">
+                    <img src="~/Content/img/Cat.png" alt="Categorías" class="img-fluid" style="max-height: 300px; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Listado de categorías -->
+    <div class="row g-4">
+        @foreach (var categoria in Model.Categorias)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 border-0 shadow-sm category-card">
+                    <div class="card-body text-center p-4">
+                        <div class="category-icon mb-3">
+                            @switch (categoria.Nombre.ToLower())
+                            {
+                                case "medicamentos":
+                                    <i class="bi bi-capsule text-primary display-4"></i>
+                                    break;
+                                case "cuidado personal":
+                                    <i class="bi bi-droplet text-info display-4"></i>
+                                    break;
+                                case "vitaminas y suplementos":
+                                    <i class="bi bi-egg-fried text-warning display-4"></i>
+                                    break;
+                                case "bebés y maternidad":
+                                    <i class="bi bi-balloon text-danger display-4"></i>
+                                    break;
+                                case "equipo médico":
+                                    <i class="bi bi-bandaid text-success display-4"></i>
+                                    break;
+                                default:
+                                    <i class="bi bi-box-seam text-secondary display-4"></i>
+                                    break;
+                            }
+                        </div>
+                        <h3 class="card-title h4 fw-bold mb-2">@categoria.Nombre</h3>
+                        <p class="card-text text-muted mb-3">
+                            @(string.IsNullOrEmpty(categoria.Descripcion)
+                                ? $"Explora nuestra selección de productos de {categoria.Nombre}."
+                                : categoria.Descripcion)
+                        </p>
+                        <div class="mb-3">
+                            <span class="badge bg-light text-dark">@categoria.CantidadProductos productos</span>
+                        </div>
+                        <a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = categoria.ID_Categoria } })" class="btn btn-outline-primary">
+                            <i class="bi bi-arrow-right me-1"></i>Ver Productos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Sección de promoción -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="display-5 fw-bold mb-3">¿Necesitas ayuda para encontrar un producto?</h2>
+                <p class="lead mb-4">Nuestro equipo de farmacéuticos está disponible para asesorarte y ayudarte a encontrar lo que necesitas.</p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="@Url.Action("Contact", "Home")" class="btn btn-light btn-lg">
+                        <i class="bi bi-chat-dots me-2"></i>Contactar Ahora
+                    </a>
+                    <a href="tel:8001234567" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-telephone me-2"></i>Llamar (800) 123-4567
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 d-none d-lg-block text-center">
+                <img src="/Content/images/pharmacist.png" alt="Farmacéutico" class="img-fluid rounded-circle" style="max-height: 300px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            // Animación para las tarjetas de categorías
+            $('.category-card').hover(
+                function() {
+                    $(this).addClass('shadow');
+                    $(this).find('.category-icon').addClass('animated');
+                },
+                function() {
+                    $(this).removeClass('shadow');
+                    $(this).find('.category-icon').removeClass('animated');
+                }
+            );
+        });
+    </script>
+}
+

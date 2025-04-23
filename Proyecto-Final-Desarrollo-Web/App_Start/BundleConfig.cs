@@ -37,7 +37,7 @@ namespace Proyecto_Final_Desarrollo_Web
                       "~/Content/bootstrap-icons/bootstrap-icons.css",
                       "~/Content/bootstrap-icons/bootstrap-icons.min.css",
                       "~/Content/notyf.min.css",
-                      "~/Content/dropzone.min.css", // Añadido para gestión de subida de imágenes
+                      "~/Content/dropzone.min.css", // Añadido para gestión de subida de imágenes                    
                       "~/Content/site.css"));
         }
     }

@@ -1,4 +1,6 @@
-﻿@model IEnumerable<Proyecto_Final_Desarrollo_Web.TableViewModels.ProveedorTableViewModel>
+﻿
+
+@model IEnumerable<Proyecto_Final_Desarrollo_Web.TableViewModels.ProveedorTableViewModel>
 @using Proyecto_Final_Desarrollo_Web.Helpers
 @{
     ViewBag.Title = "Lista de Proveedores";
@@ -110,7 +112,7 @@
                     @if (Model == null || !Model.Any())
                     {
                         <tr>
-                            <td colspan="8" class="text-center text-muted">
+                            <td colspan="5" class="text-center text-muted">
                                 @(ViewBag.MensajeVacio ?? "No se encontraron proveedores.")
                             </td>
                         </tr>
@@ -247,10 +249,18 @@
         }
 
         /* Animación al filtrar */
-        keyframes filtering {
-            0% { opacity: 1; }
-            50% { opacity: 0.7; }
-            100% { opacity: 1; }
+        @@keyframes filtering {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
 
         .filtering {

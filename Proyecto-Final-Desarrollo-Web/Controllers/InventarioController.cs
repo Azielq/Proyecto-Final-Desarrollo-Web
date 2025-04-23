@@ -187,7 +187,7 @@ namespace Proyecto_Final_Desarrollo_Web.Controllers
 
             if (!loteId.HasValue)
             {
-                
+
                 var lotes = db.Lotes
                     .Include(l => l.Productos)
                     .Where(l => !db.Inventario.Any(i => i.ID_Lote == l.id_Lote))
