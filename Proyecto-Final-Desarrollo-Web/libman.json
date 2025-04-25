@@ -1,0 +1,41 @@
+{
+  "version": "3.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "sweetalert2@11.15.10",
+      "destination": "Content/sweetalert2/"
+    },
+    {
+      "library": "bootstrap-icons@1.11.3",
+      "destination": "Content/bootstrap-icons/",
+      "files": [
+        "font/fonts/bootstrap-icons.woff",
+        "font/fonts/bootstrap-icons.woff2",
+        "font/bootstrap-icons.css",
+        "font/bootstrap-icons.min.css",
+        "font/bootstrap-icons.json"
+      ]
+    },
+    {
+      "library": "react-bootstrap@2.10.7",
+      "destination": "Scripts/react-bootstrap/"
+    },
+    {
+      "library": "react-bootstrap-table@4.3.1",
+      "destination": "Scripts/react-bootstrap-table/"
+    },
+    {
+      "library": "notyf@3.10.0",
+      "destination": "Content/notyf/"
+    },
+    {
+      "library": "dropzone@5.9.3",
+      "destination": "Content/dropzone/",
+      "files": [
+        "dropzone.min.js",
+        "dropzone.min.css"
+      ]
+    }
+  ]
+}

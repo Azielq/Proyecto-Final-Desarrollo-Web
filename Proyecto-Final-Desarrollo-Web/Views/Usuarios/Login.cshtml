@@ -1,0 +1,65 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.LoginViewModel
+@{
+    ViewBag.Title = "Login - FarmaU";
+}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="login-container">
+                <h1 class="text-center">Farma<span style="color:#2196F3">U</span></h1>
+                <h2 class="text-center mb-4"><i class="bi bi-box-arrow-in-right me-2"></i>Iniciar sesión</h2>
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ContainsKey("") && ViewData.ModelState[""].Errors.Count > 0)
+                {
+                    <div class="alert alert-danger text-center">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>@ViewData.ModelState[""].Errors[0].ErrorMessage
+                    </div>
+                }
+                @using (Html.BeginForm("Login", "Usuarios", FormMethod.Post, new { @class = "needs-validation" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label for="Usuario" class="form-label"><i class="bi bi-person-fill me-2"></i>Usuario o Correo</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                            @Html.TextBoxFor(m => m.Usuario, new { @class = "form-control", placeholder = "Ingrese su usuario o correo electrónico" })
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Usuario, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="form-text text-muted mb-3">
+                        <i class="bi bi-info-circle-fill me-1"></i>
+                        Puede iniciar sesión con su nombre de usuario o correo electrónico.
+                    </div>
+                    <div class="mb-3">
+                        <label for="Password" class="form-label"><i class="bi bi-lock-fill me-2"></i>@Html.LabelFor(m => m.Password)</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="bi bi-key"></i></span>
+                            @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Ingrese su contraseña", id = "Password" })
+                            <button class="btn btn-outline-secondary toggle-password" type="button" tabindex="-1" data-for="Password">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                        </div>
+                        @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                    </div>
+                    <div class="mb-3 form-check">
+                        @Html.CheckBoxFor(m => m.RememberMe, new { @class = "form-check-input" })
+                        <label class="form-check-label" for="RememberMe">
+                            <i class="bi bi-bookmark-check me-1"></i>@Html.LabelFor(m => m.RememberMe)
+                        </label>
+                    </div>
+                    <div class="mb-3 text-center">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-unlock me-2"></i>Iniciar sesión
+                        </button>
+                    </div>
+                    <div class="text-center">
+                        <p><i class="bi bi-question-circle me-1"></i>¿No tienes una cuenta? <a href="@Url.Action("Register", "Usuarios")"><i class="bi bi-person-plus me-1"></i>Regístrate</a></p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

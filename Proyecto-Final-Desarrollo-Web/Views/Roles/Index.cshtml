@@ -1,0 +1,668 @@
+﻿@model List<Proyecto_Final_Desarrollo_Web.Models.Roles>
+@using Proyecto_Final_Desarrollo_Web.Helpers
+@{
+    ViewBag.Title = "Gestión de Roles - FarmaU";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Roles</li>
+                </ol>
+            </nav>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0"><i class="bi bi-person-badge-fill me-2"></i>Gestión de Roles</h4>
+                        <button type="button" class="btn btn-light" data-bs-toggle="modal" data-bs-target="#createRolModal">
+                            <i class="bi bi-plus-circle-fill me-1"></i>Crear Rol
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>@ViewBag.ErrorMessage
+                        </div>
+                    }
+
+                    @if (TempData["Message"] != null)
+                    {
+                        <div class="alert alert-@TempData["MessageType"] alert-dismissible fade show" role="alert">
+                            <i class="bi bi-info-circle-fill me-2"></i>@TempData["Message"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <div class="mb-4">
+                        <form method="get" action="@Url.Action("Index", "Roles")" id="filterForm">
+                            <div class="row">
+                                <div class="col-md-9 mb-3 mb-md-0">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                        <input type="text" id="searchTerm" name="searchTerm" class="form-control"
+                                               placeholder="Buscar roles..." value="@ViewBag.SearchTerm">
+                                        <button class="btn btn-primary" type="submit">
+                                            <i class="bi bi-funnel me-1"></i>Filtrar
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <button type="button" id="btnReset" class="btn btn-secondary w-50">
+                                        <i class="bi bi-arrow-counterclockwise me-1"></i>Limpiar
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Conservar parámetros de paginación -->
+                            <input type="hidden" name="page" value="1" />
+                            <input type="hidden" name="pageSize" value="@ViewData["PageSize"]" />
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="rolesTable" class="table table-striped table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th><i class="bi bi-key me-1"></i>ID</th>
+                                    <th><i class="bi bi-tag me-1"></i>Nombre</th>
+                                    <th><i class="bi bi-people me-1"></i>Usuarios</th>
+                                    <th><i class="bi bi-gear-fill me-1"></i>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center py-4">
+                                            <i class="bi bi-info-circle text-muted me-2"></i>No se encontraron roles con los criterios de búsqueda especificados.
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var rol in Model)
+                                    {
+                                        <tr>
+                                            <td>@rol.ID_Rol</td>
+                                            <td>@rol.Nombre</td>
+                                            <td>
+                                                @if (rol.Usuarios != null)
+                                                {
+                                                    <span class="badge bg-info">@rol.Usuarios.Count</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">0</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-1">
+                                                    <button type="button" class="btn btn-sm btn-info viewDetails" data-bs-toggle="tooltip" title="Ver detalles"
+                                                            data-id="@rol.ID_Rol" data-nombre="@rol.Nombre" data-usuarios="@(rol.Usuarios != null ? rol.Usuarios.Count : 0)">
+                                                        <i class="bi bi-eye"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-primary editRol" data-bs-toggle="tooltip" title="Editar"
+                                                            data-id="@rol.ID_Rol" data-nombre="@rol.Nombre">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-sm btn-danger deleteRol" data-bs-toggle="tooltip" title="Eliminar"
+                                                            data-id="@rol.ID_Rol" data-nombre="@rol.Nombre" data-usuarios="@(rol.Usuarios != null ? rol.Usuarios.Count : 0)">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Controles de paginación usando el helper -->
+                    @Html.RenderPagination(
+                                  (int)ViewData["CurrentPage"],
+                                  (int)ViewData["TotalPages"],
+                                  (int)ViewData["PageSize"],
+                                  "Index",
+                                  "Roles",
+                                  new { searchTerm = ViewBag.SearchTerm }
+                              )
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Crear Rol -->
+<div class="modal fade" id="createRolModal" tabindex="-1" aria-labelledby="createRolModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="createRolModalLabel"><i class="bi bi-plus-circle-fill me-2"></i>Crear Nuevo Rol</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="createRolForm" action="@Url.Action("Create", "Roles")" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="Nombre" class="form-label">
+                            <i class="bi bi-tag-fill me-2"></i>Nombre del Rol
+                        </label>
+                        <input type="text" class="form-control" id="Nombre" name="Nombre" placeholder="Ingrese el nombre del rol" required>
+                        <div class="invalid-feedback">
+                            Por favor ingrese un nombre para el rol.
+                        </div>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle me-1"></i>El nombre del rol debe ser único y descriptivo.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Ver Detalles del Rol -->
+<div class="modal fade" id="detailsRolModal" tabindex="-1" aria-labelledby="detailsRolModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="detailsRolModalLabel"><i class="bi bi-info-circle me-2"></i>Detalles del Rol</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Primera columna: información general -->
+                    <div class="col-md-12 mb-4">
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Información General</h6>
+                            </div>
+                            <div class="card-body">
+                                <!-- Cambio a tabla para mejor alineación -->
+                                <table class="table table-borderless mb-0">
+                                    <tbody>
+                                        <tr>
+                                            <th style="width: 120px;"><i class="bi bi-key me-1"></i>ID:</th>
+                                            <td id="detailsID"></td>
+                                        </tr>
+                                        <tr>
+                                            <th><i class="bi bi-tag me-1"></i>Nombre:</th>
+                                            <td id="detailsNombre"></td>
+                                        </tr>
+                                        <tr>
+                                            <th><i class="bi bi-people me-1"></i>Usuarios:</th>
+                                            <td>
+                                                <span class="badge bg-info" id="detailsUsuarios"></span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Segunda columna: usuarios con este rol -->
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Usuarios con este rol</h6>
+                                <div class="spinner-border spinner-border-sm text-primary d-none" id="usuariosSpinner" role="status">
+                                    <span class="visually-hidden">Cargando...</span>
+                                </div>
+                            </div>
+                            <div class="card-body p-0" id="usuariosListContainer">
+                                <div class="text-center p-4">
+                                    <i class="bi bi-info-circle me-2"></i>No hay usuarios asignados a este rol.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnEditFromDetails">
+                    <i class="bi bi-pencil me-1"></i>Editar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Editar Rol -->
+<div class="modal fade" id="editRolModal" tabindex="-1" aria-labelledby="editRolModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="editRolModalLabel"><i class="bi bi-pencil-square me-2"></i>Editar Rol</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editRolForm" action="@Url.Action("Edit", "Roles")" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="editID_Rol" name="ID_Rol">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editNombre" class="form-label">
+                            <i class="bi bi-tag-fill me-2"></i>Nombre del Rol
+                        </label>
+                        <input type="text" class="form-control" id="editNombre" name="Nombre" placeholder="Ingrese el nombre del rol" required>
+                        <div class="invalid-feedback">
+                            Por favor ingrese un nombre para el rol.
+                        </div>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle me-1"></i>El nombre del rol debe ser único y descriptivo.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save me-1"></i>Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Eliminar Rol -->
+<div class="modal fade" id="deleteRolModal" tabindex="-1" aria-labelledby="deleteRolModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteRolModalLabel"><i class="bi bi-trash-fill me-2"></i>Eliminar Rol</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="deleteRolForm" action="@Url.Action("Delete", "Roles")" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="deleteID_Rol" name="id">
+                <div class="modal-body">
+                    <div id="deleteWarning" class="alert alert-warning" style="display: none;">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="bi bi-exclamation-triangle-fill fs-1"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">¡Advertencia! No se puede eliminar el rol</h5>
+                                <p class="mb-0">Este rol tiene <strong id="deleteUsuariosCount"></strong> usuarios asignados. Debe reasignar estos usuarios a otro rol antes de eliminarlo.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="deleteConfirm" class="alert alert-danger">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <i class="bi bi-exclamation-triangle-fill fs-1"></i>
+                            </div>
+                            <div>
+                                <h5 class="mb-1">¿Está seguro de que desea eliminar este rol?</h5>
+                                <p class="mb-0">Esta acción no se puede deshacer.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h6 class="mb-0">Información del Rol</h6>
+                        </div>
+                        <div class="card-body">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-4">ID:</dt>
+                                <dd class="col-sm-8" id="deleteID"></dd>
+
+                                <dt class="col-sm-4">Nombre:</dt>
+                                <dd class="col-sm-8" id="deleteNombre"></dd>
+
+                                <dt class="col-sm-4">Usuarios:</dt>
+                                <dd class="col-sm-8">
+                                    <span class="badge" id="deleteUsuariosBadge"></span>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x-circle me-1"></i>Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-danger" id="btnConfirmDelete">
+                        <i class="bi bi-trash me-1"></i>Eliminar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            // Inicializa tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            // Función para filtrar la tabla
+            $("#searchTerm").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#rolesTable tbody tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+            // Validación del formulario de crear rol
+            $("#createRolForm").submit(function (e) {
+                var form = $(this);
+                if (!form[0].checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                form.addClass('was-validated');
+            });
+
+            // Validación del formulario de editar rol
+            $("#editRolForm").submit(function (e) {
+                var form = $(this);
+                if (!form[0].checkValidity()) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                form.addClass('was-validated');
+            });
+
+            // Botón para limpiar filtros
+            $('#btnReset').on('click', function () {
+                $('#searchTerm').val('');
+                $('#filterForm').submit();
+            });
+
+            // Abre el modal de edición y llenar datos
+            $(".editRol").click(function () {
+                var id = $(this).data("id");
+                var nombre = $(this).data("nombre");
+
+                $("#editID_Rol").val(id);
+                $("#editNombre").val(nombre);
+
+                var editModal = new bootstrap.Modal(document.getElementById('editRolModal'));
+                editModal.show();
+            });
+            // Envia formulario de crear rol con AJAX
+            $("#createRolForm").submit(function (e) {
+                e.preventDefault();
+
+                if (this.checkValidity() === false) {
+                    e.stopPropagation();
+                    $(this).addClass('was-validated');
+                    return;
+                }
+
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            // Esto cierra el modal
+                            $('#createRolModal').modal('hide');
+
+                            // Esto muestra mensaje de éxito
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Rol creado!',
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(function () {
+                                // Recarga la página o actualizar la tabla
+                                location.reload();
+                            });
+                        } else {
+                            // Muestra error
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ha ocurrido un error al procesar la solicitud.'
+                        });
+                    }
+                });
+            });
+
+            // Abre modal de detalles y cargar datos
+            $(".viewDetails").click(function() {
+                var id = $(this).data("id");
+                var nombre = $(this).data("nombre");
+                var usuarios = $(this).data("usuarios");
+
+                $("#detailsID").text(id);
+                $("#detailsNombre").text(nombre);
+                $("#detailsUsuarios").text(usuarios);
+
+                // Prepara botón de editar desde detalles
+                $("#btnEditFromDetails").data("id", id);
+                $("#btnEditFromDetails").data("nombre", nombre);
+
+                // Esto muestra el modal
+                var detailsModal = new bootstrap.Modal(document.getElementById('detailsRolModal'));
+                detailsModal.show();
+
+                // Carga usuarios automáticamente
+                loadUsuarios(id);
+            });
+
+            // Edita desde modal de detalles
+            $("#btnEditFromDetails").click(function() {
+                var id = $(this).data("id");
+                var nombre = $(this).data("nombre");
+
+                // Cierra modal de detalles
+                var detailsModal = bootstrap.Modal.getInstance(document.getElementById('detailsRolModal'));
+                detailsModal.hide();
+
+                // Abre modal de edición
+                $("#editID_Rol").val(id);
+                $("#editNombre").val(nombre);
+
+                var editModal = new bootstrap.Modal(document.getElementById('editRolModal'));
+                editModal.show();
+            });
+
+            // Función para cargar usuarios de un rol
+           function loadUsuarios(id) {
+                $("#usuariosSpinner").removeClass("d-none");
+
+                $.ajax({
+                    url: '@Url.Action("GetUsuariosByRol", "Roles")',
+                    type: 'GET',
+                    data: { id: id },
+                    success: function(response) {
+                        $("#usuariosSpinner").addClass("d-none");
+
+                        if (response.length > 0) {
+                            var html = '<div class="table-responsive"><table class="table table-sm table-striped mb-0">';
+                            html += '<thead><tr><th>Usuario</th><th>Nombre</th><th>Correo</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>';
+
+                            $.each(response, function(i, user) {
+                                var estadoClass = '';
+                                var estadoText = '';
+
+                                switch(user.estado) {
+                                    case 1: estadoClass = 'bg-success'; estadoText = 'Activo'; break;
+                                    case 0: estadoClass = 'bg-danger'; estadoText = 'Inactivo'; break;
+                                    case 2: estadoClass = 'bg-warning'; estadoText = 'Bloqueado'; break;
+                                    default: estadoClass = 'bg-secondary'; estadoText = 'Desconocido';
+                                }
+
+                                        html += '<tr>';
+                                        html += '<td>' + user.usuario + '</td>';
+                                        html += '<td>' + user.nombreCompleto + '</td>';
+                                        html += '<td>' + user.correo + '</td>';
+                                        html += '<td><span class="badge ' + estadoClass + '">' + estadoText + '</span></td>';
+                                        html += '<td><a href="@Url.Action("Details", "Usuarios")/' + user.ID_Usuario + '" class="btn btn-sm btn-info" target="_blank" title="Ver detalles"><i class="bi bi-eye"></i><span class="hover-text"></span></a></td>';
+                                        html += '</tr>';
+                                    });
+
+                            html += '</tbody></table></div>';
+                            $("#usuariosListContainer").html(html);
+                            // Se asegura de que el scroll funcione correctamente
+                            if (response.length > 5) {
+                                $("#usuariosListContainer").addClass("user-list-container");
+                            } else {
+                                $("#usuariosListContainer").removeClass("user-list-container");
+                            }
+                        } else {
+                            $("#usuariosListContainer").html('<div class="text-center p-3"><i class="bi bi-info-circle text-muted me-2"></i>No hay usuarios asignados a este rol.</div>');
+                        }
+                    },
+                    error: function() {
+                        $("#usuariosSpinner").addClass("d-none");
+                        $("#usuariosListContainer").html('<div class="alert alert-danger m-3"><i class="bi bi-exclamation-triangle-fill me-2"></i>Error al cargar los usuarios. Intente nuevamente.</div>');
+                    }
+                });
+            }
+
+            // Envia formulario de editar rol con AJAX
+            $("#editRolForm").submit(function (e) {
+                e.preventDefault();
+
+                if (this.checkValidity() === false) {
+                    e.stopPropagation();
+                    $(this).addClass('was-validated');
+                    return;
+                }
+
+                $.ajax({
+                    url: this.action,
+                    type: this.method,
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            // Cierra el modal
+                            $('#editRolModal').modal('hide');
+
+                            // Esto muestra mensaje de éxito
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Rol actualizado!',
+                                text: response.message,
+                                timer: 2000,
+                                showConfirmButton: false
+                            }).then(function () {
+                                // Recarga la página o actualizar la tabla
+                                location.reload();
+                            });
+                        } else {
+                            // Muestra error
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ha ocurrido un error al procesar la solicitud.'
+                        });
+                    }
+                });
+            });
+        });
+        // Abre modal de eliminación y llenar datos
+        $(".deleteRol").click(function () {
+            var id = $(this).data("id");
+            var nombre = $(this).data("nombre");
+            var usuarios = $(this).data("usuarios");
+
+            $("#deleteID_Rol").val(id);
+            $("#deleteID").text(id);
+            $("#deleteNombre").text(nombre);
+            $("#deleteUsuariosCount").text(usuarios);
+
+            // Configura el badge de usuarios
+            if (usuarios > 0) {
+                $("#deleteUsuariosBadge").removeClass().addClass("badge bg-warning").text(usuarios);
+                $("#deleteWarning").show();
+                $("#deleteConfirm").hide();
+                $("#btnConfirmDelete").prop("disabled", true);
+            } else {
+                $("#deleteUsuariosBadge").removeClass().addClass("badge bg-success").text("0");
+                $("#deleteWarning").hide();
+                $("#deleteConfirm").show();
+                $("#btnConfirmDelete").prop("disabled", false);
+            }
+
+            var deleteModal = new bootstrap.Modal(document.getElementById('deleteRolModal'));
+            deleteModal.show();
+        });
+
+        // Envia formulario de eliminar rol con AJAX
+        $("#deleteRolForm").submit(function (e) {
+            e.preventDefault();
+
+            $.ajax({
+                url: this.action,
+                type: this.method,
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        // Cierra modal
+                        $('#deleteRolModal').modal('hide');
+
+                        // Esto muestra mensaje de éxito con SweetAlert2
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Rol eliminado!',
+                            text: response.message,
+                            timer: 2000,
+                            showConfirmButton: false
+                        }).then(function () {
+                            // Recarga la página
+                            location.reload();
+                        });
+                    } else {
+                        // Muestra error
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: response.message
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Ha ocurrido un error al procesar la solicitud.'
+                    });
+                }
+            });
+        });
+    </script>
+}

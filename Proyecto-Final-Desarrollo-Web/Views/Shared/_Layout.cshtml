@@ -1,0 +1,460 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet"
+          href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Web para gestión de farmacia</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark header-content">
+            <div class="container">
+                <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                    <div class="logo">
+                        @Html.Raw("<h1>Farma<span>U</span></h1>")
+                    </div>
+                </a>
+                <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" title="Toggle navigation" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index", "Home")">
+                                <i class="bi bi-house-door nav-icon"></i>Home
+                            </a>
+                        </li>
+                        @if (Session["UserRoleID"] != null
+                        && new[] { 1, 4, 7 }.Contains(Convert.ToInt32(Session["UserRoleID"])))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" href="@Url.Action("Index", "Facturacion")">
+                                    <i class="bi bi-receipt nav-icon"></i>Facturación
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="posDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-cash-register nav-icon"></i>Ventas
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="posDropdown">
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("POS", "Facturacion")">
+                                            <i class="bi bi-cart-plus me-2"></i>Punto de Venta (POS)
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="@Url.Action("Reports", "Facturacion")">
+                                            <i class="bi bi-bar-chart me-2"></i>Reportes de Ventas
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Index2", "Home")">
+                                <i class="bi bi bi-prescription2 nav-icon"></i>Farmacia
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Tienda", "Home")">
+                                <i class="bi bi bi-shop nav-icon"></i>Tienda
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("About", "Home")">
+                                <i class="bi bi-info-circle nav-icon"></i>About
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="@Url.Action("Contact", "Home")">
+                                <i class="bi bi-envelope nav-icon"></i>Contact
+                            </a>
+                        </li>
+
+
+
+                        <li class="nav-item">
+                            <a class="nav-link position-relative" href="@Url.Action("Index", "Carrito")">
+                                <i class="bi bi-cart-fill nav-icon"></i>Carrito
+                                @{
+                                    int totalItems = 0;
+                                    if (Session["UserID"] != null)
+                                    {
+                                        try
+                                        {
+                                            using (var db = new Proyecto_Final_Desarrollo_Web.Models.FarmaUEntities())
+                                            {
+                                                int userId = Convert.ToInt32(Session["UserID"]);
+                                                var items = db.Carrito
+                                                    .Where(c => c.ID_Usuario == userId)
+                                                    .Select(c => c.Cantidad)
+                                                    .ToList();
+
+                                                if (items.Any())
+                                                {
+                                                    totalItems = items.Sum();
+                                                }
+                                            }
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            // En caso de error, simplemente no mostramos contador
+                                            totalItems = 0;
+                                            // Opcionalmente registrar el error
+                                            System.Diagnostics.Debug.WriteLine("Error al obtener cantidad de items: " + ex.Message);
+                                        }
+                                    }
+                                }
+                                @if (totalItems > 0)
+                                {
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        @totalItems
+                                    </span>
+                                }
+                            </a>
+                        </li>
+
+
+                    </ul>
+
+                    
+
+                    <!-- Menú de usuario -->
+                    <div class="dropdown">
+                        @if (Session["UserID"] == null)
+                        {
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i>
+                                <span class="d-none d-md-inline">Cuenta</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Login", "Usuarios")">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar sesión
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Register", "Usuarios")">
+                                        <i class="bi bi-person-plus me-2"></i>Registrarse
+                                    </a>
+                                </li>
+                            </ul>
+                        }
+                        else
+                        {
+                            <button class="btn btn-outline-light dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle me-1"></i>
+                                <span class="d-none d-md-inline">@Session["UserName"]</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <div class="dropdown-item">
+                                        <i class="bi bi-person-badge me-2"></i>@Session["UserFullName"]
+                                    </div>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Details", "Usuarios", new { id = Session["UserID"] })">
+                                        <i class="bi bi-person me-2"></i>Mi Perfil
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("HistorialCompras", "Usuarios", new { id = Session["UserID"] })">
+                                        <i class="bi bi-bag me-2"></i>Mis Compras
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("CambiarPassword", "Usuarios", new { id = Session["UserID"] })">
+                                        <i class="bi bi-shield-lock me-2"></i>Cambiar Contraseña
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="@Url.Action("Logout", "Usuarios")">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                                    </a>
+                                </li>
+                            </ul>
+                        }
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container body-content">
+        @using System.Web
+
+        @if (TempData["Message"] != null)
+        {
+            if (TempData["UseSweet"] != null && (bool)TempData["UseSweet"])
+            {
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var messageType = '@TempData["MessageType"]';
+                        var iconType = 'info';
+
+                        // Esto me mapea tipos de mensajes a iconos de SweetAlert2
+                        switch (messageType) {
+                            case "success":
+                                iconType = 'success';
+                                break;
+                            case "error":
+                            case "danger":
+                                iconType = 'error';
+                                break;
+                            case "warning":
+                                iconType = 'warning';
+                                break;
+                            default:
+                                iconType = 'info';
+                                break;
+                        }
+
+                        Swal.fire({
+                            icon: iconType,
+                            title: '@Html.Raw(HttpUtility.HtmlDecode(TempData["Message"]?.ToString() ?? ""))',
+                            html: '@Html.Raw(HttpUtility.HtmlDecode(TempData["MessageDetail"]?.ToString() ?? ""))',
+                            showConfirmButton: true,
+                            timer: 5000,
+                            timerProgressBar: true
+                        });
+                    });
+                </script>
+            }
+            else
+            {
+                <div class="alert alert-@(TempData["MessageType"] ?? "info") alert-dismissible fade show mt-3" role="alert">
+                    @if (TempData["MessageType"]?.ToString() == "success")
+                    {
+                        <i class="bi bi-check-circle-fill me-2"></i>
+                    }
+                    else if (TempData["MessageType"]?.ToString() == "danger" || TempData["MessageType"]?.ToString() == "error")
+                    {
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    }
+                    else if (TempData["MessageType"]?.ToString() == "warning")
+                    {
+                        <i class="bi bi-exclamation-circle-fill me-2"></i>
+                    }
+                    else
+                    {
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                    }
+                    @Html.Raw(HttpUtility.HtmlDecode(TempData["Message"]?.ToString() ?? ""))
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+        }
+
+        @RenderBody()
+
+
+    <footer id="contacto">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3><i class="bi bi-capsule me-2"></i>FarmaU</h3>
+                    <p><i class="bi bi-clock me-2"></i>Tu farmacia digital de confianza, disponible las 24 horas del día, los 7 días de la semana.</p>
+                    <div class="social-links">
+                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="Twitter"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" data-bs-toggle="tooltip" data-bs-placement="top" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3><i class="bi bi-list me-2"></i>Navegación</h3>
+                    <ul>
+                        <li><a href="#inicio"><i class="bi bi-house-door"></i> Inicio</a></li>
+                        <li><a href="#categorias"><i class="bi bi-grid"></i> Categorías</a></li>
+                        <li><a href="#servicios"><i class="bi bi-stars"></i> Servicios</a></li>
+                        <li><a href="#testimonios"><i class="bi bi-chat-quote"></i> Testimonios</a></li>
+                        <li><a href="#app"><i class="bi bi-phone"></i> App</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3><i class="bi bi-tags me-2"></i>Categorías</h3>
+                    <ul>
+                        <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 1, Nombre = "Analgésicos" } })"><i class="bi bi-prescription2"></i> Medicamentos</a></li>
+                        <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 2, Nombre = "Antibióticos" } })"><i class="bi bi-droplet"></i> Cuidado Personal</a></li>
+                        <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 3, Nombre = "Antiinflamatorios" } })"><i class="bi bi-capsule"></i> Vitaminas y Suplementos</a></li>
+                        <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 4, Nombre = "Antihistamínicos" } })"><i class="bi bi-balloon"></i> Bebés y Maternidad</a></li>
+                        <li><a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 5, Nombre = "Equipo Médico" } })"><i class="bi bi-bandaid"></i> Equipo Médico</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3><i class="bi bi-chat-dots me-2"></i>Contacto</h3>
+                    <p><i class="bi bi-envelope"></i> Email: info@farmau.com</p>
+                    <p><i class="bi bi-telephone"></i> Teléfono: (800) 123-4567</p>
+                    <p><i class="bi bi-geo-alt"></i> Dirección: Av. Principal #123, Ciudad</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p><i class="bi bi-c-circle me-1"></i> @DateTime.Now.Year FarmaU. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/libs")
+    <script src="~/Scripts/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+
+    @RenderSection("scripts", required: false)
+    @Html.Partial("_SweetAlertPartial")
+    <script>
+        // Verifica si SweetAlert2 está cargado correctamente
+        document.addEventListener('DOMContentLoaded', function () {
+            if (typeof Swal === 'undefined') {
+                console.error('SweetAlert2 no está cargado correctamente. Verifica las referencias de scripts.');
+            } else {
+                console.log('SweetAlert2 cargado correctamente.');
+            }
+        });
+
+        // Versión mejorada del JavaScript para actualizar el contador del carrito con AJAX
+        // Agregar este código en un archivo JS o en la sección scripts del layout
+
+        $(document).ready(function () {
+            // Función para actualizar el contador del carrito mediante AJAX
+            function actualizarContadorCarritoAJAX() {
+                $.ajax({
+                    url: '/Carrito/ObtenerTotalElementos',
+                    type: 'GET',
+                    success: function (response) {
+                        var totalItems = parseInt(response) || 0;
+                        var $badge = $('.nav-link .badge');
+
+                        if (totalItems > 0) {
+                            if ($badge.length === 0) {
+                                $('.nav-link.position-relative').append(
+                                    '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">' +
+                                    totalItems +
+                                    '</span>'
+                                );
+                            } else {
+                                $badge.text(totalItems);
+                            }
+                        } else {
+                            $badge.remove();
+                        }
+                    },
+                    error: function () {
+                        console.error('Error al obtener cantidad de productos en el carrito');
+                    }
+                });
+            }
+
+            // Actualizar contador al cargar la página
+            actualizarContadorCarritoAJAX();
+
+            // Cuando se hace clic en un botón para añadir al carrito
+            $(document).on('click', '.add-to-cart-btn', function (e) {
+                e.preventDefault();
+
+                var idProducto = $(this).data('producto-id');
+                var cantidad = parseInt($('#cantidad').val() || 1);
+
+                $.ajax({
+                    url: '/Carrito/AgregarAjax',
+                    type: 'POST',
+                    data: { idProducto: idProducto, cantidad: cantidad },
+                    success: function (response) {
+                        if (response.success) {
+                            // Mostrar mensaje de éxito
+                            Swal.fire({
+                                icon: 'success',
+                                title: '¡Producto agregado!',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                            // Actualizar el contador
+                            var $badge = $('.nav-link .badge');
+
+                            if ($badge.length === 0) {
+                                $('.nav-link.position-relative').append(
+                                    '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge-pulse">' +
+                                    response.totalItems +
+                                    '</span>'
+                                );
+                            } else {
+                                $badge.text(response.totalItems);
+                                $badge.addClass('cart-badge-pulse');
+                            }
+
+                            // Remover la clase de animación después de completarla
+                            setTimeout(function () {
+                                $('.nav-link .badge').removeClass('cart-badge-pulse');
+                            }, 500);
+
+                        } else {
+                            // Mostrar mensaje de error
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Ocurrió un error al agregar el producto al carrito'
+                        });
+                    }
+                });
+            });
+        });
+
+        // Agregar este código en un archivo JS o en la sección scripts del layout
+
+        // Función para actualizar el contador del carrito cuando se añade un producto
+        function actualizarContadorCarrito() {
+            // En una implementación real, esto haría una petición AJAX
+            // Por ahora, simplificamos obteniendo el elemento actual y sumando 1
+            var $badge = $('.nav-link .badge');
+            if ($badge.length > 0) {
+                var currentCount = parseInt($badge.text()) || 0;
+                $badge.text(currentCount + 1);
+
+                // Añadir clase para la animación
+                $badge.addClass('cart-badge-pulse');
+
+                // Remover la clase después de la animación
+                setTimeout(function () {
+                    $badge.removeClass('cart-badge-pulse');
+                }, 500);
+            } else {
+                // Si no existe el badge, crearlo
+                $('.nav-link.position-relative').append(
+                    '<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge-pulse">1</span>'
+                );
+
+                // Remover la clase después de la animación
+                setTimeout(function () {
+                    $('.nav-link .badge').removeClass('cart-badge-pulse');
+                }, 500);
+            }
+        }
+
+        // Ejemplo de uso - esto se llamaría cuando se añade un producto al carrito
+        $(document).ready(function () {
+            // Cuando se hace clic en un botón para añadir al carrito
+            $('.add-to-cart-btn').on('click', function () {
+                // Lógica para añadir al carrito...
+
+                // Luego actualizar el contador
+                // actualizarContadorCarrito();
+            });
+        });
+    </script>
+</body>
+</html>

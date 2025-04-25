@@ -1,0 +1,198 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.UsuarioViewModel
+@{
+    ViewBag.Title = "Editar Perfil - FarmaU";
+    ViewBag.CardHeaderClass = "primary";
+    ViewBag.IsAdmin = Session["UserRoleID"] != null && Convert.ToInt32(Session["UserRoleID"]) == 1;
+    ViewBag.MostrarRol = Session["UserRoleID"] != null && Convert.ToInt32(Session["UserRoleID"]) == 1;
+    ViewBag.IsEdit = true;
+}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Details", "Usuarios", new { id = Model.ID_Usuario })">Mi Perfil</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Editar Perfil</li>
+                </ol>
+            </nav>
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Editar Perfil</h4>
+                </div>
+                <div class="card-body">
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Error:</strong>
+                            @Html.ValidationSummary(false, "", new { @class = "mb-0 list-unstyled" })
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("Edit", "Usuarios", FormMethod.Post, new
+                    {
+                        @class = "needs-validation",
+                        data_confirm_submit = "true",
+                        data_confirm_title = "Confirmar cambios",
+                        data_confirm_text = "¿Estás seguro de que deseas guardar los cambios realizados?",
+                        data_confirm_button_text = "Sí, guardar cambios"
+                    }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(model => model.ID_Usuario)
+                        @Html.HiddenFor(model => model.ID_Persona)
+
+                        <div class="card mb-4">
+                            <div class="card-header bg-@ViewBag.CardHeaderClass text-white">
+                                <h5 class="mb-0"><i class="bi bi-person-badge me-2"></i>Información personal</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        <label for="Nombre" class="form-label">
+                                            <i class="bi bi-person-fill me-2"></i>@Html.DisplayNameFor(m => m.Nombre)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.Nombre, new { @class = "form-control", placeholder = "Ingrese su nombre" })
+                                        @Html.ValidationMessageFor(m => m.Nombre, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="Apellido_1" class="form-label">
+                                            <i class="bi bi-person-fill me-2"></i>@Html.DisplayNameFor(m => m.Apellido_1)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.Apellido_1, new { @class = "form-control", placeholder = "Ingrese primer apellido" })
+                                        @Html.ValidationMessageFor(m => m.Apellido_1, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="Apellido_2" class="form-label">
+                                            <i class="bi bi-person-fill me-2"></i>@Html.DisplayNameFor(m => m.Apellido_2)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.Apellido_2, new { @class = "form-control", placeholder = "Ingrese segundo apellido" })
+                                        @Html.ValidationMessageFor(m => m.Apellido_2, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="tipo_documento" class="form-label">
+                                            <i class="bi bi-card-text me-2"></i>@Html.DisplayNameFor(m => m.tipo_documento)
+                                        </label>
+                                        @Html.DropDownListFor(m => m.tipo_documento, new List<SelectListItem>
+                                        {
+                                            new SelectListItem { Text = "Seleccione...", Value = "" },
+                                            new SelectListItem { Text = "DNI", Value = "DNI" },
+                                            new SelectListItem { Text = "Pasaporte", Value = "Pasaporte" },
+                                            new SelectListItem { Text = "Cédula", Value = "Cedula" }
+                                        }, new { @class = "form-select" })
+                                        @Html.ValidationMessageFor(m => m.tipo_documento, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="numero_documento" class="form-label">
+                                            <i class="bi bi-123 me-2"></i>@Html.DisplayNameFor(m => m.numero_documento)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.numero_documento, new { @class = "form-control", placeholder = "Ingrese número de documento" })
+                                        @Html.ValidationMessageFor(m => m.numero_documento, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label for="Correo" class="form-label">
+                                            <i class="bi bi-envelope-fill me-2"></i>@Html.DisplayNameFor(m => m.Correo)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.Correo, new { @class = "form-control", placeholder = "ejemplo@correo.com", type = "email" })
+                                        @Html.ValidationMessageFor(m => m.Correo, "", new { @class = "text-danger" })
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="Teléfono" class="form-label">
+                                            <i class="bi bi-telephone-fill me-2"></i>@Html.DisplayNameFor(m => m.Teléfono)
+                                        </label>
+                                        @Html.TextBoxFor(m => m.Teléfono, new { @class = "form-control", placeholder = "(123) 456-7890" })
+                                        @Html.ValidationMessageFor(m => m.Teléfono, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="dirección" class="form-label">
+                                        <i class="bi bi-geo-alt-fill me-2"></i>@Html.DisplayNameFor(m => m.dirección)
+                                    </label>
+                                    @Html.TextBoxFor(m => m.dirección, new { @class = "form-control", placeholder = "Ingrese su dirección" })
+                                    @Html.ValidationMessageFor(m => m.dirección, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-header bg-@ViewBag.CardHeaderClass text-white">
+                                <h5 class="mb-0"><i class="bi bi-shield-lock me-2"></i>Información de cuenta</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="usuario" class="form-label">
+                                        <i class="bi bi-person-fill me-2"></i>@Html.DisplayNameFor(m => m.usuario)
+                                    </label>
+                                    @Html.TextBoxFor(m => m.usuario, new { @class = "form-control", placeholder = "Ingrese nombre de usuario" })
+                                    @Html.ValidationMessageFor(m => m.usuario, "", new { @class = "text-danger" })
+                                </div>
+
+                                @if (ViewBag.IsAdmin && ViewBag.MostrarRol)
+                                {
+                                    <div class="mb-3">
+                                        <label for="ID_Rol" class="form-label">
+                                            <i class="bi bi-person-badge-fill me-2"></i>@Html.DisplayNameFor(m => m.ID_Rol)
+                                        </label>
+                                        @Html.DropDownListFor(m => m.ID_Rol, (SelectList)ViewBag.ID_Rol, "Seleccione Rol...", new { @class = "form-select" })
+                                        @Html.ValidationMessageFor(m => m.ID_Rol, "", new { @class = "text-danger" })
+                                    </div>
+                                }
+                                else
+                                {
+                                    @Html.HiddenFor(m => m.ID_Rol)
+                                }
+
+                                <!-- Enlace para cambiar contraseña -->
+                                <div class="mb-3">
+                                    <a href="@Url.Action("CambiarPassword", "Usuarios", new { id = Model.ID_Usuario })" class="btn btn-warning">
+                                        <i class="bi bi-shield-lock me-2"></i>Cambiar Contraseña
+                                    </a>
+                                    <small class="text-muted ms-2">
+                                        <i class="bi bi-info-circle me-1"></i>Utilice esta opción para cambiar su contraseña de forma segura.
+                                    </small>
+                                </div>
+
+                                @if (ViewBag.IsAdmin && ViewBag.IsEdit)
+                                {
+                                    <div class="mb-3">
+                                        <label for="estado" class="form-label">
+                                            <i class="bi bi-toggle-on me-2"></i>@Html.DisplayNameFor(m => m.estado)
+                                        </label>
+                                        @Html.DropDownListFor(m => m.estado, new List<SelectListItem>
+                                        {
+                                            new SelectListItem { Text = "Activo", Value = "1" },
+                                            new SelectListItem { Text = "Inactivo", Value = "0" },
+                                            new SelectListItem { Text = "Bloqueado", Value = "2" }
+                                        }, new { @class = "form-select" })
+                                        @Html.ValidationMessageFor(m => m.estado, "", new { @class = "text-danger" })
+                                    </div>
+                                }
+                                else
+                                {
+                                    @Html.HiddenFor(m => m.estado)
+                                }
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="@Url.Action("Details", "Usuarios", new { id = Model.ID_Usuario })" class="btn btn-secondary">
+                                <i class="bi bi-x-circle me-1"></i>Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save me-1"></i>Guardar Cambios
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

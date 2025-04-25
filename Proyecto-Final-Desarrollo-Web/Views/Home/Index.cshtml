@@ -1,0 +1,211 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmaU - Tu farmacia de confianza</title>
+
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero" id="inicio">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h2>Tu farmacia de confianza, ahora digital</h2>
+                    <p>Medicamentos, productos de cuidado personal y asesoría profesional. Todo en un solo lugar, con entrega a domicilio en menos de 30 minutos.</p>
+                    <a href="@Url.Action("Tienda", "Home")" class="btn">Comprar ahora</a>
+                </div>
+                <div class="hero-image">
+                    <img src="..\Content\img\FarmaU.png" alt="Farmacia Digital">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categorías -->
+    <section class="categories" id="categorias">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nuestras Categorías</h2>
+                <p>Descubre nuestra amplia selección de productos clasificados para facilitar tu búsqueda.</p>
+            </div>
+            <div class="category-grid">
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="..\Content\img\medicamentos.jpg" alt="Analgésicos">
+                    </div>
+                    <div class="category-content">
+                        <h3>Medicamentos</h3>
+                        <p>Con y sin receta médica, para todas tus necesidades de salud.</p>
+                        <a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 1, Nombre = "Analgésicos" } })" class="btn">Ver productos</a>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="..\Content\img\CUIDADO-PERSONAL-COLON.jpg" alt="Antibióticos">
+                    </div>
+                    <div class="category-content">
+                        <h3>Cuidado Personal</h3>
+                        <p>Productos de higiene y belleza para tu bienestar diario.</p>
+                        <a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 2, Nombre = "Antibióticos" } })" class="btn">Ver productos</a>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="..\Content\img\OIP (1).jpeg" alt="Antiinflamatorios">
+                    </div>
+                    <div class="category-content">
+                        <h3>Vitaminas y Suplementos</h3>
+                        <p>Complementa tu alimentación con lo mejor para tu salud.</p>
+                        <a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 3, Nombre = "Antiinflamatorios" } })" class="btn">Ver productos</a>
+                    </div>
+                </div>
+                <div class="category-card">
+                    <div class="category-image">
+                        <img src="..\Content\img\maternidad.jpg" alt="Antihistamínicos">
+                    </div>
+                    <div class="category-content">
+                        <h3>Bebés y Maternidad</h3>
+                        <p>Todo lo que mamá y bebé necesitan para su cuidado.</p>
+                        <a href="@Url.Action("Tienda", "Home", new { filtro = new { CategoriaId = 4, Nombre = "Antihistamínicos" } })" class="btn">Ver productos</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Servicios -->
+    <section class="services" id="servicios">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nuestros Servicios</h2>
+                <p>En FarmaU nos preocupamos por ofrecerte la mejor experiencia y cuidado integral.</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="..\Content\img\entrega.jpg" alt="Entrega Rápida">
+                    </div>
+                    <h3>Entrega Express</h3>
+                    <p>Recibe tus medicamentos en menos de 30 minutos directamente en la puerta de tu casa.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="..\Content\img\asesoria.jpg" alt="Asesoría Farmacéutica">
+                    </div>
+                    <h3>Asesoría Farmacéutica</h3>
+                    <p>Consulta con nuestros farmacéuticos profesionales a través del chat o videollamada.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="..\Content\img\lealtad.jpg" alt="Programa de Lealtad">
+                    </div>
+                    <h3>Programa de Lealtad</h3>
+                    <p>Gana puntos en cada compra y canjéalos por descuentos especiales.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="..\Content\img\recordatorio.jpg" alt="Recordatorios">
+                    </div>
+                    <h3>Recordatorios de Medicación</h3>
+                    <p>Configura alertas para no olvidar tomar tus medicamentos a tiempo.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="..\Content\img\recetas.jpg" alt="Recetas Digitales">
+                    </div>
+                    <h3>Recetas Digitales</h3>
+                    <p>Sube tus recetas médicas directamente desde la app y recibe tus medicamentos.</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">
+                        <img src="..\Content\img\subscripcion.jpg" alt="Suscripción">
+                    </div>
+                    <h3>Suscripción de Medicamentos</h3>
+                    <p>Recibe automáticamente tus medicamentos recurrentes sin preocupaciones.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section class="testimonials" id="testimonios">
+        <div class="container">
+            <div class="section-title">
+                <h2>Lo que dicen nuestros clientes</h2>
+                <p>La satisfacción de nuestros usuarios es nuestra mayor recompensa.</p>
+            </div>
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">FarmaU ha revolucionado la forma en que compro mis medicamentos. La app es super intuitiva y la entrega es realmente rápida. ¡En menos de 20 minutos tenía mi pedido en casa!</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="..\Content\img\usuario.jpg" alt="Cliente">
+                            </div>
+                            <div class="author-info">
+                                <h4>María González</h4>
+                                <p>Cliente desde 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">Lo que más valoro es la asesoría farmacéutica. Tenía dudas sobre la interacción de mis medicamentos y pude consultar con un profesional por videollamada. Servicio excepcional.</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="..\Content\img\usuario.jpg" alt="Cliente">
+                            </div>
+                            <div class="author-info">
+                                <h4>José Martínez</h4>
+                                <p>Cliente desde 2022</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <div class="testimonial-content">
+                        <p class="testimonial-text">El sistema de recordatorios me ha ayudado muchísimo con mi tratamiento. Ya no olvido tomar mis medicamentos a tiempo y mi salud ha mejorado notablemente. ¡Gracias FarmaU!</p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">
+                                <img src="..\Content\img\usuario.jpg" alt="Cliente">
+                            </div>
+                            <div class="author-info">
+                                <h4>Ana López</h4>
+                                <p>Cliente desde 2023</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Descarga App -->
+    <section class="app-download" id="app">
+        <div class="container">
+            <div class="app-content">
+                <h2>Descarga nuestra app</h2>
+                <p>Accede a todos nuestros servicios desde tu dispositivo móvil. Rápido, fácil y seguro.</p>
+                <div class="app-buttons">
+                    <a href="#" class="app-btn">
+                        <img src="..\Content\img\googleplay.jpg" alt="Google Play">
+                        <span>Google Play</span>
+                    </a>
+                    <a href="#" class="app-btn">
+                        <img src="..\Content\img\appstore.jpg" alt="App Store">
+                        <span>App Store</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

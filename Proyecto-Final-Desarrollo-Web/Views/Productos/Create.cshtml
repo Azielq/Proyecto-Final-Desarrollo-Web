@@ -1,0 +1,266 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.ProductoViewModel
+
+@{
+    ViewBag.Title = "Crear Producto";
+    ViewBag.NeedsTinyMCE = true;
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Productos")">Productos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Crear Producto</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4">@ViewBag.Title</h2>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Nuevo Producto</h5>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("Create", "Productos", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation", data_confirm_submit = "true", data_confirm_title = "Confirmar creación", data_confirm_text = "¿Está seguro de que desea crear este producto?" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            @Html.LabelFor(model => model.Nombre, new { @class = "form-label" })
+                            @Html.TextBoxFor(model => model.Nombre, new { @class = "form-control", placeholder = "Nombre del producto" })
+                            @Html.ValidationMessageFor(model => model.Nombre, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(model => model.ID_Categoría, new { @class = "form-label" })
+                            @Html.DropDownListFor(model => model.ID_Categoría, (SelectList)ViewBag.ID_Categoría, "Seleccione una categoría", new { @class = "form-select" })
+                            @Html.ValidationMessageFor(model => model.ID_Categoría, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    @Html.LabelFor(model => model.precio_compra, new { @class = "form-label" })
+                                    @Html.TextBoxFor(model => model.precio_compra, "{0:0.00}", new { @class = "form-control", type = "number", step = "0.01", min = "0.01" })
+                                    @Html.ValidationMessageFor(model => model.precio_compra, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    @Html.LabelFor(model => model.precio_venta, new { @class = "form-label" })
+                                    @Html.TextBoxFor(model => model.precio_venta, "{0:0.00}", new { @class = "form-control", type = "number", step = "0.01", min = "0.01" })
+                                    @Html.ValidationMessageFor(model => model.precio_venta, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    @Html.LabelFor(model => model.Marca, new { @class = "form-label" })
+                                    @Html.TextBoxFor(model => model.Marca, new { @class = "form-control", placeholder = "Marca del producto" })
+                                    @Html.ValidationMessageFor(model => model.Marca, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    @Html.LabelFor(model => model.UnidadDeVenta, new { @class = "form-label" })
+                                    @Html.TextBoxFor(model => model.UnidadDeVenta, new { @class = "form-control", placeholder = "Unidad (caja, frasco, etc.)" })
+                                    @Html.ValidationMessageFor(model => model.UnidadDeVenta, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(model => model.ContenidoNeto, new { @class = "form-label" })
+                            @Html.TextBoxFor(model => model.ContenidoNeto, new { @class = "form-control", placeholder = "Contenido neto (100ml, 30 tabletas, etc.)" })
+                            @Html.ValidationMessageFor(model => model.ContenidoNeto, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Imágenes del Producto</label>
+                            <ul class="nav nav-tabs mb-3" id="imageTabCreate" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="file-tab" data-bs-toggle="tab" data-bs-target="#file-content" type="button" role="tab" aria-controls="file-content" aria-selected="true">
+                                        <i class="bi bi-upload"></i> Subir desde PC
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="url-tab" data-bs-toggle="tab" data-bs-target="#url-content" type="button" role="tab" aria-controls="url-content" aria-selected="false">
+                                        <i class="bi bi-link"></i> Usar URL
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <div class="tab-content" id="imageTabContentCreate">
+                                <div class="tab-pane fade show active" id="file-content" role="tabpanel" aria-labelledby="file-tab">
+                                    <input type="file" class="form-control" id="imagenes" name="imagenes" multiple accept="image/*">
+                                    <div class="form-text">Puede seleccionar múltiples imágenes. La primera será establecida como principal.</div>
+                                    <div id="previewContainerFile" class="mt-2"></div>
+                                </div>
+
+                                <div class="tab-pane fade" id="url-content" role="tabpanel" aria-labelledby="url-tab">
+                                    <div class="row g-2">
+                                        <div class="col-md-9">
+                                            <input type="text" class="form-control" id="imagenUrl" placeholder="https://ejemplo.com/imagen.jpg">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button type="button" id="btnAgregarUrl" class="btn btn-outline-primary w-100">
+                                                <i class="bi bi-plus"></i> Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="form-text">Ingrese la URL de una imagen en la nube y haga clic en "Agregar".</div>
+
+                                    <div id="urlsContainer" class="mt-3">
+                                        <!-- Aquí se mostrarán las URLs agregadas -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-4">
+                            @Html.LabelFor(model => model.Detalles, new { @class = "form-label" })
+                            @Html.TextAreaFor(model => model.Detalles, new { @class = "form-control tinymce", rows = "8" })
+                            @Html.ValidationMessageFor(model => model.Detalles, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="mb-4">
+                            @Html.LabelFor(model => model.Indicaciones, new { @class = "form-label" })
+                            @Html.TextAreaFor(model => model.Indicaciones, new { @class = "form-control tinymce", rows = "8" })
+                            @Html.ValidationMessageFor(model => model.Indicaciones, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="mb-4">
+                            @Html.LabelFor(model => model.Ingredientes, new { @class = "form-label" })
+                            @Html.TextAreaFor(model => model.Ingredientes, new { @class = "form-control tinymce-ingredientes", rows = "5" })
+                            @Html.ValidationMessageFor(model => model.Ingredientes, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar Producto
+                    </button>
+                    <a href="@Url.Action("Index")" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver a la Lista
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        // Variables para almacenar las URLs de imágenes
+        let imageUrls = [];
+
+        // Función para actualizar el contenedor de URLs
+        function updateUrlsContainer() {
+            const container = $('#urlsContainer');
+            container.empty();
+
+            if (imageUrls.length === 0) {
+                container.html('<div class="alert alert-info mt-2"><i class="bi bi-info-circle-fill me-2"></i>No hay URLs agregadas.</div>');
+                return;
+            }
+
+            let html = '<div class="row g-2">';
+
+            imageUrls.forEach((url, index) => {
+                html += `
+                        <div class="col-md-6 mb-2">
+                            <div class="card">
+                                <div class="card-body p-2">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div class="text-truncate me-2">
+                                            <small>${url}</small>
+                                        </div>
+                                        <button type="button" class="btn-close" data-index="${index}" aria-label="Close"></button>
+                                    </div>
+                                </div>
+                                <div class="card-footer p-0" style="height: 150px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa;">
+                                    <img src="${url}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                </div>
+                            </div>
+                            <input type="hidden" name="imagenesUrl" value="${url}">
+                        </div>
+                    `;
+            });
+
+            html += '</div>';
+            container.html(html);
+
+            // Agrega manejadores de eventos para los botones de eliminar
+            container.find('.btn-close').on('click', function () {
+                const index = $(this).data('index');
+                imageUrls.splice(index, 1);
+                updateUrlsContainer();
+            });
+        }
+
+        $(document).ready(function () {
+            // Maneja el botón de agregar URL
+            $('#btnAgregarUrl').on('click', function () {
+                const url = $('#imagenUrl').val().trim();
+                if (url) {
+                    imageUrls.push(url);
+                    $('#imagenUrl').val('');
+                    updateUrlsContainer();
+                }
+            });
+
+            // También agregar URL al presionar Enter
+            $('#imagenUrl').on('keypress', function (e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    $('#btnAgregarUrl').click();
+                }
+            });
+
+            // Vista previa para subida de archivos
+            $('#imagenes').on('change', function (e) {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    $('#previewContainerFile').empty();
+
+                    for (let i = 0; i < files.length; i++) {
+                        const file = files[i];
+                        const reader = new FileReader();
+
+                        reader.onload = function (e) {
+                            const preview = `
+                                    <div class="card mt-2">
+                                        <div class="card-header bg-light py-1">
+                                            <small>${file.name}</small>
+                                        </div>
+                                        <div class="card-body p-0 text-center" style="height: 200px; display: flex; align-items: center; justify-content: center;">
+                                            <img src="${e.target.result}" class="img-fluid" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                        </div>
+                                    </div>
+                                `;
+
+                            $('#previewContainerFile').append(preview);
+                        };
+
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+
+            // Asegura que las URLs se envíen con el formulario
+            $('form').on('submit', function (e) {
+                imageUrls.forEach((url, index) => {
+                    $(this).append(`<input type="hidden" name="imagenesUrl[${index}]" value="${url}">`);
+                });
+            });
+        });
+    </script>
+}

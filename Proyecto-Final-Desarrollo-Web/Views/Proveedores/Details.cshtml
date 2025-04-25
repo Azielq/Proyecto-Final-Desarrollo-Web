@@ -1,0 +1,42 @@
+﻿@model Proyecto_Final_Desarrollo_Web.TableViewModels.ProveedorTableViewModel
+@{
+    ViewBag.Title = "Detalles del Proveedor";
+}
+
+<!-- Sección de Encabezado (Hero) -->
+<section class="hero" id="detalle-proveedor-header">
+    <div class="container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h2>Detalles del Proveedor</h2>
+                <p>Conocé toda la información relevante del proveedor seleccionado.</p>
+            </div>
+            <div class="hero-image">
+                <img src="@Url.Content("~/Content/img/proveedor.png")" alt="Proveedores" class="img-fluid" style="max-width: 300px; height: auto;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección de Detalles del Proveedor -->
+<section class="details" id="detalle-proveedor">
+    <div class="container mb-4">
+        <div class="detail-card">
+            <h3>@Model.Nombre</h3>
+            <p><strong>Correo:</strong> @Model.Correo</p>
+            <p><strong>Teléfono:</strong> @Model.Telefono</p>
+            <p><strong>Dirección:</strong> @Model.direccion</p>
+            <p>
+                <strong>Estado:</strong>
+                <span class="@Model.EstadoClass">@Model.EstadoTexto</span>
+            </p>
+            <p><strong>Total Compras:</strong> @Model.TotalCompras.ToString("C2")</p>
+            <p>
+                <strong>Última Compra:</strong>
+                @(Model.UltimaCompra.HasValue ? Model.UltimaCompra.Value.ToString("dd/MM/yyyy") : "No registrada")
+            </p>
+            <p><strong>Compras Realizadas:</strong> @Model.NumeroCompras</p>
+            <a href="@Url.Action("Index", "Proveedores")" class="btn">Volver</a>
+        </div>
+    </div>
+</section>

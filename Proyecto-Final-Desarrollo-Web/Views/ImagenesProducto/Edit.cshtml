@@ -1,0 +1,125 @@
+﻿@model Proyecto_Final_Desarrollo_Web.ViewModels.ImagenProductoViewModel
+@{
+    ViewBag.Title = "Editar Imagen";
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Productos")">Productos</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Details", "Productos", new { id = Model.ID_Producto })">@Model.NombreProducto</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "ImagenesProducto", new { productoId = Model.ID_Producto })">Imágenes</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Editar Imagen</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4">@ViewBag.Title</h2>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0"><i class="bi bi-pencil"></i> Editar Imagen de @Model.NombreProducto</h5>
+        </div>
+        <div class="card-body">
+            @using (Html.BeginForm("Edit", "ImagenesProducto", FormMethod.Post, new { enctype = "multipart/form-data", @class = "needs-validation" }))
+            {
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.ID_Imagen)
+                @Html.HiddenFor(model => model.ID_Producto)
+                @Html.HiddenFor(model => model.FechaCreacion)
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="ImagenFile" class="form-label">Cambiar Imagen</label>
+                            <input type="file" class="form-control" id="ImagenFile" name="ImagenFile" accept="image/*">
+                            <div class="form-text">Deje este campo vacío si no desea cambiar la imagen actual.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            @Html.LabelFor(model => model.Descripcion, new { @class = "form-label" })
+                            @Html.TextBoxFor(model => model.Descripcion, new { @class = "form-control", placeholder = "Descripción de la imagen" })
+                            @Html.ValidationMessageFor(model => model.Descripcion, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            @Html.CheckBoxFor(model => model.EsPrincipal, new { @class = "form-check-input" })
+                            @Html.LabelFor(model => model.EsPrincipal, new { @class = "form-check-label" })
+                            <div class="form-text">Si marca esta opción, esta imagen se establecerá como la principal del producto.</div>
+                        </div>
+
+                        <div class="mb-3 form-check">
+                            @Html.CheckBoxFor(model => model.Estado, new { @class = "form-check-input" })
+                            @Html.LabelFor(model => model.Estado, new { @class = "form-check-label" })
+                            <div class="form-text">Desmarque esta opción para desactivar la imagen sin eliminarla.</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            @Html.LabelFor(model => model.URL, new { @class = "form-label" })
+                            @Html.TextBoxFor(model => model.URL, new { @class = "form-control", placeholder = "URL de la imagen" })
+                            @Html.ValidationMessageFor(model => model.URL, "", new { @class = "text-danger" })
+                        </div>
+
+                        <div class="card mt-4">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Imagen Actual</h6>
+                            </div>
+                            <div class="card-body text-center" id="previewContainer">
+                                @if (!string.IsNullOrEmpty(Model.URL))
+                                {
+                                    <img src="@Model.URL" class="img-fluid" style="max-height: 300px;" alt="@Model.Descripcion">
+                                }
+                                else
+                                {
+                                    <div class="py-5 text-muted">
+                                        <i class="bi bi-image" style="font-size: 3rem;"></i>
+                                        <p>No hay imagen disponible</p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Guardar Cambios
+                    </button>
+                    <a href="@Url.Action("Index", "ImagenesProducto", new { productoId = Model.ID_Producto })" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Volver a la Lista
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            // Vista previa cuando se selecciona un archivo
+            $('#ImagenFile').change(function () {
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        $('#previewContainer').html('<img src="' + e.target.result + '" class="img-fluid" style="max-height: 300px;">');
+                    }
+                    reader.readAsDataURL(this.files[0]);
+                }
+            });
+
+            // Vista previa cuando se cambia la URL
+            $('#URL').on('input', function () {
+                var url = $(this).val();
+                if (url) {
+                    $('#previewContainer').html('<img src="' + url + '" class="img-fluid" style="max-height: 300px;">');
+                } else {
+                    $('#previewContainer').html('<div class="py-5 text-muted"><i class="bi bi-image" style="font-size: 3rem;"></i><p>No hay imagen disponible</p></div>');
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,315 @@
+﻿
+@model IEnumerable<Proyecto_Final_Desarrollo_Web.TableViewModels.InventarioTableViewModel>
+
+@{
+    ViewBag.Title = "Gestión de Inventario";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <!-- Migas de pan -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Inventario</li>
+        </ol>
+    </nav>
+
+    <!-- Tarjetas de estadísticas -->
+    <div class="row mb-4">
+        <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card bg-primary text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="fw-bold mb-0">Total de Registros</h6>
+                            <h3 class="mb-0">@(ViewData["TotalRecords"] ?? 0)</h3>
+                        </div>
+                        <i class="fas fa-warehouse fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card bg-success text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="fw-bold mb-0">Total Unidades</h6>
+                            <h3 class="mb-0">@(ViewBag.TotalUnidades ?? 0)</h3>
+                        </div>
+                        <i class="fas fa-cubes fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-6 mb-3">
+            <div class="card bg-info text-white h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="fw-bold mb-0">Valor Total</h6>
+                            <h3 class="mb-0">@string.Format("{0:C}", ViewBag.ValorTotal ?? 0)</h3>
+                        </div>
+                        <i class="fas fa-dollar-sign fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="mb-0"><i class="fas fa-warehouse me-2"></i>Gestión de Inventario</h5>
+            <div>
+                <a href="@Url.Action("Create", "Inventario")" class="btn btn-success me-2">
+                    <i class="fas fa-plus me-1"></i>Nuevo Registro
+                </a>
+                <a href="@Url.Action("Reporte", "Inventario")" class="btn btn-info">
+                    <i class="fas fa-chart-bar me-1"></i>Reporte
+                </a>
+            </div>
+        </div>
+        <div class="card-body">
+            <!-- Filtros de búsqueda -->
+            <form id="searchForm" method="get" action="@Url.Action("Index", "Inventario")">
+                <div class="row mb-4">
+                    <div class="col-md-4 mb-3">
+                        <div class="input-group">
+                            <input type="text" id="searchTerm" name="searchTerm" class="form-control"
+                                   placeholder="Buscar por producto, ubicación..." value="@ViewBag.SearchTerm">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <select id="productoId" name="productoId" class="form-select">
+                            <option value="">-- Todos los productos --</option>
+                            @foreach (var item in ViewBag.Productos)
+                            {
+                                <option value="@item.Value" @(ViewBag.ProductoId != null && ViewBag.ProductoId.ToString() == item.Value ? "selected" : "")>
+                                    @item.Text
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <input type="text" id="ubicacion" name="ubicacion" class="form-control"
+                               placeholder="Filtrar por ubicación" value="@ViewBag.Ubicacion">
+                    </div>
+                    <div class="col-md-2 mb-3 d-flex justify-content-end">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="collapse" data-bs-target="#advancedFilters">
+                            <i class="fas fa-filter me-1"></i> Filtros
+                        </button>
+                    </div>
+                </div>
+
+                <div id="advancedFilters" class="collapse @(ViewBag.SoloVencidos == true || ViewBag.SoloPorVencer == true || ViewBag.CategoriaId != null ? "show" : "")">
+                    <div class="card mb-3">
+                        <div class="card-body bg-light">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <select id="categoriaId" name="categoriaId" class="form-select">
+                                        <option value="">-- Todas las categorías --</option>
+                                        @foreach (var item in ViewBag.Categorias)
+                                        {
+                                            <option value="@item.Value" @(ViewBag.CategoriaId != null && ViewBag.CategoriaId.ToString() == item.Value ? "selected" : "")>
+                                                @item.Text
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="soloVencidos" name="soloVencidos" value="true"
+                                               @(ViewBag.SoloVencidos == true ? "checked" : "")>
+                                        <label class="form-check-label" for="soloVencidos">
+                                            Solo productos vencidos
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="soloPorVencer" name="soloPorVencer" value="true"
+                                               @(ViewBag.SoloPorVencer == true ? "checked" : "")>
+                                        <label class="form-check-label" for="soloPorVencer">
+                                            Solo productos por vencer (30 días)
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hidden fields para paginación -->
+                <input type="hidden" id="page" name="page" value="1" />
+                <input type="hidden" id="pageSize" name="pageSize" value="@(ViewData["CurrentPageSize"] ?? 10)" />
+            </form>
+
+            @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+            {
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle me-2"></i>@ViewBag.ErrorMessage
+                </div>
+            }
+
+            @if (TempData["Message"] != null)
+            {
+                <div class="alert alert-@(TempData["MessageType"] ?? "info")">
+                    <i class="fas fa-info-circle me-2"></i>@TempData["Message"]
+                </div>
+            }
+
+            <!-- Tabla de inventario -->
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th><i class="fas fa-hashtag me-1"></i>ID</th>
+                            <th><i class="fas fa-box me-1"></i>Lote</th>
+                            <th><i class="fas fa-prescription-bottle-alt me-1"></i>Producto</th>
+                            <th><i class="fas fa-tags me-1"></i>Categoría</th>
+                            <th><i class="fas fa-cubes me-1"></i>Cantidad</th>
+                            <th><i class="fas fa-calendar-alt me-1"></i>Vencimiento</th>
+                            <th><i class="fas fa-map-marker-alt me-1"></i>Ubicación</th>
+                            <th><i class="fas fa-exclamation-circle me-1"></i>Estado</th>
+                            <th><i class="fas fa-cogs me-1"></i>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                var badgeClass = "";
+
+                                switch (item.Estado)
+                                {
+                                    case "Vencido":
+                                        badgeClass = "bg-danger";
+                                        break;
+                                    case "Por Vencer":
+                                        badgeClass = "bg-warning text-dark";
+                                        break;
+                                    default:
+                                        badgeClass = "bg-success";
+                                        break;
+                                }
+
+                                <tr>
+                                    <td>@item.id_Inventario</td>
+                                    <td>@item.NumeroLote</td>
+                                    <td>@item.NombreProducto</td>
+                                    <td>@item.Categoria</td>
+                                    <td>@item.Cantidad</td>
+                                    <td>@item.FechaVencimiento.ToString("dd/MM/yyyy")</td>
+                                    <td>@item.ubicacion</td>
+                                    <td>
+                                        <span class="badge @badgeClass">@item.Estado</span>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <a href="@Url.Action("Details", "Inventario", new { id = item.id_Inventario })" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <a href="@Url.Action("Edit", "Inventario", new { id = item.id_Inventario })" class="btn btn-sm btn-primary" data-bs-toggle="tooltip" title="Editar">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a href="@Url.Action("Delete", "Inventario", new { id = item.id_Inventario })" class="btn btn-sm btn-danger" data-bs-toggle="tooltip" title="Eliminar">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="9" class="text-center">No se encontraron registros de inventario con los criterios de búsqueda.</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Paginación -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <nav aria-label="Paginación">
+                        <ul class="pagination">
+                            @{
+                                int currentPage = (int)ViewData["CurrentPage"];
+                                int totalPages = (int)ViewData["TotalPages"];
+                                int previousPage = currentPage - 1;
+                                int nextPage = currentPage + 1;
+                            }
+
+                            <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                <a class="page-link" href="javascript:void(0)" onclick="cambiarPagina(@previousPage)" tabindex="-1" aria-disabled="@(currentPage == 1)">
+                                    Anterior
+                                </a>
+                            </li>
+
+                            @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                            {
+                                <li class="page-item @(i == currentPage ? "active" : "")">
+                                    <a class="page-link" href="javascript:void(0)" onclick="cambiarPagina(@i)">@i</a>
+                                </li>
+                            }
+
+                            <li class="page-item @(currentPage >= totalPages ? "disabled" : "")">
+                                <a class="page-link" href="javascript:void(0)" onclick="cambiarPagina(@nextPage)" aria-disabled="@(currentPage >= totalPages)">
+                                    Siguiente
+                                </a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="d-inline-flex align-items-center">
+                        <label class="me-2">Mostrar:</label>
+                        <select id="pageSizeSelector" class="form-select form-select-sm" onchange="cambiarTamanoPagina()">
+                            <option value="10" @((ViewData["CurrentPageSize"] as int? == 10) ? "selected" : "")>10</option>
+                            <option value="25" @((ViewData["CurrentPageSize"] as int? == 25) ? "selected" : "")>25</option>
+                            <option value="50" @((ViewData["CurrentPageSize"] as int? == 50) ? "selected" : "")>50</option>
+                            <option value="100" @((ViewData["CurrentPageSize"] as int? == 100) ? "selected" : "")>100</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Activar tooltips
+        $(function () {
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            // Manejar filtros
+            $('#productoId, #categoriaId').change(function () {
+                $('#searchForm').submit();
+            });
+
+            // Manejar checkboxes de filtros
+            $('#soloVencidos, #soloPorVencer').change(function () {
+                $('#searchForm').submit();
+            });
+        });
+
+        function cambiarPagina(pagina) {
+            $('#page').val(pagina);
+            $('#searchForm').submit();
+        }
+
+        function cambiarTamanoPagina() {
+            $('#pageSize').val($('#pageSizeSelector').val());
+            $('#page').val(1); // Reset a la primera página
+            $('#searchForm').submit();
+        }
+    </script>
+}
